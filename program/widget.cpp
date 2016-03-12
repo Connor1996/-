@@ -8,6 +8,9 @@ Widget::Widget(QWidget *parent) :
     ui->setupUi(this);
     this->resize(1280, 720);
     this->setWindowTitle("Travel-Query-System");
+    ui->DurationText->setEnabled(false);
+    ui->FareEdit->setEnabled(false);
+    ui->TotalTimeEdit->setEnabled(false);
 
     //计时功能及所需的线程
     mstimer = new QTimer;
@@ -24,7 +27,7 @@ Widget::Widget(QWidget *parent) :
     secondcnt = 0;
 
     QObject::connect(ui->StartButton, SIGNAL(clicked()), this, SLOT(startButtonClicked()));
-    QObject::connect(mstimer, SIGNAL(timeout()), this, SLOT(timeSlot()));
+    QObject::connect(mstimer, SIGNAL(timeout()), this, SLOT(displayCurrentTime()));
     QObject::connect(ui->StartButton, SIGNAL(clicked()), this, SLOT(timeStart()));
     QObject::connect(this, SIGNAL(DoStartTimer()), mstimer, SLOT(start()));
 
@@ -45,10 +48,19 @@ void Widget::startButtonClicked()
         priordestination = destination = getDestination();
         if (start == destination)
         {
-            QMessageBox::information(this, "Error", QString::fromWCharArray(L"出发地目的地相同"));
+            QMessageBox::information(this, "Error", QString::fromWCharArray(L"出发地和目的地相同"));
             return;
         }
+        getStartTime();
         getDeadline();
+
+        setTotalTime(1, 2, 30);
+        displayTotalTime();
+        setFare(2340);
+        displayFare();
+
+        ui->StartComboBox->setEnabled(false);
+        ui->StrategyComboBox->setEnabled(false);
         startclickedtimes += 1;
         qDebug()<< "------------";
         return;
@@ -87,7 +99,7 @@ int Widget::getStrategy()
         qDebug()<< "Least Fare in Given Time";
         break;
     default:
-        QMessageBox::warning(this, "Error", "Illegal Strategy");
+        QMessageBox::warning(this, "Error", QString::fromWCharArray(L"策略非法"));
         break;
     }
     return ui->StrategyComboBox->currentIndex();
@@ -148,7 +160,7 @@ int Widget::getStart()
         qDebug()<< "Moscow";
         break;
     default:
-        QMessageBox::warning(this, "Error", "Start City Illegal");
+        QMessageBox::warning(this, "Error", QString::fromWCharArray(L"始发地非法"));
         break;
     }
     return ui->StartComboBox->currentIndex();
@@ -209,7 +221,7 @@ int Widget::getDestination()
         qDebug()<< "Moscow";
         break;
     default:
-        QMessageBox::warning(this, "Error", "Start City Illegal");
+        QMessageBox::warning(this, "Error", QString::fromWCharArray(L"目的地非法"));
         break;
     }
     return ui->DestinationComboBox->currentIndex();
@@ -218,97 +230,166 @@ int Widget::getDestination()
 //获取截止时间
 void Widget::getDeadline()
 {
-    int year, month, day, hour, min;
     QDate date = ui->DeadlineDateTimeEdit->date();
     QTime time = ui->DeadlineDateTimeEdit->time();
-    date.getDate(&year, &month, &day);
-    hour = time.hour();
-    min = time.minute();
-    qDebug() << "Deadline:" << year << month << day << hour << min;
+    date.getDate(&deadlineyear, &deadlinemonth, &deadlineday);
+    deadlinehour = time.hour();
+    deadlinemin = time.minute();
+    ui->DeadlineDateTimeEdit->setEnabled(false);
+    qDebug() << "Deadline:" << deadlineyear << deadlinemonth << deadlineday << deadlinehour << deadlinemin;
 }
-//##############
-void Widget::timeSlot()
+
+//获取开始时间
+void Widget::getStartTime()
 {
-    QDate date = ui->StartDateTimeEdit->date();
-    QTime time = ui->StartDateTimeEdit->time();
+    date = ui->StartDateTimeEdit->date();
+    time = ui->StartDateTimeEdit->time();
     date.getDate(&currentyear, &currentmonth, &currentday);
     currenthour = time.hour();
     currentmin = time.minute();
-    secondcnt ++;
-    if(secondcnt == 360)
+
+    startyear = currentyear;
+    startmonth = currentmonth;
+    startday = currentday;
+    starthour = currenthour;
+    startmin = currentmin;
+}
+
+//显示当前时间
+void Widget::displayCurrentTime()
+{
+    if (startclickedtimes == 1)
     {
-        currentmin ++;
-        secondcnt = 0;
-        if (currentmin == 60)
+        ui->StartDateTimeEdit->setEnabled(false);
+        secondcnt ++;
+        if(secondcnt == 360)
         {
-            currenthour ++;
-            currentmin = 0;
-            if (currenthour == 24)
+            currentmin ++;
+            secondcnt = 0;
+            if (currentmin == 60)
             {
-                currentday ++;
-                currenthour = 0;
-                switch (currentmonth)
+                currenthour ++;
+                currentmin = 0;
+                if (currenthour == 24)
                 {
-                case 1:
-                case 3:
-                case 5:
-                case 7:
-                case 8:
-                case 10:
-                    if (currentday == 32)
+                    currentday ++;
+                    currenthour = 0;
+                    switch (currentmonth)
                     {
-                        currentmonth ++;
-                        currentday = 1;
-                    }
-                    break;
-                case 4:
-                case 6:
-                case 9:
-                case 11:
-                    if (currentday == 31)
-                    {
-                        currentmonth ++;
-                        currentday = 1;
-                    }
-                    break;
-                case 2:
-                    if (currentyear % 4 == 0 || currentyear % 400 == 0)
-                    {
-                        if (currentday == 30)
+                    case 1:
+                    case 3:
+                    case 5:
+                    case 7:
+                    case 8:
+                    case 10:
+                        if (currentday == 32)
                         {
                             currentmonth ++;
                             currentday = 1;
                         }
-                    }
-                    if (currentyear % 4 != 0 && currentyear % 400 != 0)
-                    {
-                        if (currentday == 29)
+                        break;
+                    case 4:
+                    case 6:
+                    case 9:
+                    case 11:
+                        if (currentday == 31)
                         {
                             currentmonth ++;
                             currentday = 1;
                         }
+                        break;
+                    case 2:
+                        if (currentyear % 4 == 0 || currentyear % 400 == 0)
+                        {
+                            if (currentday == 30)
+                            {
+                                currentmonth ++;
+                                currentday = 1;
+                            }
+                        }
+                        if (currentyear % 4 != 0 && currentyear % 400 != 0)
+                        {
+                            if (currentday == 29)
+                            {
+                                currentmonth ++;
+                                currentday = 1;
+                            }
+                        }
+                        break;
+                    case 12:
+                        if (currentday == 32)
+                        {
+                            currentyear ++;
+                            currentmonth = 1;
+                        }
+                    default:
+                        break;
                     }
-                    break;
-                case 12:
-                    if (currentday == 32)
-                    {
-                        currentyear ++;
-                        currentmonth = 1;
-                    }
-                default:
-                    break;
                 }
             }
         }
+        ui->StartDateTimeEdit->setReadOnly(false);
+        ui->StartDateTimeEdit->setDate(QDate(currentyear, currentmonth, currentday));
+        ui->StartDateTimeEdit->setTime(QTime(currenthour, currentmin, 0, 0));
+        displaySpentTime();
     }
-    ui->StartDateTimeEdit->setReadOnly(false);
-    ui->StartDateTimeEdit->setDate(QDate(currentyear, currentmonth, currentday));
-    ui->StartDateTimeEdit->setTime(QTime(currenthour, currentmin, 0, 0));
 }
 
+//如果mstimer未激活，那么发出DoStartTimer信号
 void Widget::timeStart()
 {
     if (mstimer->isActive())
         return;
     emit DoStartTimer();
+}
+
+//计算开始出行到目前所用的时间
+void Widget::displaySpentTime()
+{
+    //QString durationyear = QString::number(currentyear - startyear);//年月表示时间跨度不准确，如durationmonth+1，不能确定是因为31天还是30天+1
+    //QString durationmonth = QString::number(currentmonth - startmonth);
+    int durday = currentday - startday;
+    int durhour = currenthour - starthour;
+    int durmin = currentmin - startmin;
+    if (durmin == 60)
+    {
+        durmin = 0;
+        durhour ++;
+        if (durhour== 24)
+        {
+            durhour = 0;
+            durday++;
+        }
+    }
+    QString durationday = QString::number(durday);
+    QString durationhour = QString::number(durhour);
+    QString durationmin = QString::number(durmin);
+
+    ui->DurationText->setText(durationday + QString::fromWCharArray(L"天") + durationhour + QString::fromWCharArray(L"小时") + durationmin + QString::fromWCharArray(L"分钟"));
+}
+
+//直接在TotalTimeEdit显示方案所需总时间
+void Widget::displayTotalTime()
+{
+    ui->TotalTimeEdit->setText(QString::number(totalday) + QString::fromWCharArray(L"天") + QString::number(totalhour) + QString::fromWCharArray(L"小时") + QString::number(totalmin) + QString::fromWCharArray(L"分钟"));
+}
+
+//设置方案所需总时间
+void Widget::setTotalTime(int totaldaytmp, int totalhourtmp, int totalmintmp)
+{
+    totalday = totaldaytmp;
+    totalhour = totalhourtmp;
+    totalmin = totalmintmp;
+}
+
+//显示方案所需经费
+void Widget::displayFare()
+{
+    ui->FareEdit->setText(QString::number(fare) + QString::fromWCharArray(L"元"));
+}
+
+//设置方案所需经费
+void Widget::setFare(int faretmp)
+{
+    fare = faretmp;
 }
