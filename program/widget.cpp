@@ -421,3 +421,63 @@ void Widget::setFare(int faretmp)
 {
     fare = faretmp;
 }
+
+//将方案中城市编号对应城市名称
+QString Widget::numToCity(int index){
+    QString city;
+    switch (index)
+    {
+    case 0:
+        //北京
+        city = tr("北京");
+        break;
+    case 1:
+        //上海
+        city = tr("上海");
+        break;
+    case 2:
+        //西安
+        city = tr("西安");
+        break;
+    case 3:
+        //武汉
+        city = tr("武汉");
+        break;
+    case 4:
+        //深圳
+        city = tr("深圳");
+        break;
+    case 5:
+        //郑州
+        city = tr("郑州");
+        break;
+    case 6:
+        //海南
+        city = tr("海南");
+        break;
+    case 7:
+        //拉萨
+        city = tr("拉萨");
+        break;
+    case 8:
+        //纽约
+        city = tr("纽约");
+        break;
+    case 9:
+        //首尔
+        city = tr("首尔");
+        break;
+    case 10:
+        //哈尔滨
+        city = tr("哈尔滨");
+        break;
+    case 11:
+        //莫斯科
+        city = tr("莫斯科");
+        break;
+    default:
+        QMessageBox::warning(this, "Error", QString::fromWCharArray(L"程序运行错误--请联系工作人员"));
+        break;
+    }
+    return city;
+}
