@@ -27,6 +27,8 @@ Widget::Widget(QWidget *parent) :
     secondcnt = 0;
 
     QObject::connect(ui->StartButton, SIGNAL(clicked()), this, SLOT(startButtonClicked()));
+    QObject::connect(ui->resetButton, SIGNAL(clicked()), this, SLOT(resetButtonClicked()));
+
     QObject::connect(mstimer, SIGNAL(timeout()), this, SLOT(displayCurrentTime()));
     QObject::connect(ui->StartButton, SIGNAL(clicked()), this, SLOT(timeStart()));
     QObject::connect(this, SIGNAL(DoStartTimer()), mstimer, SLOT(start()));
@@ -78,6 +80,31 @@ void Widget::startButtonClicked()
         }
         qDebug()<< "------------";
     }
+}
+
+//单击“重置”按钮，重置所有变量，重新来过
+void Widget::resetButtonClicked()
+{
+    startclickedtimes = 0;
+    priordestination = 0;
+    secondcnt = 0;
+
+    ui->StartComboBox->setEnabled(true);
+    ui->StrategyComboBox->setEnabled(true);
+    ui->DeadlineDateTimeEdit->setEnabled(true);
+    ui->StartDateTimeEdit->setEnabled(true);
+    ui->StartButton->setEnabled(true);
+
+    ui->StrategyComboBox->setCurrentIndex(0);
+    ui->StartComboBox->setCurrentIndex(0);
+    ui->DestinationComboBox->setCurrentIndex(0);
+
+    ui->StartDateTimeEdit->setDate(QDate(2000, 1, 1));
+    ui->StartDateTimeEdit->setTime(QTime(0, 00));
+    ui->DeadlineDateTimeEdit->setReadOnly(false);
+    ui->DeadlineDateTimeEdit->setDate(QDate(2000, 1, 1));
+    ui->DeadlineDateTimeEdit->setTime(QTime(0, 00));
+
 }
 
 //获取用户所选策略
@@ -253,6 +280,8 @@ void Widget::getStartTime()
     startday = currentday;
     starthour = currenthour;
     startmin = currentmin;
+
+    ui->StartDateTimeEdit->setEnabled(false);
 }
 
 //显示当前时间
@@ -260,7 +289,6 @@ void Widget::displayCurrentTime()
 {
     if (startclickedtimes == 1)
     {
-        ui->StartDateTimeEdit->setEnabled(false);
         secondcnt ++;
         if(secondcnt == 360)
         {

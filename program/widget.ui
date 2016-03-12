@@ -256,7 +256,35 @@
         </spacer>
        </item>
        <item>
+        <widget class="QPushButton" name="resetButton">
+         <property name="minimumSize">
+          <size>
+           <width>59</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>59</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>重置</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="StartButton">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>59</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="text">
           <string>开始</string>
          </property>

@@ -77,6 +77,7 @@ private:
 
 private slots:
     void startButtonClicked();//开始按钮按下，开始计算路径图形输出
+    void resetButtonClicked();//reset按钮按下，重置所有变量重新来过
     void displayCurrentTime();//显示当前时间
     void timeStart();//此函数用于，如果mstimer未激活，那么this发出DoStartTimer信号
 
