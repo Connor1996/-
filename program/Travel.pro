@@ -22,3 +22,6 @@ HEADERS  += widget.h \
     attribute.h
 
 FORMS    += widget.ui
+
+RESOURCES += \
+    resource.qrc

@@ -6,10 +6,11 @@ Widget::Widget(QWidget *parent) :
     ui(new Ui::Widget)
 {
     ui->setupUi(this);
-    this->resize(1280, 720);
+    this->setFixedSize(1280, 720);
     this->setWindowTitle("Travel-Query-System");
 
     Schedule schedule;
+    schedule.Dijkstra(QTime(),1, 0, 1);
 
     ui->DurationText->setEnabled(false);
     ui->FareEdit->setEnabled(false);
