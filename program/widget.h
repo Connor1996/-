@@ -1,6 +1,8 @@
 ﻿#ifndef WIDGET_H
 #define WIDGET_H
 
+#include "schedule.h"
+
 #include <QWidget>
 #include <QDebug>
 #include <QPushButton>
