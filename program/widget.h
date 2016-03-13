@@ -37,6 +37,8 @@ public:
     void setTotalTime(int totaldaytmp, int totalhourtmp, int totalmintmp);//设置方案所需总时间
     void setFare(int faretmp);//设置方案所需经费
     void displayFare();//显示方案所需经费
+    void displayPath();//在pathlist窗口中显示路径
+    QString numToCity(int index);//将城市编号转为城市名称
 
 private:
     Ui::Widget *ui;
