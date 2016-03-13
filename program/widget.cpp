@@ -6,10 +6,8 @@ Widget::Widget(QWidget *parent) :
     ui(new Ui::Widget)
 {
     ui->setupUi(this);
-    this->resize(1280, 720);
+    this->setFixedSize(1280, 720);
     this->setWindowTitle("Travel-Query-System");
-
-   // Schedule schedule;
 
     ui->DurationText->setEnabled(false);
     ui->FareEdit->setEnabled(false);

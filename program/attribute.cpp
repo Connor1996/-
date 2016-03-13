@@ -5,7 +5,7 @@ Attribute::Attribute()
     this->from = -1;
 }
 
-Attribute::Attribute(int from, int to, QString num, QDate begin, QDate end, int cost, int vehicle)
+Attribute::Attribute(int from, int to, QString num, QTime begin, QTime end, int cost, int vehicle)
 {
     this->from = from;
     this->to = to;

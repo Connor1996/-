@@ -24,4 +24,8 @@ HEADERS  += widget.h \
 FORMS    += widget.ui
 
 RESOURCES += \
+<<<<<<< HEAD
     vehicle-icons.qrc
+=======
+    resource.qrc
+>>>>>>> origin/master

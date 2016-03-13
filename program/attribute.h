@@ -8,13 +8,13 @@ class Attribute
 {
 public:
     Attribute();
-    Attribute(int, int, QString, QDate, QDate, int, int);
+    Attribute(int, int, QString, QTime, QTime, int, int);
 
     int from, to, cost, vehicle;
     QString num;
-    QDate begin, end;
+    QTime begin, end;
 
-    QDate getDuration(int , int);
+    QTime getDuration(int , int);
 };
 
 #endif // ATTRIBUTE_H
