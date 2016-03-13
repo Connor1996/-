@@ -41,7 +41,7 @@ public:
     int getStrategy();//获取用户所选策略
     int getStart();//获取用户所选始发地
     int getDestination();//获取用户所选目的地
-    void getStartTime();//获取开始时间
+    QTime getStartTime();//获取开始时间
     void getDeadline();//获取截止时间
     void displaySpentTime();//显示已经花费的时间
     void displayTotalTime();//显示方案所需总时间

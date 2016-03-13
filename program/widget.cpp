@@ -61,9 +61,9 @@ void Widget::startButtonClicked()
             QMessageBox::information(this, "Error", QString::fromWCharArray(L"出发地和目的地相同"));
             return;
         }
-        getStartTime();
+        QTime startTime = getStartTime();
         getDeadline();
-        std::vector<Attribute> path = schedule.Dijkstra(strategy, start, destination);
+        std::vector<Attribute> path = schedule.Dijkstra(startTime, strategy, start, destination);
 
         setTotalTime(1, 2, 30);
         displayTotalTime();
@@ -277,7 +277,7 @@ void Widget::getDeadline()
 }
 
 //获取开始时间
-void Widget::getStartTime()
+QTime Widget::getStartTime()
 {
     date = ui->StartDateTimeEdit->date();
     time = ui->StartDateTimeEdit->time();
@@ -292,6 +292,7 @@ void Widget::getStartTime()
     startmin = currentmin;
 
     ui->StartDateTimeEdit->setEnabled(false);
+    return time;
 }
 
 //显示当前时间
