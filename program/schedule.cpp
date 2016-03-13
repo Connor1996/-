@@ -16,9 +16,9 @@ Schedule::Schedule()
     }
 }
 
-int CityToNum(QString city)
+int Schedule::CityToNum(QString city)
 {
-    int num;
+    int num = -1;
 
     if(city == "北京")
         num = 0;

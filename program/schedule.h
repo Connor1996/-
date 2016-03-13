@@ -2,13 +2,13 @@
 #define SCHEDULE_H
 
 #include "attribute.h"
-#include "widget.h"
 
-#include <QWidget>
 #include <vector>
 #include <map>
+#include <utility>
 #include <algorithm>
 #include <QString>
+#include <QDate>
 #include <QFile>
 #include <QTextStream>
 
