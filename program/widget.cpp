@@ -506,8 +506,8 @@ void Widget::displayPath(std::vector<Attribute> path)
     QVBoxLayout *listlayout = new QVBoxLayout;
     QWidget *containwidget = new QWidget;
 
-    int index = 0;
-    while (index < path.size())
+    for(std::vector<Attribute>::size_type index = 0;
+            index != path.size(); index++)
     {
         if (path[index].vehicle == 0)
             vehiclelabel->setPixmap(QPixmap(":/new/vehicle/car"));
