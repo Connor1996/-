@@ -5,15 +5,25 @@
 
 #include <QWidget>
 #include <QDebug>
+
 #include <QPushButton>
 #include <QComboBox>
+#include <QLabel>
 #include <QString>
 #include <QMessageBox>
+
 #include <QDate>
 #include <QTime>
 #include <QDateTimeEdit>
 #include <QTimer>
 #include <QThread>
+
+#include <QPixmap>
+#include <QScrollArea>
+#include <QPalette>
+#include <QLayout>
+#include <QPalette>
+
 
 namespace Ui {
 class Widget;
@@ -27,6 +37,7 @@ public:
     explicit Widget(QWidget *parent = 0);
     ~Widget();
 
+    Schedule schedule;
     int getStrategy();//获取用户所选策略
     int getStart();//获取用户所选始发地
     int getDestination();//获取用户所选目的地
@@ -37,7 +48,7 @@ public:
     void setTotalTime(int totaldaytmp, int totalhourtmp, int totalmintmp);//设置方案所需总时间
     void setFare(int faretmp);//设置方案所需经费
     void displayFare();//显示方案所需经费
-    void displayPath();//在pathlist窗口中显示路径
+    void displayPath(std::vector<Attribute> path);//在pathlist窗口中显示路径
     QString numToCity(int index);//将城市编号转为城市名称
 
 private:
@@ -87,7 +98,6 @@ private slots:
 
 signals:
     void DoStartTimer();//开始计时的信号
-
 };
 
 #endif // WIDGET_H

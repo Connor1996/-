@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/new/vehicle">
+        <file>car.ico</file>
+        <file>plane.ico</file>
+        <file>train.ico</file>
+    </qresource>
+</RCC>

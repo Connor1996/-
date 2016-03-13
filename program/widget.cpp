@@ -9,7 +9,7 @@ Widget::Widget(QWidget *parent) :
     this->resize(1280, 720);
     this->setWindowTitle("Travel-Query-System");
 
-    Schedule schedule;
+   // Schedule schedule;
 
     ui->DurationText->setEnabled(false);
     ui->FareEdit->setEnabled(false);
@@ -29,6 +29,8 @@ Widget::Widget(QWidget *parent) :
     priordestination = 0;
     secondcnt = 0;
 
+   // QObject::connect(ui->StartButton, SIGNAL(clicked()), this, SLOT(emitclickedsignal()));
+  //  QObject::connect(this, SIGNAL(StartSignal(Schedule&)), this, SLOT(startButtonClicked(Schedule&)));
     QObject::connect(ui->StartButton, SIGNAL(clicked()), this, SLOT(startButtonClicked()));
     QObject::connect(ui->resetButton, SIGNAL(clicked()), this, SLOT(resetButtonClicked()));
 
@@ -42,6 +44,11 @@ Widget::~Widget()
 {
     delete ui;
 }
+
+//void Widget::emitclickedsignal()
+//{
+//    emit StartSignal(Schedule&);
+//}
 
 //单击“开始”按钮，获取用户输入信息
 void Widget::startButtonClicked()
@@ -58,11 +65,13 @@ void Widget::startButtonClicked()
         }
         getStartTime();
         getDeadline();
+        std::vector<Attribute> path = schedule.Dijkstra(strategy, start, destination);
 
         setTotalTime(1, 2, 30);
         displayTotalTime();
         setFare(2340);
         displayFare();
+        displayPath(path);
 
         ui->StartComboBox->setEnabled(false);
         ui->StrategyComboBox->setEnabled(false);
@@ -483,4 +492,39 @@ QString Widget::numToCity(int index){
         break;
     }
     return city;
+}
+
+//显示路径
+void Widget::displayPath(std::vector<Attribute> path)
+{
+    QLabel *vehiclelabel = new QLabel;
+    QLabel *textlabel = new QLabel;
+//    QLabel *tolabel = new QLabel;
+//    QLabel *costlabel = new QLabel;
+   // QLabel *beginlabel = new QLabel;
+   // QLabel *endlabel = new QLabel;
+
+    QVBoxLayout *listlayout = new QVBoxLayout;
+    QWidget *containwidget = new QWidget;
+
+    int index = 0;
+    while (index < path.size())
+    {
+        if (path[index].vehicle == 0)
+            vehiclelabel->setPixmap(QPixmap(":/new/vehicle/car"));
+        else if (path[index].vehicle == 1)
+            vehiclelabel->setPixmap(QPixmap(":/new/vehicle/train"));
+        else if (path[index].vehicle == 2)
+            vehiclelabel->setPixmap(QPixmap(":/new/vehicle/plane"));
+        textlabel->setText(numToCity(path[index].from) + "->" + numToCity(path[index].to) + tr(" 车次：") + path[index].num + tr(" 票价：") + QString::number(path[index].cost));
+        QHBoxLayout *rowlayout = new QHBoxLayout;
+        rowlayout->addWidget(vehiclelabel);
+        rowlayout->addWidget(textlabel);
+        listlayout->addLayout(rowlayout);
+    }
+    containwidget->setLayout(listlayout);
+
+    QScrollArea *scrollarea = new QScrollArea(this);
+    scrollarea->setBackgroundRole(QPalette::Dark);
+    scrollarea->setWidget(containwidget);
 }

@@ -1,4 +1,4 @@
-#include "schedule.h"
+﻿#include "schedule.h"
 
 Schedule::Schedule()
 {
@@ -40,9 +40,9 @@ int Schedule::CityToNum(QString city)
         num = 8;
     else if(city =="首尔")
         num = 9;
-    else if(city =="哈尔滨")
+    else if(city == "哈尔滨")
         num = 10;
-    else if(city =="莫斯科")
+    else if (city == "莫斯科")
         num = 11;
 
     return num;
