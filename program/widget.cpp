@@ -9,6 +9,8 @@ Widget::Widget(QWidget *parent) :
     this->setFixedSize(1280, 720);
     this->setWindowTitle("Travel-Query-System");
 
+    ui->StartDateTimeEdit->setDateTime(QDateTime::currentDateTime());
+    ui->DeadlineDateTimeEdit->setDateTime(QDateTime::currentDateTime());
     ui->DurationText->setEnabled(false);
     ui->FareEdit->setEnabled(false);
     ui->TotalTimeEdit->setEnabled(false);
@@ -65,6 +67,7 @@ void Widget::startButtonClicked()
         displayFare();
         displayPath(path);
 
+        //ui->StartButton->setEnabled(false);
         ui->StartComboBox->setEnabled(false);
         ui->StrategyComboBox->setEnabled(false);
         startclickedtimes += 1;
@@ -105,11 +108,8 @@ void Widget::resetButtonClicked()
     ui->StartComboBox->setCurrentIndex(0);
     ui->DestinationComboBox->setCurrentIndex(0);
 
-    ui->StartDateTimeEdit->setDate(QDate(2000, 1, 1));
-    ui->StartDateTimeEdit->setTime(QTime(0, 00));
-    ui->DeadlineDateTimeEdit->setReadOnly(false);
-    ui->DeadlineDateTimeEdit->setDate(QDate(2000, 1, 1));
-    ui->DeadlineDateTimeEdit->setTime(QTime(0, 00));
+    ui->StartDateTimeEdit->setDateTime(QDateTime::currentDateTime());
+    ui->DeadlineDateTimeEdit->setDateTime(QDateTime::currentDateTime());
 
 }
 

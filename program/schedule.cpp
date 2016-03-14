@@ -74,36 +74,35 @@ std::vector<Attribute> Schedule::Dijkstra(QDateTime startTime, int strategy, int
         qDebug() << "update success...";
         city = -1;
 
-        switch(strategy)
+        if(strategy == 0)
         {
-            case 0:
-                int min = INT_MAX;
+            int min = INT_MAX;
 
-                for(std::vector<int>::size_type ix = 0;
-                    ix != value.size(); ix++)
+            for(std::vector<int>::size_type ix = 0;
+                ix != value.size(); ix++)
+            {
+                if(!known[ix] && min > value[ix])
                 {
-                    if(!known[ix] && min > value[ix])
-                    {
-                        min = value[ix];
-                        city = ix;
-                        qDebug() << city;
-                    }
+                    min = value[ix];
+                    city = ix;
+                    qDebug() << city;
                 }
-                break;
-            case 1:
-                QDateTime minn(QDate(7999, 12, 31), QTime(23, 59, 59));
+            }
+        }
+        else if(strategy == 1)
+        {
+            QDateTime minn(QDate(7999, 12, 31), QTime(23, 59, 59));
 
-                for(std::vector<QDateTime>::size_type ix = 0;
-                    ix != time.size(); ix++)
+            for(std::vector<QDateTime>::size_type ix = 0;
+                ix != time.size(); ix++)
+            {
+                if(!known[ix] && minn > time[ix])
                 {
-                    if(!known[ix] && minn > time[ix])
-                    {
-                        minn = time[ix];
-                        city = ix;
-                        qDebug() << city;
-                    }
+                    minn = time[ix];
+                    city = ix;
+                    qDebug() << city;
                 }
-                break;
+            }
         }
 
 
@@ -176,7 +175,7 @@ void Schedule::UpdateAdjacents(int city, std::vector<int>& value, std::vector<QD
                     else if(span && time[iter->second.to] >
                             QDateTime(time[iter->second.from].addDays(1).date(), iter->second.end))
                     {
-                        value[iter->second.to] = QDateTime(time[iter->second.from].addDays(1).date(), iter->second.end);
+                        time[iter->second.to] = QDateTime(time[iter->second.from].addDays(1).date(), iter->second.end);
                         path[iter->second.to] = iter->second;
                     }
                 break;
