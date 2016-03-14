@@ -44,7 +44,7 @@ Widget::~Widget()
 //单击“开始”按钮，获取用户输入信息
 void Widget::startButtonClicked()
 {
-    QTime startTime;
+    QDateTime startDateTime;
     if (startclickedtimes == 0)//首次运行，目的地和始发地不能相同，相同则弹出窗口，重新来过
     {
         strategy = getStrategy();
@@ -55,9 +55,9 @@ void Widget::startButtonClicked()
             QMessageBox::information(this, "Error", QString::fromWCharArray(L"出发地和目的地相同"));
             return;
         }
-        startTime = getStartTime();
+        startDateTime = getStartTime();
         getDeadline();
-        std::vector<Attribute> path = schedule.Dijkstra(startTime, strategy, start, destination);
+        std::vector<Attribute> path = schedule.Dijkstra(startDateTime, strategy, start, destination);
 
         setTotalTime(1, 2, 30);
         displayTotalTime();
@@ -79,7 +79,7 @@ void Widget::startButtonClicked()
             //strategy = getStrategy();//如果涉及途中策略更改，则保留
             //start = getStart();
             priordestination = destination = getDestination();
-            std::vector<Attribute> path = schedule.Dijkstra(startTime, strategy, start, destination);
+            std::vector<Attribute> path = schedule.Dijkstra(startDateTime, strategy, start, destination);
             displayPath(path);
             qDebug() << "Prior Destination after changed" << priordestination;
             //getDeadline();//如果涉及第三策略下截止时间修订，则保留
@@ -116,147 +116,18 @@ void Widget::resetButtonClicked()
 //获取用户所选策略
 int Widget::getStrategy()
 {
-    qDebug()<< "Strategy";
-    switch (ui->StrategyComboBox->currentIndex())
-    {
-    case 0:
-        //费用最少策略
-        qDebug()<< "Least Fare";
-        break;
-    case 1:
-        //耗时最短策略
-        qDebug()<< "Least Time";
-        break;
-    case 2:
-        //限时费用最少
-        qDebug()<< "Least Fare in Given Time";
-        break;
-    default:
-        QMessageBox::warning(this, "Error", QString::fromWCharArray(L"策略非法"));
-        break;
-    }
     return ui->StrategyComboBox->currentIndex();
 }
 
 //获取用户所选始发地
 int Widget::getStart()
 {
-    qDebug()<< "Start:";
-    switch (ui->StartComboBox->currentIndex())
-    {
-    case 0:
-        //北京
-        qDebug()<< "Beijing";
-        break;
-    case 1:
-        //上海
-        qDebug()<< "Shanghai";
-        break;
-    case 2:
-        //西安
-        qDebug()<< "Xi`an";
-        break;
-    case 3:
-        //武汉
-        qDebug()<< "Wuhan";
-        break;
-    case 4:
-        //深圳
-        qDebug()<< "Shenzhen";
-        break;
-    case 5:
-        //郑州
-        qDebug()<< "Zhengzhou";
-        break;
-    case 6:
-        //海南
-        qDebug()<< "Hainan";
-        break;
-    case 7:
-        //拉萨
-        qDebug()<< "Lasa";
-        break;
-    case 8:
-        //纽约
-        qDebug()<< "NewYork";
-        break;
-    case 9:
-        //首尔
-        qDebug()<< "Seoul";
-        break;
-    case 10:
-        //哈尔滨
-        qDebug()<< "Haerbing";
-        break;
-    case 11:
-        //莫斯科
-        qDebug()<< "Moscow";
-        break;
-    default:
-        QMessageBox::warning(this, "Error", QString::fromWCharArray(L"始发地非法"));
-        break;
-    }
     return ui->StartComboBox->currentIndex();
 }
 
 //获取用户所选目的地
 int Widget::getDestination()
 {
-    qDebug()<< "Destination:";
-    switch (ui->DestinationComboBox->currentIndex())
-    {
-    case 0:
-        //北京
-        qDebug()<< "Beijing";
-        break;
-    case 1:
-        //上海
-        qDebug()<< "Shanghai";
-        break;
-    case 2:
-        //西安
-        qDebug()<< "Xi`an";
-        break;
-    case 3:
-        //武汉
-        qDebug()<< "Wuhan";
-        break;
-    case 4:
-        //深圳
-        qDebug()<< "Shenzhen";
-        break;
-    case 5:
-        //郑州
-        qDebug()<< "Zhengzhou";
-        break;
-    case 6:
-        //海南
-        qDebug()<< "Hainan";
-        break;
-    case 7:
-        //拉萨
-        qDebug()<< "Lasa";
-        break;
-    case 8:
-        //纽约
-        qDebug()<< "NewYork";
-        break;
-    case 9:
-        //首尔
-        qDebug()<< "Seoul";
-        break;
-    case 10:
-        //哈尔滨
-        qDebug()<< "Haerbing";
-        break;
-    case 11:
-        //莫斯科
-        qDebug()<< "Moscow";
-        break;
-    default:
-        QMessageBox::warning(this, "Error", QString::fromWCharArray(L"目的地非法"));
-        break;
-    }
     return ui->DestinationComboBox->currentIndex();
 }
 
@@ -273,10 +144,11 @@ void Widget::getDeadline()
 }
 
 //获取开始时间
-QTime Widget::getStartTime()
+QDateTime Widget::getStartTime()
 {
     date = ui->StartDateTimeEdit->date();
     time = ui->StartDateTimeEdit->time();
+    datetime = ui->StartDateTimeEdit->dateTime();
     date.getDate(&currentyear, &currentmonth, &currentday);
     currenthour = time.hour();
     currentmin = time.minute();
@@ -288,7 +160,7 @@ QTime Widget::getStartTime()
     startmin = currentmin;
 
     ui->StartDateTimeEdit->setEnabled(false);
-    return time;
+    return datetime;
 }
 
 //显示当前时间
