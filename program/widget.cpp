@@ -27,8 +27,6 @@ Widget::Widget(QWidget *parent) :
     priordestination = 0;
     secondcnt = 0;
 
-   // QObject::connect(ui->StartButton, SIGNAL(clicked()), this, SLOT(emitclickedsignal()));
-  //  QObject::connect(this, SIGNAL(StartSignal(Schedule&)), this, SLOT(startButtonClicked(Schedule&)));
     QObject::connect(ui->StartButton, SIGNAL(clicked()), this, SLOT(startButtonClicked()));
     QObject::connect(ui->resetButton, SIGNAL(clicked()), this, SLOT(resetButtonClicked()));
 
@@ -43,14 +41,10 @@ Widget::~Widget()
     delete ui;
 }
 
-//void Widget::emitclickedsignal()
-//{
-//    emit StartSignal(Schedule&);
-//}
-
 //单击“开始”按钮，获取用户输入信息
 void Widget::startButtonClicked()
 {
+    QTime startTime;
     if (startclickedtimes == 0)//首次运行，目的地和始发地不能相同，相同则弹出窗口，重新来过
     {
         strategy = getStrategy();
@@ -61,7 +55,7 @@ void Widget::startButtonClicked()
             QMessageBox::information(this, "Error", QString::fromWCharArray(L"出发地和目的地相同"));
             return;
         }
-        QTime startTime = getStartTime();
+        startTime = getStartTime();
         getDeadline();
         std::vector<Attribute> path = schedule.Dijkstra(startTime, strategy, start, destination);
 
@@ -85,6 +79,8 @@ void Widget::startButtonClicked()
             //strategy = getStrategy();//如果涉及途中策略更改，则保留
             //start = getStart();
             priordestination = destination = getDestination();
+            std::vector<Attribute> path = schedule.Dijkstra(startTime, strategy, start, destination);
+            displayPath(path);
             qDebug() << "Prior Destination after changed" << priordestination;
             //getDeadline();//如果涉及第三策略下截止时间修订，则保留
         }
@@ -440,51 +436,63 @@ QString Widget::numToCity(int index){
     {
     case 0:
         //北京
-        city = tr("北京");
+        //city = tr("北京");
+        city = QString::fromWCharArray(L"北京");
         break;
     case 1:
         //上海
-        city = tr("上海");
+        //city = tr("上海");
+        city = QString::fromWCharArray(L"上海");
         break;
     case 2:
         //西安
-        city = tr("西安");
+        //city = tr("西安");
+        city = QString::fromWCharArray(L"西安");
         break;
     case 3:
         //武汉
-        city = tr("武汉");
+        //city = tr("武汉");
+        city = QString::fromWCharArray(L"武汉");
         break;
     case 4:
         //深圳
-        city = tr("深圳");
+        //city = tr("深圳");
+        city = QString::fromWCharArray(L"深圳");
         break;
     case 5:
         //郑州
-        city = tr("郑州");
+        //city = tr("郑州");
+        city = QString::fromWCharArray(L"郑州");
         break;
     case 6:
         //海南
-        city = tr("海南");
+        //city = tr("海南");
+        city = QString::fromWCharArray(L"海南");
         break;
     case 7:
         //拉萨
-        city = tr("拉萨");
+        //city = tr("拉萨");
+        city = QString::fromWCharArray(L"拉萨");
         break;
     case 8:
         //纽约
-        city = tr("纽约");
+        //city = tr("纽约");
+        city = QString::fromWCharArray(L"纽约");
         break;
     case 9:
         //首尔
-        city = tr("首尔");
+        //city = tr("首尔");
+        city = QString::fromWCharArray(L"首尔");
         break;
     case 10:
         //哈尔滨
-        city = tr("哈尔滨");
+        //city = tr("哈尔滨");
+        city = QString::fromWCharArray(L"哈尔滨");
         break;
     case 11:
         //莫斯科
-        city = tr("莫斯科");
+        //city = tr("莫斯科");
+        city = QString::fromWCharArray(L"莫斯科");
         break;
     default:
         QMessageBox::warning(this, "Error", QString::fromWCharArray(L"程序运行错误--请联系工作人员"));
@@ -496,34 +504,30 @@ QString Widget::numToCity(int index){
 //显示路径
 void Widget::displayPath(std::vector<Attribute> path)
 {
-    QLabel *vehiclelabel = new QLabel;
-    QLabel *textlabel = new QLabel;
-//    QLabel *tolabel = new QLabel;
-//    QLabel *costlabel = new QLabel;
+   // QLabel *tolabel = new QLabel;
+   // QLabel *costlabel = new QLabel;
    // QLabel *beginlabel = new QLabel;
    // QLabel *endlabel = new QLabel;
 
     QVBoxLayout *listlayout = new QVBoxLayout;
-    QWidget *containwidget = new QWidget;
-
+    QWidget *containwidget = new QWidget(ui->PathList);
     for(std::vector<Attribute>::size_type index = 0;
             index != path.size(); index++)
     {
+        QLabel *vehiclelabel = new QLabel;
+        QLabel *textlabel = new QLabel;
         if (path[index].vehicle == 0)
             vehiclelabel->setPixmap(QPixmap(":/new/vehicle/car"));
         else if (path[index].vehicle == 1)
             vehiclelabel->setPixmap(QPixmap(":/new/vehicle/train"));
         else if (path[index].vehicle == 2)
             vehiclelabel->setPixmap(QPixmap(":/new/vehicle/plane"));
-        textlabel->setText(numToCity(path[index].from) + "->" + numToCity(path[index].to) + tr(" 车次：") + path[index].num + tr(" 票价：") + QString::number(path[index].cost));
+        textlabel->setText(numToCity(path[index].from) + "->" + numToCity(path[index].to) + QString::fromWCharArray(L" 车次：") + path[index].num + QString::fromWCharArray(L" 票价：") + QString::number(path[index].cost));
         QHBoxLayout *rowlayout = new QHBoxLayout;
         rowlayout->addWidget(vehiclelabel);
         rowlayout->addWidget(textlabel);
         listlayout->addLayout(rowlayout);
     }
     containwidget->setLayout(listlayout);
-
-    QScrollArea *scrollarea = new QScrollArea(this);
-    scrollarea->setBackgroundRole(QPalette::Dark);
-    scrollarea->setWidget(containwidget);
+    ui->PathList->setWidget(containwidget);
 }

@@ -1,3 +1,3 @@
 Beijing Xi'an G88 13:10 14:20 300 1
-Xi'an Shanghai D101 14:10 15:30 300 1
-Xi'an Shanghai D103 14:30 15:50 320 1
+Xi'an Shanghai D101 14:10 15:30 300 2
+Xi'an Shanghai D103 14:30 15:50 320 2
