@@ -496,8 +496,7 @@ QString Widget::numToCity(int index){
 //显示路径
 void Widget::displayPath(std::vector<Attribute> path)
 {
-    QLabel *vehiclelabel = new QLabel;
-    QLabel *textlabel = new QLabel;
+
 //    QLabel *tolabel = new QLabel;
 //    QLabel *costlabel = new QLabel;
    // QLabel *beginlabel = new QLabel;
@@ -509,12 +508,15 @@ void Widget::displayPath(std::vector<Attribute> path)
     for(std::vector<Attribute>::size_type index = 0;
             index != path.size(); index++)
     {
+        QLabel *vehiclelabel = new QLabel;
+        QLabel *textlabel = new QLabel;
+
         if (path[index].vehicle == 0)
-            vehiclelabel->setPixmap(QPixmap(":/new/vehicle/car"));
+            vehiclelabel->setPixmap(QPixmap(":/new/vehicle/resource/car.ico"));
         else if (path[index].vehicle == 1)
-            vehiclelabel->setPixmap(QPixmap(":/new/vehicle/train"));
+            vehiclelabel->setPixmap(QPixmap(":/new/vehicle/resource/train.ico"));
         else if (path[index].vehicle == 2)
-            vehiclelabel->setPixmap(QPixmap(":/new/vehicle/plane"));
+            vehiclelabel->setPixmap(QPixmap(":/new/vehicle/resource/plane.ico"));
         textlabel->setText(numToCity(path[index].from) + "->" + numToCity(path[index].to) + tr(" 车次：") + path[index].num + tr(" 票价：") + QString::number(path[index].cost));
         QHBoxLayout *rowlayout = new QHBoxLayout;
         rowlayout->addWidget(vehiclelabel);
@@ -523,7 +525,12 @@ void Widget::displayPath(std::vector<Attribute> path)
     }
     containwidget->setLayout(listlayout);
 
-    QScrollArea *scrollarea = new QScrollArea(this);
-    scrollarea->setBackgroundRole(QPalette::Dark);
-    scrollarea->setWidget(containwidget);
+//    QScrollArea *scrollarea = new QScrollArea(this);
+//    scrollarea->setBackgroundRole(QPalette::Dark);
+//    scrollarea->setWidget(containwidget);
+//    scrollarea->show();
+
+    //ui->PathList->setBackgroundRole(QPalette::Highlight);
+    ui->PathList->setWidget(containwidget);
+    //scrollarea->show();
 }
