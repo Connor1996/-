@@ -57,36 +57,61 @@ int Schedule::CityToNum(QString city)
     return num;
 }
 
-std::vector<Attribute> Schedule::Dijkstra(QTime startTime, int strategy, int origin, int destination)
+std::vector<Attribute> Schedule::Dijkstra(QDateTime startTime, int strategy, int origin, int destination)
 {
     std::vector<int> value(11, INT_MAX);
+    std::vector<QDateTime> time(11, startTime);
     std::vector<bool> known(11, false);
     std::vector<Attribute> path(11);
 
-    QTime currentTime = startTime;
+    QDateTime currentTime = startTime;
     known[origin] = true;
     value[origin] = 0;
     int city = origin;
     while(1)
     {
-        UpdateAdjacents(city, value, known, path, currentTime);
+        UpdateAdjacents(city, value, time, known, path, strategy);
         qDebug() << "update success...";
-        int min = INT_MAX;
         city = -1;
-        for(std::vector<int>::size_type ix = 0;
-            ix != value.size(); ix++)
+
+        switch(strategy)
         {
-            if(!known[ix] && min > value[ix])
-            {
-                min = value[ix];
-                city = ix;
-                qDebug() << city;
-            }
+            case 0:
+                int min = INT_MAX;
+
+                for(std::vector<int>::size_type ix = 0;
+                    ix != value.size(); ix++)
+                {
+                    if(!known[ix] && min > value[ix])
+                    {
+                        min = value[ix];
+                        city = ix;
+                        qDebug() << city;
+                    }
+                }
+                break;
+            case 1:
+                QDateTime minn(QDate(7999, 12, 31), QTime(23, 59, 59));
+
+                for(std::vector<QDateTime>::size_type ix = 0;
+                    ix != time.size(); ix++)
+                {
+                    if(!known[ix] && minn > time[ix])
+                    {
+                        minn = time[ix];
+                        city = ix;
+                        qDebug() << city;
+                    }
+                }
+                break;
         }
+
+
         if(city == -1)
             break;
 
         known[city] = true;
+        //currentTime =
     }
     qDebug() << "loop finish...";
     std::vector<Attribute> plan;
@@ -100,15 +125,14 @@ void Schedule::MakePlan(std::vector<Attribute>& plan, const std::vector<Attribut
 {
     if(city != origin)
     {
-        //qDebug() << path[city].from << path[city].num << path[city].to;
         MakePlan(plan, path, path[city].from, origin);
         plan.push_back(path[city]);
         qDebug() << path[city].from << path[city].num << path[city].to;
     }
 }
 
-void Schedule::UpdateAdjacents(int city, std::vector<int>& value, std::vector<bool>& known,
-                               std::vector<Attribute>& path, QTime currentTime)
+void Schedule::UpdateAdjacents(int city, std::vector<int>& value, std::vector<QDateTime>& time, std::vector<bool>& known,
+                               std::vector<Attribute>& path, int strategy)
 {
     typedef std::multimap<int, Attribute>::size_type sz_type;
     sz_type entries = database.count(city);
@@ -116,11 +140,46 @@ void Schedule::UpdateAdjacents(int city, std::vector<int>& value, std::vector<bo
     std::multimap<int, Attribute>::iterator iter = database.find(city);
     for(sz_type cnt = 0; cnt != entries; cnt++, iter++)
     {
-        if(!known[iter->second.to] && value[iter->second.to] > value[city] + iter->second.cost
-                && currentTime <= iter->second.begin)
+        //判断是否时间跨天
+        bool span;
+        if(iter->second.begin <= iter->second.end)
+            span = false;
+        else
+            span = true;
+
+        switch(strategy)
         {
-            value[iter->second.to] = value[city] + iter->second.cost;
-            path[iter->second.to] = iter->second;
+            //策略一:花费最少
+            case 0:
+                if(!known[iter->second.to] && value[iter->second.to] > value[city] + iter->second.cost)
+                {
+                    value[iter->second.to] = value[city] + iter->second.cost;
+                    path[iter->second.to] = iter->second;
+                    time[iter->second.to].setTime(iter->second.end);
+                    if(span)
+                        time[iter->second.to] = time[iter->second.to].addDays(1);
+                }
+                break;
+            //策略二:时间最短
+            case 1:
+                if(!known[iter->second.to])
+                    //判断条件有两种情况：
+                    //第一种：行程不跨天，则用time[出发城市]的当天日期+行程到达时间与time[到达城市]比较
+                    //第二钟：行程跨天，则用time[出发城市]的下一天日期+行程到达时间与time[到达城市]比较
+                    //若time[到底城市]，则更新值
+                    if(!span && time[iter->second.to] >
+                            QDateTime(time[iter->second.from].date(), iter->second.end))
+                    {
+                        time[iter->second.to] = QDateTime(time[iter->second.from].date(), iter->second.end);
+                        path[iter->second.to] = iter->second;
+                    }
+                    else if(span && time[iter->second.to] >
+                            QDateTime(time[iter->second.from].addDays(1).date(), iter->second.end))
+                    {
+                        value[iter->second.to] = QDateTime(time[iter->second.from].addDays(1).date(), iter->second.end);
+                        path[iter->second.to] = iter->second;
+                    }
+                break;
         }
     }
 }
