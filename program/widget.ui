@@ -16,327 +16,151 @@
   <widget class="QWidget" name="RightWidget" native="true">
    <property name="geometry">
     <rect>
-     <x>829</x>
+     <x>990</x>
      <y>0</y>
      <width>455</width>
      <height>720</height>
     </rect>
    </property>
+   <widget class="QFrame" name="ThroughCityFrame">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>150</y>
+      <width>221</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+    <property name="lineWidth">
+     <number>5</number>
+    </property>
+    <property name="midLineWidth">
+     <number>5</number>
+    </property>
+    <widget class="QWidget" name="gridLayoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>201</width>
+       <height>84</height>
+      </rect>
+     </property>
+     <layout class="QGridLayout" name="CityThroughGridLayout">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetDefaultConstraint</enum>
+      </property>
+      <item row="1" column="2">
+       <widget class="QCheckBox" name="city5cbox">
+        <property name="text">
+         <string>郑州</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="city0cbox">
+        <property name="text">
+         <string>北京</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QCheckBox" name="city1cbox">
+        <property name="text">
+         <string>上海</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QCheckBox" name="city7cbox">
+        <property name="text">
+         <string>拉萨</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QCheckBox" name="city2cbox">
+        <property name="text">
+         <string>西安</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QCheckBox" name="city4cbox">
+        <property name="text">
+         <string>深圳</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="city6cbox">
+        <property name="text">
+         <string>海南</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QCheckBox" name="city8cbox">
+        <property name="text">
+         <string>纽约</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QCheckBox" name="city9cbox">
+        <property name="text">
+         <string>首尔</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="city3cbox">
+        <property name="text">
+         <string>武汉</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QCheckBox" name="city11cbox">
+        <property name="text">
+         <string>莫斯科</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QCheckBox" name="city10cbox">
+        <property name="text">
+         <string>哈尔滨</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>152</x>
-      <y>62</y>
-      <width>288</width>
-      <height>533</height>
+      <x>50</x>
+      <y>630</y>
+      <width>221</width>
+      <height>81</height>
      </rect>
     </property>
-    <layout class="QVBoxLayout" name="verticalLayout_2">
+    <layout class="QVBoxLayout" name="FareTimeDurLayout7">
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QLabel" name="StrategyLabel">
-         <property name="text">
-          <string>策略选择：</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="StrategyComboBox">
-         <item>
-          <property name="text">
-           <string>费用最少</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>耗时最短</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>限时费用最少</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="QLabel" name="StartLabel">
-         <property name="text">
-          <string>始发地：</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="StartComboBox">
-         <item>
-          <property name="text">
-           <string>北京</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>上海</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>西安</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>武汉</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>深圳</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>郑州</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>海南</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>拉萨</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>纽约</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>首尔</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>哈尔滨</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>莫斯科</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="QLabel" name="DestinationLabel">
-         <property name="text">
-          <string>目的地：</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="DestinationComboBox">
-         <item>
-          <property name="text">
-           <string>北京</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>上海</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>西安</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>武汉</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>深圳</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>郑州</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>海南</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>拉萨</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>纽约</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>首尔</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>哈尔滨</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>莫斯科</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_6">
-       <item>
-        <widget class="QLabel" name="TimeLabel">
-         <property name="text">
-          <string>当前时间：</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QDateTimeEdit" name="StartDateTimeEdit"/>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_4">
-       <item>
-        <widget class="QLabel" name="DeadlineLabel">
-         <property name="text">
-          <string>截止时间：</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QDateTimeEdit" name="DeadlineDateTimeEdit"/>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_5">
-       <item>
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>138</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QPushButton" name="resetButton">
-         <property name="minimumSize">
-          <size>
-           <width>59</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>59</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>重置</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="StartButton">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>59</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>开始</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <item>
-        <widget class="QLabel" name="SolutionLabel">
-         <property name="text">
-          <string>解决方案：</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QScrollArea" name="PathList">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>256</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>256</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">background-color: rgb(255, 255, 255);</string>
-         </property>
-         <property name="widgetResizable">
-          <bool>true</bool>
-         </property>
-         <widget class="QWidget" name="PathListContent">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>282</width>
-            <height>254</height>
-           </rect>
-          </property>
-         </widget>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_9">
+      <layout class="QHBoxLayout" name="TotalFareLayout">
        <item>
         <widget class="QLabel" name="FareLabel">
          <property name="text">
@@ -350,7 +174,7 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_8">
+      <layout class="QHBoxLayout" name="TotalTimeLayout">
        <item>
         <widget class="QLabel" name="TotalTimeLabel">
          <property name="text">
@@ -364,7 +188,7 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_7">
+      <layout class="QHBoxLayout" name="DurationLayout">
        <item>
         <widget class="QLabel" name="DurationLabel">
          <property name="text">
@@ -379,11 +203,411 @@
      </item>
     </layout>
    </widget>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>51</x>
+      <y>340</y>
+      <width>221</width>
+      <height>276</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="PathListLayout6">
+     <item>
+      <widget class="QLabel" name="SolutionLabel">
+       <property name="text">
+        <string>解决方案：</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QScrollArea" name="PathList">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>256</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>256</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(255, 255, 255);</string>
+       </property>
+       <property name="widgetResizable">
+        <bool>true</bool>
+       </property>
+       <widget class="QWidget" name="PathListContent">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>217</width>
+          <height>254</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>260</y>
+      <width>221</width>
+      <height>85</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <layout class="QVBoxLayout" name="TimeEditLayout4">
+       <item>
+        <layout class="QHBoxLayout" name="CurrentTimeLayout">
+         <item>
+          <widget class="QLabel" name="TimeLabel">
+           <property name="text">
+            <string>当前时间：</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDateTimeEdit" name="StartDateTimeEdit"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="DeadlineLayout">
+         <item>
+          <widget class="QLabel" name="DeadlineLabel">
+           <property name="text">
+            <string>截止时间：</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDateTimeEdit" name="DeadlineDateTimeEdit"/>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="StartButtonLayout5">
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="StartButton">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>62</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>59</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>开始</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>51</x>
+      <y>11</y>
+      <width>221</width>
+      <height>143</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_3">
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <layout class="QHBoxLayout" name="TravelerLayout1">
+         <item>
+          <widget class="QPushButton" name="resetButton">
+           <property name="minimumSize">
+            <size>
+             <width>59</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>59</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>添加旅客</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="TravelerLayout">
+           <item>
+            <widget class="QLabel" name="TravelerChoseLabel">
+             <property name="text">
+              <string>选择旅客：</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="TravelerComboBox"/>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="ComboLayout2">
+         <item>
+          <layout class="QHBoxLayout" name="StrategyLayout">
+           <item>
+            <widget class="QLabel" name="StrategyLabel">
+             <property name="text">
+              <string>策略选择：</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="StrategyComboBox">
+             <item>
+              <property name="text">
+               <string>费用最少</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>耗时最短</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>限时费用最少</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="StartCityLayout">
+           <item>
+            <widget class="QLabel" name="StartLabel">
+             <property name="text">
+              <string>始发地：</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="StartComboBox">
+             <item>
+              <property name="text">
+               <string>北京</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>上海</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>西安</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>武汉</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>深圳</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>郑州</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>海南</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>拉萨</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>纽约</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>首尔</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>哈尔滨</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>莫斯科</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="DestinationCityLayout">
+           <item>
+            <widget class="QLabel" name="DestinationLabel">
+             <property name="text">
+              <string>目的地：</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="DestinationComboBox">
+             <item>
+              <property name="text">
+               <string>北京</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>上海</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>西安</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>武汉</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>深圳</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>郑州</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>海南</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>拉萨</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>纽约</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>首尔</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>哈尔滨</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>莫斯科</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="ThroughCityCheckBox">
+         <property name="text">
+          <string>选择途径城市</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+   <zorder>ThroughCityFrame</zorder>
+   <zorder>layoutWidget</zorder>
+   <zorder>layoutWidget</zorder>
+   <zorder>layoutWidget</zorder>
+   <zorder>layoutWidget</zorder>
   </widget>
   <widget class="QWidget" name="LeftWidget" native="true">
    <property name="geometry">
     <rect>
-     <x>0</x>
+     <x>20</x>
      <y>0</y>
      <width>825</width>
      <height>720</height>

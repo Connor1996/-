@@ -60,6 +60,11 @@ void Widget::startButtonClicked()
         startDateTime = getStartTime();
         getDeadline();
         std::vector<Attribute> path = schedule.Dijkstra(startDateTime, strategy, start, destination);
+        if (path.size() == 0)
+        {
+            QMessageBox::information(this, "Error", QString::fromWCharArray(L"无有效路径"));
+            return;
+        }
 
         displayTotalTime(path);
         displayFare(path);
