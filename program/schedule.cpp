@@ -60,11 +60,12 @@ int Schedule::CityToNum(QString city)
 std::vector<Attribute> Schedule::Dijkstra(QDateTime startTime, int strategy, int origin, int destination)
 {
     std::vector<int> value(11, INT_MAX);
-    std::vector<QDateTime> time(11, startTime);
+    std::vector<QDateTime> time(11, QDateTime(QDate(7999, 12, 31), QTime(23, 59, 59)));
     std::vector<bool> known(11, false);
     std::vector<Attribute> path(11);
 
     QDateTime currentTime = startTime;
+    time[origin] = currentTime;
     known[origin] = true;
     value[origin] = 0;
     int city = origin;
@@ -146,39 +147,50 @@ void Schedule::UpdateAdjacents(int city, std::vector<int>& value, std::vector<QD
         else
             span = true;
 
-        switch(strategy)
+        if(strategy == 0)
         {
             //策略一:花费最少
-            case 0:
-                if(!known[iter->second.to] && value[iter->second.to] > value[city] + iter->second.cost)
-                {
-                    value[iter->second.to] = value[city] + iter->second.cost;
-                    path[iter->second.to] = iter->second;
-                    time[iter->second.to].setTime(iter->second.end);
-                    if(span)
-                        time[iter->second.to] = time[iter->second.to].addDays(1);
-                }
-                break;
+            if(!known[iter->second.to] && value[iter->second.to] > value[city] + iter->second.cost)
+            {
+                value[iter->second.to] = value[city] + iter->second.cost;
+                path[iter->second.to] = iter->second;
+                time[iter->second.to].setTime(iter->second.end);
+                if(span)
+                    time[iter->second.to] = time[iter->second.to].addDays(1);
+            }
+        }
+        else if(strategy == 1)
+        {
             //策略二:时间最短
-            case 1:
-                if(!known[iter->second.to])
-                    //判断条件有两种情况：
-                    //第一种：行程不跨天，则用time[出发城市]的当天日期+行程到达时间与time[到达城市]比较
-                    //第二钟：行程跨天，则用time[出发城市]的下一天日期+行程到达时间与time[到达城市]比较
-                    //若time[到底城市]，则更新值
-                    if(!span && time[iter->second.to] >
-                            QDateTime(time[iter->second.from].date(), iter->second.end))
-                    {
-                        time[iter->second.to] = QDateTime(time[iter->second.from].date(), iter->second.end);
-                        path[iter->second.to] = iter->second;
-                    }
-                    else if(span && time[iter->second.to] >
-                            QDateTime(time[iter->second.from].addDays(1).date(), iter->second.end))
-                    {
-                        time[iter->second.to] = QDateTime(time[iter->second.from].addDays(1).date(), iter->second.end);
-                        path[iter->second.to] = iter->second;
-                    }
-                break;
+            if(!known[iter->second.to])
+                //判断条件有四种情况：
+                //第一种：行程不跨天，则用time[出发城市]的当天日期+行程到达时间与time[到达城市]比较
+                //第二钟：行程跨天，则用time[出发城市]的下一天日期+行程到达时间与time[到达城市]比较
+                //若time[到底城市]，则更新值
+                if(!span && time[iter->second.from].time() <= iter->second.begin &&
+                        time[iter->second.to] > QDateTime(time[iter->second.from].date(), iter->second.end))
+                {
+                    time[iter->second.to] = QDateTime(time[iter->second.from].date(), iter->second.end);
+                    path[iter->second.to] = iter->second;
+                }
+                else if(!span && time[iter->second.from].time() > iter->second.begin &&
+                        time[iter->second.to] > QDateTime(time[iter->second.from].addDays(1).date(), iter->second.end))
+                {
+                    time[iter->second.to] = QDateTime(time[iter->second.from].addDays(1).date(), iter->second.end);
+                    path[iter->second.to] = iter->second;
+                }
+                else if(span && time[iter->second.from].time() <= iter->second.begin &&
+                        time[iter->second.to] > QDateTime(time[iter->second.from].addDays(1).date(), iter->second.end))
+                {
+                    time[iter->second.to] = QDateTime(time[iter->second.from].addDays(1).date(), iter->second.end);
+                    path[iter->second.to] = iter->second;
+                }
+                else if(span && time[iter->second.from].time() > iter->second.begin &&
+                        time[iter->second.to] > QDateTime(time[iter->second.from].addDays(2).date(), iter->second.end))
+                {
+                    time[iter->second.to] = QDateTime(time[iter->second.from].addDays(2).date(), iter->second.end);
+                    path[iter->second.to] = iter->second;
+                }
         }
     }
 }
