@@ -249,26 +249,26 @@ void Widget::timeStart()
 //计算开始出行到目前所用的时间
 void Widget::displaySpentTime()
 {
-    //QString durationyear = QString::number(currentyear - startyear);//年月表示时间跨度不准确，如durationmonth+1，不能确定是因为31天还是30天+1
-    //QString durationmonth = QString::number(currentmonth - startmonth);
     int durday = currentday - startday;
     int durhour = currenthour - starthour;
     int durmin = currentmin - startmin;
-    if (durmin == 60)
+
+    if (durmin < 0)
     {
-        durmin = 0;
-        durhour ++;
-        if (durhour== 24)
-        {
-            durhour = 0;
-            durday++;
-        }
+        durmin += 60;
+        durhour--;
     }
+    if (durhour < 0)
+    {
+        durhour += 24;
+        durday--;
+    }
+
     QString durationday = QString::number(durday);
     QString durationhour = QString::number(durhour);
     QString durationmin = QString::number(durmin);
 
-    ui->DurationText->setText(durationday + QString::fromWCharArray(L"天") + durationhour + QString::fromWCharArray(L"小时") + durationmin + QString::fromWCharArray(L"分钟"));
+    ui->DurationText->setText(durationday + QString::fromWCharArray(L"天 ") + durationhour + QString::fromWCharArray(L"小时 ") + durationmin + QString::fromWCharArray(L"分钟"));
 }
 
 //直接在TotalTimeEdit显示方案所需总时间
@@ -278,6 +278,12 @@ void Widget::displayTotalTime(std::vector<Attribute> path)
     int durationhour = endtime.hour() - starthour;
     int durationmin = endtime.minute() - startmin;
     int durationday = 0;
+
+    if (starthour > path[0].begin.hour())
+        durationday++;
+    else if (startmin > path[0].begin.minute())
+        durationday++;
+
     for(std::vector<Attribute>::size_type index = 0;
             index != path.size()-1; index++)
     {
@@ -290,7 +296,19 @@ void Widget::displayTotalTime(std::vector<Attribute> path)
                 durationday++;
         }
     }
-    ui->TotalTimeEdit->setText(QString::number(durationday) + QString::fromWCharArray(L"天") + QString::number(durationhour) + QString::fromWCharArray(L"小时") + QString::number(durationmin) + QString::fromWCharArray(L"分钟"));
+
+    if (durationmin < 0)
+    {
+        durationmin = 60 + durationmin;
+        durationhour--;
+    }
+    if (durationhour < 0)
+    {
+        durationhour = 24 + durationhour;
+        durationday--;
+    }
+
+    ui->TotalTimeEdit->setText(QString::number(durationday) + QString::fromWCharArray(L"天 ") + QString::number(durationhour) + QString::fromWCharArray(L"小时 ") + QString::number(durationmin) + QString::fromWCharArray(L"分钟"));
 }
 
 //显示方案所需经费
@@ -394,8 +412,17 @@ void Widget::displayPath(std::vector<Attribute> path)
             vehiclelabel->setPixmap(QPixmap(":/new/vehicle/resource/train.ico"));
         else if (path[index].vehicle == 2)
             vehiclelabel->setPixmap(QPixmap(":/new/vehicle/resource/plane.ico"));
-        textlabel->setText(numToCity(path[index].from) + "->" + numToCity(path[index].to) + QString::fromWCharArray(L" 车次：") + path[index].num + QString::fromWCharArray(L" 票价：") + QString::number(path[index].cost));
-//        textlabel->setText(numToCity(path[index].from) + "->" + numToCity(path[index].to) + tr(" 车次：") + path[index].num + tr(" 票价：") + QString::number(path[index].cost));
+
+        int beginhour = path[index].begin.hour();
+        int beginmin = path[index].begin.minute();
+        int endhour = path[index].end.hour();
+        int endmin = path[index].end.minute();
+
+        textlabel->setText(" " + numToCity(path[index].from) + "->" + numToCity(path[index].to) +
+                           QString::fromWCharArray(L" 车次:") + path[index].num + "\n" +
+                           " " + QString::fromWCharArray(L"出发时间:") + QString::number(beginhour) + ":" + QString::number(beginmin) +
+                           QString::fromWCharArray(L" 到站时间:") + QString::number(endhour) + ":" + QString::number(endmin) + "\n" +
+                           QString::fromWCharArray(L" 票价:") + QString::number(path[index].cost));
 
         QHBoxLayout *rowlayout = new QHBoxLayout;
         rowlayout->addWidget(vehiclelabel);
