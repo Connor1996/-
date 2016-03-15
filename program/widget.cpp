@@ -61,33 +61,29 @@ void Widget::startButtonClicked()
         getDeadline();
         std::vector<Attribute> path = schedule.Dijkstra(startDateTime, strategy, start, destination);
 
-        setTotalTime(1, 2, 30);
-        displayTotalTime();
-        setFare(2340);
-        displayFare();
+        displayTotalTime(path);
+        displayFare(path);
         displayPath(path);
 
-        //ui->StartButton->setEnabled(false);
         ui->StartComboBox->setEnabled(false);
         ui->StrategyComboBox->setEnabled(false);
         startclickedtimes += 1;
-        qDebug()<< "------------";
         return;
     }
     if (startclickedtimes == 1)//不是首次运行，执行以下代码，如果目的地没有改变那么不作操作
     {
-        qDebug() << "Prior Destination before changed:" << priordestination;
         if (priordestination != ui->DestinationComboBox->currentIndex())
         {
             //strategy = getStrategy();//如果涉及途中策略更改，则保留
             //start = getStart();
             priordestination = destination = getDestination();
             std::vector<Attribute> path = schedule.Dijkstra(startDateTime, strategy, start, destination);
+
+            displayTotalTime(path);
+            displayFare(path);
             displayPath(path);
-            qDebug() << "Prior Destination after changed" << priordestination;
             //getDeadline();//如果涉及第三策略下截止时间修订，则保留
         }
-        qDebug()<< "------------";
     }
 }
 
@@ -276,29 +272,37 @@ void Widget::displaySpentTime()
 }
 
 //直接在TotalTimeEdit显示方案所需总时间
-void Widget::displayTotalTime()
+void Widget::displayTotalTime(std::vector<Attribute> path)
 {
-    ui->TotalTimeEdit->setText(QString::number(totalday) + QString::fromWCharArray(L"天") + QString::number(totalhour) + QString::fromWCharArray(L"小时") + QString::number(totalmin) + QString::fromWCharArray(L"分钟"));
-}
-
-//设置方案所需总时间
-void Widget::setTotalTime(int totaldaytmp, int totalhourtmp, int totalmintmp)
-{
-    totalday = totaldaytmp;
-    totalhour = totalhourtmp;
-    totalmin = totalmintmp;
+    QTime endtime = path[path.size()-1].end;
+    int durationhour = endtime.hour() - starthour;
+    int durationmin = endtime.minute() - startmin;
+    int durationday = 0;
+    for(std::vector<Attribute>::size_type index = 0;
+            index != path.size()-1; index++)
+    {
+        for(std::vector<Attribute>::size_type jndex = index + 1;
+                jndex != path.size(); jndex++)
+        {
+            if (path[jndex].begin.hour() < path[index].end.hour())
+            durationday ++;
+            else if (path[jndex].begin.minute() < path[index].end.minute())
+                durationday++;
+        }
+    }
+    ui->TotalTimeEdit->setText(QString::number(durationday) + QString::fromWCharArray(L"天") + QString::number(durationhour) + QString::fromWCharArray(L"小时") + QString::number(durationmin) + QString::fromWCharArray(L"分钟"));
 }
 
 //显示方案所需经费
-void Widget::displayFare()
+void Widget::displayFare(std::vector<Attribute> path)
 {
-    ui->FareEdit->setText(QString::number(fare) + QString::fromWCharArray(L"元"));
-}
-
-//设置方案所需经费
-void Widget::setFare(int faretmp)
-{
-    fare = faretmp;
+    int totalcost = 0;
+    for(std::vector<Attribute>::size_type index = 0;
+            index != path.size(); index++)
+    {
+        totalcost += path[index].cost;
+    }
+    ui->FareEdit->setText(QString::number(totalcost) + QString::fromWCharArray(L"元"));
 }
 
 //将方案中城市编号对应城市名称

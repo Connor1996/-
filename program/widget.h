@@ -44,10 +44,8 @@ public:
     QDateTime getStartTime();//获取开始时间
     void getDeadline();//获取截止时间
     void displaySpentTime();//显示已经花费的时间
-    void displayTotalTime();//显示方案所需总时间
-    void setTotalTime(int totaldaytmp, int totalhourtmp, int totalmintmp);//设置方案所需总时间
-    void setFare(int faretmp);//设置方案所需经费
-    void displayFare();//显示方案所需经费
+    void displayTotalTime(std::vector<Attribute> path);//显示方案所需总时间
+    void displayFare(std::vector<Attribute> path);//显示方案所需经费
     void displayPath(std::vector<Attribute> path);//在pathlist窗口中显示路径
     QString numToCity(int index);//将城市编号转为城市名称
 
