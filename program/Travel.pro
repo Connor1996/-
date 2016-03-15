@@ -15,11 +15,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         widget.cpp \
     schedule.cpp \
-    attribute.cpp
+    attribute.cpp \
+    traveler.cpp
 
 HEADERS  += widget.h \
     schedule.h \
-    attribute.h
+    attribute.h \
+    traveler.h
 
 FORMS    += widget.ui
 
