@@ -123,6 +123,8 @@ std::vector<Attribute> Schedule::Dijkstra(QDateTime startTime, int strategy, int
 void Schedule::MakePlan(std::vector<Attribute>& plan, const std::vector<Attribute>& path,
                         int city, int origin)
 {
+    if(path[city].from == -1)
+        return;
     if(city != origin)
     {
         MakePlan(plan, path, path[city].from, origin);
