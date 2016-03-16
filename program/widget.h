@@ -2,6 +2,7 @@
 #define WIDGET_H
 
 #include "schedule.h"
+#include "traveler.h"
 
 #include <QWidget>
 #include <QDebug>
@@ -42,7 +43,7 @@ public:
     int getStart();//获取用户所选始发地
     int getDestination();//获取用户所选目的地
     QDateTime getStartTime();//获取开始时间
-    void getDeadline();//获取截止时间
+    QDateTime getDeadline();//获取截止时间
     void displaySpentTime();//显示已经花费的时间
     void displayTotalTime(std::vector<Attribute> path);//显示方案所需总时间
     void displayFare(std::vector<Attribute> path);//显示方案所需经费
@@ -72,11 +73,7 @@ private:
     int currentmin;
     int secondcnt;
 
-    int deadlineyear;
-    int deadlinemonth;
-    int deadlineday;
-    int deadlinehour;
-    int deadlinemin;
+
 
     int startyear;
     int startmonth;
@@ -90,6 +87,7 @@ private:
     QTime time;
     QDateTime datetime;
     std::vector<bool> throughcity;
+    std::vector<Traveler> travelers;
 
 private slots:
     void startButtonClicked();//开始按钮按下，开始计算路径图形输出

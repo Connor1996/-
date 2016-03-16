@@ -1,5 +1,4 @@
-﻿#include "schedule.h"
-
+﻿                                                                                                                                                            #include "schedule.h"Schedule::Schedule()
 Schedule::Schedule()
 {
     QFile file(":/database.txt");
@@ -57,12 +56,12 @@ int Schedule::CityToNum(QString city)
     return num;
 }
 
-std::vector<Attribute> Schedule::Dijkstra(QDateTime startTime, int strategy, int origin, int destination)
+std::vector<Attribute> Schedule::Dijkstra(QDateTime startTime, int strategy, int origin,
+                                          int destination, std::vector<QDateTime>& time)
 {
-    std::vector<int> value(11, INT_MAX);
-    std::vector<QDateTime> time(11, QDateTime(QDate(7999, 12, 31), QTime(23, 59, 59)));
-    std::vector<bool> known(11, false);
-    std::vector<Attribute> path(11);
+    std::vector<int> value(12, INT_MAX);
+    std::vector<bool> known(12, false);
+    std::vector<Attribute> path(12);
 
     QDateTime currentTime = startTime;
     time[origin] = currentTime;
@@ -111,12 +110,13 @@ std::vector<Attribute> Schedule::Dijkstra(QDateTime startTime, int strategy, int
             break;
 
         known[city] = true;
-        //currentTime =
+
     }
     qDebug() << "loop finish...";
     std::vector<Attribute> plan;
     MakePlan(plan, path, destination, origin);
     qDebug() << "makeplan finish...";
+    //endTime = time[destination]
     return plan;
 }
 
@@ -166,8 +166,10 @@ void Schedule::UpdateAdjacents(int city, std::vector<int>& value, std::vector<QD
             //策略二:时间最短
             if(!known[iter->second.to])
                 //判断条件有四种情况：
-                //第一种：行程不跨天，则用time[出发城市]的当天日期+行程到达时间与time[到达城市]比较
-                //第二钟：行程跨天，则用time[出发城市]的下一天日期+行程到达时间与time[到达城市]比较
+                //第一种：行程不跨天，time[出发城市]的时间在行程出发时间之前，则用time[出发城市]的当天日期+行程到达时间与time[到达城市]比较
+                //第二种：行程不跨天，time[出发城市]的时间在行程出发时间之后，则用time[出发城市]的下一天日期+行程到达时间与time[到达城市]比较
+                //第三钟：行程跨天，time[出发城市]的时间在行程出发时间之前，则用time[出发城市]的下一天日期+行程到达时间与time[到达城市]比较
+                //第四钟：行程跨天，time[出发城市]的时间在行程出发时间之后，则用time[出发城市]的后天日期+行程到达时间与time[到达城市]比较
                 //若time[到底城市]，则更新值
                 if(!span && time[iter->second.from].time() <= iter->second.begin &&
                         time[iter->second.to] > QDateTime(time[iter->second.from].date(), iter->second.end))

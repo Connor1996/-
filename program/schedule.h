@@ -19,15 +19,16 @@ class Schedule
 public:
     Schedule();
 
-    std::vector<Attribute> Dijkstra(QDateTime, int, int, int);
-    int CityToNum(QString);
-    void MakePlan(std::vector<Attribute>&, const std::vector<Attribute>&, int, int);
-    void UpdateAdjacents(int, std::vector<int>&, std::vector<QDateTime>&, std::vector<bool>&,
+    static std::vector<Attribute> Dijkstra(QDateTime, int, int, int, std::vector<QDateTime>&);
+    static int CityToNum(QString);
+    static void MakePlan(std::vector<Attribute>&, const std::vector<Attribute>&, int, int);
+    static void UpdateAdjacents(int, std::vector<int>&, std::vector<QDateTime>&, std::vector<bool>&,
                          std::vector<Attribute>&, int);
 
-private:
-    std::multimap<int, Attribute> database;
+    static std::multimap<int, Attribute> database;
 
 };
+
+//std::multimap<int, Attribute> Schedule::database;
 
 #endif // SCHEDULE_H

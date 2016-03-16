@@ -10,6 +10,7 @@ Widget::Widget(QWidget *parent) :
     this->setFixedSize(1280, 720);
     this->setWindowTitle("Travel-Query-System");
 
+
     ui->StartDateTimeEdit->setDateTime(QDateTime::currentDateTime());
     ui->DeadlineDateTimeEdit->setDateTime(QDateTime::currentDateTime());
     ui->StrategyComboBox->setEnabled(false);
@@ -97,8 +98,9 @@ void Widget::startButtonClicked()
             return;
         }
         startDateTime = getStartTime();
-        getDeadline();
-        std::vector<Attribute> path = schedule.Dijkstra(startDateTime, strategy, start, destination);
+
+        travelers.push_back(Traveler(addtravelertimes, startDateTime, getDeadline(), strategy, start, destination));
+        std::vector<Attribute> path = travelers[ui->TravelerComboBox->currentIndex()].getPlan();
         if (path.size() == 0)
         {
             QMessageBox::information(this, "Error", QString::fromWCharArray(L"无有效路径"));
@@ -118,10 +120,11 @@ void Widget::startButtonClicked()
     {
         if (priordestination != ui->DestinationComboBox->currentIndex())
         {
-            //strategy = getStrategy();//如果涉及途中策略更改，则保留
+            strategy = getStrategy();//如果涉及途中策略更改，则保留
+            destination = getDestination();
             //start = getStart();
             priordestination = destination = getDestination();
-            std::vector<Attribute> path = schedule.Dijkstra(startDateTime, strategy, start, destination);
+            std::vector<Attribute> path = travelers[ui->TravelerComboBox->currentIndex()].changePlan(strategy, destination);
 
             displayTotalTime(path);
             displayFare(path);
@@ -140,6 +143,7 @@ void Widget::addTravelerButtonClicked()
     secondcnt = 0;
 
     ui->TravelerComboBox->addItem(QString::number(addtravelertimes));
+    ui->TravelerComboBox->setCurrentText(QString::number(addtravelertimes));
 
     ui->TravelerComboBox->setEnabled(true);
     ui->StartComboBox->setEnabled(true);
@@ -177,14 +181,20 @@ int Widget::getDestination()
 }
 
 //获取截止时间
-void Widget::getDeadline()
+QDateTime Widget::getDeadline()
 {
-    QDate date = ui->DeadlineDateTimeEdit->date();
-    QTime time = ui->DeadlineDateTimeEdit->time();
-    date.getDate(&deadlineyear, &deadlinemonth, &deadlineday);
-    deadlinehour = time.hour();
-    deadlinemin = time.minute();
-    ui->DeadlineDateTimeEdit->setEnabled(false);
+    return ui->DeadlineDateTimeEdit->dateTime();
+//    int deadlineyear;
+//    int deadlinemonth;
+//    int deadlineday;
+//    int deadlinehour;
+//    int deadlinemin;
+//    QDate date = ui->DeadlineDateTimeEdit->date();
+//    QTime time = ui->DeadlineDateTimeEdit->time();
+//    date.getDate(&deadlineyear, &deadlinemonth, &deadlineday);
+//    deadlinehour = time.hour();
+//    deadlinemin = time.minute();
+
 }
 
 //获取开始时间
@@ -203,7 +213,6 @@ QDateTime Widget::getStartTime()
     starthour = currenthour;
     startmin = currentmin;
 
-    ui->StartDateTimeEdit->setEnabled(false);
     return datetime;
 }
 
