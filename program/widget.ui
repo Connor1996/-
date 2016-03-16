@@ -352,7 +352,7 @@
        <item>
         <layout class="QHBoxLayout" name="TravelerLayout1">
          <item>
-          <widget class="QPushButton" name="resetButton">
+          <widget class="QPushButton" name="addTravelerButton">
            <property name="minimumSize">
             <size>
              <width>59</width>
@@ -598,11 +598,6 @@
      </item>
     </layout>
    </widget>
-   <zorder>ThroughCityFrame</zorder>
-   <zorder>layoutWidget</zorder>
-   <zorder>layoutWidget</zorder>
-   <zorder>layoutWidget</zorder>
-   <zorder>layoutWidget</zorder>
   </widget>
   <widget class="QWidget" name="LeftWidget" native="true">
    <property name="geometry">

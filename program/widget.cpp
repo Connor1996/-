@@ -3,7 +3,8 @@
 
 Widget::Widget(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::Widget)
+    ui(new Ui::Widget),
+    throughcity(12, false)
 {
     ui->setupUi(this);
     this->setFixedSize(1280, 720);
@@ -11,6 +12,28 @@ Widget::Widget(QWidget *parent) :
 
     ui->StartDateTimeEdit->setDateTime(QDateTime::currentDateTime());
     ui->DeadlineDateTimeEdit->setDateTime(QDateTime::currentDateTime());
+    ui->StrategyComboBox->setEnabled(false);
+    ui->StartComboBox->setEnabled(false);
+    ui->DestinationComboBox->setEnabled(false);
+    ui->TravelerComboBox->setEnabled(false);
+    ui->ThroughCityCheckBox->setEnabled(false);
+
+    ui->city0cbox->setEnabled(false);
+    ui->city1cbox->setEnabled(false);
+    ui->city2cbox->setEnabled(false);
+    ui->city3cbox->setEnabled(false);
+    ui->city4cbox->setEnabled(false);
+    ui->city5cbox->setEnabled(false);
+    ui->city6cbox->setEnabled(false);
+    ui->city7cbox->setEnabled(false);
+    ui->city8cbox->setEnabled(false);
+    ui->city9cbox->setEnabled(false);
+    ui->city10cbox->setEnabled(false);
+    ui->city11cbox->setEnabled(false);
+
+    ui->StartDateTimeEdit->setEnabled(false);
+    ui->DeadlineDateTimeEdit->setEnabled(false);
+    ui->StartButton->setEnabled(false);
     ui->DurationText->setEnabled(false);
     ui->FareEdit->setEnabled(false);
     ui->TotalTimeEdit->setEnabled(false);
@@ -28,9 +51,25 @@ Widget::Widget(QWidget *parent) :
     startclickedtimes = 0;
     priordestination = 0;
     secondcnt = 0;
+    addtravelertimes = 0;
+
+    QObject::connect(ui->addTravelerButton, SIGNAL(clicked()), this, SLOT(addTravelerButtonClicked()));
+
+    QObject::connect(ui->ThroughCityCheckBox, SIGNAL(toggled(bool)), this, SLOT(activeThroughCity()));
+    QObject::connect(ui->city0cbox, SIGNAL(toggled(bool)), this, SLOT(setThroungCity0()));
+    QObject::connect(ui->city1cbox, SIGNAL(toggled(bool)), this, SLOT(setThroungCity1()));
+    QObject::connect(ui->city2cbox, SIGNAL(toggled(bool)), this, SLOT(setThroungCity2()));
+    QObject::connect(ui->city3cbox, SIGNAL(toggled(bool)), this, SLOT(setThroungCity3()));
+    QObject::connect(ui->city4cbox, SIGNAL(toggled(bool)), this, SLOT(setThroungCity4()));
+    QObject::connect(ui->city5cbox, SIGNAL(toggled(bool)), this, SLOT(setThroungCity5()));
+    QObject::connect(ui->city6cbox, SIGNAL(toggled(bool)), this, SLOT(setThroungCity6()));
+    QObject::connect(ui->city7cbox, SIGNAL(toggled(bool)), this, SLOT(setThroungCity7()));
+    QObject::connect(ui->city8cbox, SIGNAL(toggled(bool)), this, SLOT(setThroungCity8()));
+    QObject::connect(ui->city9cbox, SIGNAL(toggled(bool)), this, SLOT(setThroungCity9()));
+    QObject::connect(ui->city10cbox, SIGNAL(toggled(bool)), this, SLOT(setThroungCity10()));
+    QObject::connect(ui->city11cbox, SIGNAL(toggled(bool)), this, SLOT(setThroungCity11()));
 
     QObject::connect(ui->StartButton, SIGNAL(clicked()), this, SLOT(startButtonClicked()));
-    QObject::connect(ui->resetButton, SIGNAL(clicked()), this, SLOT(resetButtonClicked()));
 
     QObject::connect(mstimer, SIGNAL(timeout()), this, SLOT(displayCurrentTime()));
     QObject::connect(ui->StartButton, SIGNAL(clicked()), this, SLOT(timeStart()));
@@ -92,22 +131,27 @@ void Widget::startButtonClicked()
     }
 }
 
-//单击“重置”按钮，重置所有变量，重新来过
-void Widget::resetButtonClicked()
+//单击“添加旅客”按钮，开始运行
+void Widget::addTravelerButtonClicked()
 {
+    addtravelertimes += 1;
     startclickedtimes = 0;
     priordestination = 0;
     secondcnt = 0;
 
+    ui->TravelerComboBox->addItem(QString::number(addtravelertimes));
+
+    ui->TravelerComboBox->setEnabled(true);
     ui->StartComboBox->setEnabled(true);
     ui->StrategyComboBox->setEnabled(true);
-    ui->DeadlineDateTimeEdit->setEnabled(true);
-    ui->StartDateTimeEdit->setEnabled(true);
-    ui->StartButton->setEnabled(true);
-
+    ui->DestinationComboBox->setEnabled(true);
     ui->StrategyComboBox->setCurrentIndex(0);
     ui->StartComboBox->setCurrentIndex(0);
     ui->DestinationComboBox->setCurrentIndex(0);
+    ui->ThroughCityCheckBox->setEnabled(true);
+    ui->DeadlineDateTimeEdit->setEnabled(true);
+    ui->StartDateTimeEdit->setEnabled(true);
+    ui->StartButton->setEnabled(true);
 
     ui->StartDateTimeEdit->setDateTime(QDateTime::currentDateTime());
     ui->DeadlineDateTimeEdit->setDateTime(QDateTime::currentDateTime());
@@ -141,7 +185,6 @@ void Widget::getDeadline()
     deadlinehour = time.hour();
     deadlinemin = time.minute();
     ui->DeadlineDateTimeEdit->setEnabled(false);
-    qDebug() << "Deadline:" << deadlineyear << deadlinemonth << deadlineday << deadlinehour << deadlinemin;
 }
 
 //获取开始时间
@@ -436,4 +479,125 @@ void Widget::displayPath(std::vector<Attribute> path)
     }
     containwidget->setLayout(listlayout);
     ui->PathList->setWidget(containwidget);
+}
+
+//激活gridwidget中的checkbox并初始化throughcity
+void Widget::activeThroughCity()
+{
+    if (ui->ThroughCityCheckBox->isChecked())
+    {
+        ui->city0cbox->setEnabled(true);
+        ui->city1cbox->setEnabled(true);
+        ui->city2cbox->setEnabled(true);
+        ui->city3cbox->setEnabled(true);
+        ui->city4cbox->setEnabled(true);
+        ui->city5cbox->setEnabled(true);
+        ui->city6cbox->setEnabled(true);
+        ui->city7cbox->setEnabled(true);
+        ui->city8cbox->setEnabled(true);
+        ui->city9cbox->setEnabled(true);
+        ui->city10cbox->setEnabled(true);
+        ui->city11cbox->setEnabled(true);
+    }
+    else
+    {
+        ui->city0cbox->setEnabled(false);
+        ui->city1cbox->setEnabled(false);
+        ui->city2cbox->setEnabled(false);
+        ui->city3cbox->setEnabled(false);
+        ui->city4cbox->setEnabled(false);
+        ui->city5cbox->setEnabled(false);
+        ui->city6cbox->setEnabled(false);
+        ui->city7cbox->setEnabled(false);
+        ui->city8cbox->setEnabled(false);
+        ui->city9cbox->setEnabled(false);
+        ui->city10cbox->setEnabled(false);
+        ui->city11cbox->setEnabled(false);
+    }
+}
+
+//设置12个城市哪些被指定途经
+void Widget::setThroungCity0()
+{
+   if (ui->city0cbox->isChecked())
+       throughcity[0] = true;
+   else
+       throughcity[0] = false;
+}
+void Widget::setThroungCity1()
+{
+    if (ui->city1cbox->isChecked())
+        throughcity[1] = true;
+    else
+        throughcity[1] = false;
+}
+void Widget::setThroungCity2()
+{
+    if (ui->city2cbox->isChecked())
+        throughcity[2] = true;
+    else
+        throughcity[2] = false;
+}
+void Widget::setThroungCity3()
+{
+    if (ui->city3cbox->isChecked())
+        throughcity[3] = true;
+    else
+        throughcity[3] = false;
+}
+void Widget::setThroungCity4()
+{
+   if (ui->city4cbox->isChecked())
+       throughcity[4] = true;
+   else
+       throughcity[4]= false;
+}
+void Widget::setThroungCity5()
+{
+    if (ui->city5cbox->isChecked())
+        throughcity[5] = true;
+    else
+        throughcity[5] = false;
+}
+void Widget::setThroungCity6()
+{
+    if (ui->city6cbox->isChecked())
+        throughcity[6] = true;
+    else
+        throughcity[6] = false;
+}
+void Widget::setThroungCity7()
+{
+    if (ui->city7cbox->isChecked())
+        throughcity[7] = true;
+    else
+        throughcity[7] = false;
+}
+void Widget::setThroungCity8()
+{
+    if (ui->city8cbox->isChecked())
+        throughcity[8] = true;
+    else
+        throughcity[8] = false;
+}
+void Widget::setThroungCity9()
+{
+    if (ui->city9cbox->isChecked())
+        throughcity[9] = true;
+    else
+        throughcity[9] = false;
+}
+void Widget::setThroungCity10()
+{
+    if (ui->city10cbox->isChecked())
+        throughcity[10] = true;
+    else
+        throughcity[10] = false;
+}
+void Widget::setThroungCity11()
+{
+    if (ui->city11cbox->isChecked())
+        throughcity[11] = true;
+    else
+        throughcity[11] = false;
 }

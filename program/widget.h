@@ -56,6 +56,7 @@ private:
     int strategy;
     int start;
     int destination;
+    int addtravelertimes;
     int startclickedtimes;//“开始”按钮点击次数，0次表示首次运行，1表示其他
     int priordestination;//保留目的地，如果运行过程中目的地改变，作为两个目的地比较的前者，与currentIndex比较
     int totalday;//策略所需总时间--天数
@@ -88,12 +89,27 @@ private:
     QDate date;
     QTime time;
     QDateTime datetime;
+    std::vector<bool> throughcity;
 
 private slots:
     void startButtonClicked();//开始按钮按下，开始计算路径图形输出
-    void resetButtonClicked();//reset按钮按下，重置所有变量重新来过
+    void addTravelerButtonClicked();//reset按钮按下，重置所有变量重新来过
     void displayCurrentTime();//显示当前时间
     void timeStart();//此函数用于，如果mstimer未激活，那么this发出DoStartTimer信号
+    void activeThroughCity();//得到途经城市
+
+    void setThroungCity0();
+    void setThroungCity1();
+    void setThroungCity2();
+    void setThroungCity3();
+    void setThroungCity4();
+    void setThroungCity5();
+    void setThroungCity6();
+    void setThroungCity7();
+    void setThroungCity8();
+    void setThroungCity9();
+    void setThroungCity10();
+    void setThroungCity11();
 
 signals:
     void DoStartTimer();//开始计时的信号
