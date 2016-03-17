@@ -271,7 +271,7 @@
          <item>
           <widget class="QLabel" name="TimeLabel">
            <property name="text">
-            <string>当前时间：</string>
+            <string>起始时间：</string>
            </property>
           </widget>
          </item>

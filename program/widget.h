@@ -44,7 +44,6 @@ public:
     int getDestination();//获取用户所选目的地
     QDateTime getStartTime();//获取开始时间
     QDateTime getDeadline();//获取截止时间
-    void displaySpentTime();//显示已经花费的时间
     void displayTotalTime(std::vector<Attribute> path);//显示方案所需总时间
     void displayFare(std::vector<Attribute> path);//显示方案所需经费
     void displayPath(std::vector<Attribute> path);//在pathlist窗口中显示路径
@@ -94,9 +93,9 @@ private slots:
     void startButtonClicked();//开始按钮按下，开始计算路径图形输出
     void addTravelerButtonClicked();//reset按钮按下，重置所有变量重新来过
     void travelerChanged();//切换旅客时更改界面显示
-    void displayCurrentTime();//显示当前时间
     void timeStart();//此函数用于，如果mstimer未激活，那么this发出DoStartTimer信号
     void activeThroughCity();//得到途经城市
+    void displaySpentTime();//显示已经花费的时间
 
     void setThroungCity0();
     void setThroungCity1();

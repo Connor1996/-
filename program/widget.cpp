@@ -73,7 +73,7 @@ Widget::Widget(QWidget *parent) :
 
     QObject::connect(ui->StartButton, SIGNAL(clicked()), this, SLOT(startButtonClicked()));
 
-    QObject::connect(mstimer, SIGNAL(timeout()), this, SLOT(displayCurrentTime()));
+    QObject::connect(mstimer, SIGNAL(timeout()), this, SLOT(displaySpentTime()));
     QObject::connect(ui->StartButton, SIGNAL(clicked()), this, SLOT(timeStart()));
     QObject::connect(this, SIGNAL(DoStartTimer()), mstimer, SLOT(start()));
 
@@ -145,7 +145,9 @@ void Widget::addTravelerButtonClicked()
 {
     std::vector<bool> temp(12, false);
     throughcity = temp;
-    travelers.push_back(Traveler(addtravelertimes-1, getStartTime(), getDeadline(), getStrategy(), getStart(), getDestination(), ui->ThroughCityCheckBox->isChecked(), throughcity));
+    travelers.push_back(Traveler(addtravelertimes-1, getStartTime(), getDeadline(),
+                                 getStrategy(), getStart(), getDestination(),
+                                 ui->ThroughCityCheckBox->isChecked(), throughcity));
     startclicked.push_back(false);
     addtravelertimes += 1;
     startclickedtimes = 0;
@@ -263,35 +265,17 @@ QDateTime Widget::getStartTime()
     return datetime;
 }
 
-//显示当前时间//在这里得到traveler的startDateTime然后获取系统的当前时间根据比例关系得到当前date和time//currenttime设为数组
-void Widget::displayCurrentTime()
+//如果mstimer未激活，那么发出DoStartTimer信号
+void Widget::timeStart()
 {
-//    //获得对应旅客的起始时间
-//    QDateTime privateStartDateTime = travelers[ui->TravelerComboBox->currentIndex()].startTime;
-//    QDate privateStartDate = privateStartDateTime.date();
-//    QTime privateStartTime = privateStartDateTime.time();
-//    int privateStartYear, privateStartMonth, privateStartDay,
-//            privateStartHour, privateStartMin;
-//    privateStartDate.getDate(&privateStartYear, &privateStartMonth, &privateStartDay);
-//    privateStartHour = privateStartTime.hour();
-//    privateStartMin = privateStartTime.minute();
-//    //获得系统当前时间
-//    QDate systemDate = QDate::currentDate();
-//    QTime systemTime = QTime::currentTime();
-//    int systemYear, systemMonth, systemDay,
-//            systemHour, systemMin;
-//    systemDate.getDate(&systemYear, &systemMonth, &systemDay);
-//    systemHour = systemTime.hour();
-//    systemMin = systemTime.minute();
-//    //二者做差得知切换到该旅客时时间从何开始
-//    int growthYear = 0, growthMonth = 0, growthDay = 0,
-//            growthHour = 0, growthMin = 0;
-//    growthYear = systemYear - privateStartYear;
-//    growthMonth = systemMonth - privateStartMonth;
-//    growthDay = systemDay - privateStartDay;
-//    growthHour = systemHour - privateStartHour;
-//    growthMin = systemMin - privateStartMin;
+    if (mstimer->isActive())
+        return;
+    emit DoStartTimer();
+}
 
+//计算开始出行到目前所用的时间
+void Widget::displaySpentTime()
+{
     if (startclickedtimes == 1)
     {
         secondcnt ++;
@@ -361,24 +345,7 @@ void Widget::displayCurrentTime()
                 }
             }
         }
-        ui->StartDateTimeEdit->setReadOnly(false);
-        ui->StartDateTimeEdit->setDate(QDate(currentyear, currentmonth, currentday));
-        ui->StartDateTimeEdit->setTime(QTime(currenthour, currentmin, 0, 0));
-        displaySpentTime();
     }
-}
-
-//如果mstimer未激活，那么发出DoStartTimer信号
-void Widget::timeStart()
-{
-    if (mstimer->isActive())
-        return;
-    emit DoStartTimer();
-}
-
-//计算开始出行到目前所用的时间
-void Widget::displaySpentTime()
-{
     int durday = currentday - startday;
     int durhour = currenthour - starthour;
     int durmin = currentmin - startmin;
