@@ -1,4 +1,4 @@
-#ifndef SCHEDULE_H
+﻿#ifndef SCHEDULE_H
 #define SCHEDULE_H
 
 #include "attribute.h"
@@ -28,7 +28,5 @@ public:
     static std::multimap<int, Attribute> database;
 
 };
-
-//std::multimap<int, Attribute> Schedule::database;
 
 #endif // SCHEDULE_H

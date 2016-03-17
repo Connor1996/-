@@ -59,6 +59,7 @@ private:
     int destination;
     int addtravelertimes;
     int startclickedtimes;//“开始”按钮点击次数，0次表示首次运行，1表示其他
+    std::vector<bool> startclicked;//“开始”按钮第一次按下
     int priordestination;//保留目的地，如果运行过程中目的地改变，作为两个目的地比较的前者，与currentIndex比较
     int totalday;//策略所需总时间--天数
     int totalhour;//策略所需总时间--小时数
@@ -92,6 +93,7 @@ private:
 private slots:
     void startButtonClicked();//开始按钮按下，开始计算路径图形输出
     void addTravelerButtonClicked();//reset按钮按下，重置所有变量重新来过
+    void travelerChanged();//切换旅客时更改界面显示
     void displayCurrentTime();//显示当前时间
     void timeStart();//此函数用于，如果mstimer未激活，那么this发出DoStartTimer信号
     void activeThroughCity();//得到途经城市

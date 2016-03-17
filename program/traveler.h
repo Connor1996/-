@@ -1,4 +1,4 @@
-#ifndef TRAVELER_H
+﻿#ifndef TRAVELER_H
 #define TRAVELER_H
 
 #include <vector>
@@ -16,7 +16,6 @@ public:
     QDateTime startTime, deadlineTime;
 
     Traveler(int, QDateTime, QDateTime, int, int, int);
-
     void getTotalTime(int &, int &, int &);
     std::vector<Attribute> getPlan();
     std::vector<Attribute> changePlan(int ,int);

@@ -1,4 +1,4 @@
-#include "traveler.h"
+﻿#include "traveler.h"
 
 Traveler::Traveler(int id, QDateTime startTime, QDateTime deadlineTime, int strategy, int origin, int destination) :
     id(id), startTime(startTime), deadlineTime(deadlineTime), strategy(strategy), origin(origin), destination(destination),

@@ -1,4 +1,7 @@
-﻿                                                                                                                                                            #include "schedule.h"Schedule::Schedule()
+﻿#include "schedule.h"
+
+std::multimap<int, Attribute> Schedule::database;
+
 Schedule::Schedule()
 {
     QFile file(":/database.txt");

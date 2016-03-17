@@ -55,6 +55,10 @@ Widget::Widget(QWidget *parent) :
     addtravelertimes = 0;
 
     QObject::connect(ui->addTravelerButton, SIGNAL(clicked()), this, SLOT(addTravelerButtonClicked()));
+    QObject::connect(ui->TravelerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(travelerChanged()));
+//    QObject::connect(ui->TravelerComboBox, SIGNAL(currentIndexChanged(int)), ui->StrategyComboBox, SLOT(setCurrentIndex(int)));
+//    QObject::connect(ui->TravelerComboBox, SIGNAL(currentIndexChanged(int)), ui->StartComboBox, SLOT(setCurrentIndex(int)));
+//    QObject::connect(ui->TravelerComboBox, SIGNAL(currentIndexChanged(int)), ui->DestinationComboBox, SLOT(setCurrentIndex(int)));
 
     QObject::connect(ui->ThroughCityCheckBox, SIGNAL(toggled(bool)), this, SLOT(activeThroughCity()));
     QObject::connect(ui->city0cbox, SIGNAL(toggled(bool)), this, SLOT(setThroungCity0()));
@@ -81,11 +85,13 @@ Widget::Widget(QWidget *parent) :
 Widget::~Widget()
 {
     delete ui;
+    delete timethread;
 }
 
 //单击“开始”按钮，获取用户输入信息
 void Widget::startButtonClicked()
 {
+    startclicked[ui->TravelerComboBox->currentIndex()] = true;
     QDateTime startDateTime;
     if (startclickedtimes == 0)//首次运行，目的地和始发地不能相同，相同则弹出窗口，重新来过
     {
@@ -99,7 +105,7 @@ void Widget::startButtonClicked()
         }
         startDateTime = getStartTime();
 
-        travelers.push_back(Traveler(addtravelertimes, startDateTime, getDeadline(), strategy, start, destination));
+        travelers[ui->TravelerComboBox->currentIndex()] = (Traveler(addtravelertimes-1, startDateTime, getDeadline(), strategy, start, destination));
         std::vector<Attribute> path = travelers[ui->TravelerComboBox->currentIndex()].getPlan();
         if (path.size() == 0)
         {
@@ -113,6 +119,8 @@ void Widget::startButtonClicked()
 
         ui->StartComboBox->setEnabled(false);
         ui->StrategyComboBox->setEnabled(false);
+        ui->StartDateTimeEdit->setEnabled(false);
+        ui->DeadlineDateTimeEdit->setEnabled(false);
         startclickedtimes += 1;
         return;
     }
@@ -137,6 +145,8 @@ void Widget::startButtonClicked()
 //单击“添加旅客”按钮，开始运行
 void Widget::addTravelerButtonClicked()
 {
+    travelers.push_back(Traveler(addtravelertimes-1, getStartTime(), getDeadline(), getStrategy(), getStart(), getDestination()));
+    startclicked.push_back(false);
     addtravelertimes += 1;
     startclickedtimes = 0;
     priordestination = 0;
@@ -159,7 +169,37 @@ void Widget::addTravelerButtonClicked()
 
     ui->StartDateTimeEdit->setDateTime(QDateTime::currentDateTime());
     ui->DeadlineDateTimeEdit->setDateTime(QDateTime::currentDateTime());
+}
 
+//旅客选择更改，显示更改
+void Widget::travelerChanged()
+{
+    ui->StartDateTimeEdit->setDateTime(travelers[ui->TravelerComboBox->currentIndex()].startTime);
+    ui->DeadlineDateTimeEdit->setDateTime(travelers[ui->TravelerComboBox->currentIndex()].deadlineTime);
+    ui->StrategyComboBox->setCurrentIndex(travelers[ui->TravelerComboBox->currentIndex()].strategy);
+    ui->StartComboBox->setCurrentIndex(travelers[ui->TravelerComboBox->currentIndex()].origin);
+    ui->DestinationComboBox->setCurrentIndex(travelers[ui->TravelerComboBox->currentIndex()].destination);
+    if (startclicked[ui->TravelerComboBox->currentIndex()])
+    {
+        displayPath(travelers[ui->TravelerComboBox->currentIndex()].getPlan());
+        ui->StartDateTimeEdit->setEnabled(false);
+        ui->DeadlineDateTimeEdit->setEnabled(false);
+    }
+    else
+    {
+        ui->StartDateTimeEdit->setEnabled(true);
+        ui->DeadlineDateTimeEdit->setEnabled(true);
+
+        ui->StartDateTimeEdit->setDateTime(QDateTime::currentDateTime());
+        ui->DeadlineDateTimeEdit->setDateTime(QDateTime::currentDateTime());
+        ui->StrategyComboBox->setCurrentIndex(0);
+        ui->StartComboBox->setCurrentIndex(0);
+        ui->DestinationComboBox->setCurrentIndex(0);
+        QVBoxLayout *listlayout = new QVBoxLayout;
+        QWidget *containwidget = new QWidget(ui->PathList);
+        containwidget->setLayout(listlayout);
+        ui->PathList->setWidget(containwidget);
+    }
 }
 
 //获取用户所选策略
@@ -184,17 +224,6 @@ int Widget::getDestination()
 QDateTime Widget::getDeadline()
 {
     return ui->DeadlineDateTimeEdit->dateTime();
-//    int deadlineyear;
-//    int deadlinemonth;
-//    int deadlineday;
-//    int deadlinehour;
-//    int deadlinemin;
-//    QDate date = ui->DeadlineDateTimeEdit->date();
-//    QTime time = ui->DeadlineDateTimeEdit->time();
-//    date.getDate(&deadlineyear, &deadlinemonth, &deadlineday);
-//    deadlinehour = time.hour();
-//    deadlinemin = time.minute();
-
 }
 
 //获取开始时间
