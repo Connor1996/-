@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file alias="database.txt">resource/database.txt</file>
+        <file alias="map.jpg">resource/1.jpg</file>
     </qresource>
 </RCC>
