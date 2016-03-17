@@ -1,7 +1,9 @@
 ﻿#include "traveler.h"
 
-Traveler::Traveler(int id, QDateTime startTime, QDateTime deadlineTime, int strategy, int origin, int destination) :
-    id(id), startTime(startTime), deadlineTime(deadlineTime), strategy(strategy), origin(origin), destination(destination),
+Traveler::Traveler(int id, QDateTime startTime, QDateTime deadlineTime, int strategy, int origin,
+                   int destination, bool isChecked, std::vector<bool> throughCity) :
+    id(id), startTime(startTime), deadlineTime(deadlineTime), strategy(strategy), origin(origin),
+    destination(destination), isChecked(isChecked), throughCity(throughCity),
     time(11, QDateTime(QDate(7999, 12, 31), QTime(23, 59, 59)))
 {
     plan = Schedule::Dijkstra(startTime, strategy, origin, destination, time);

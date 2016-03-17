@@ -103,7 +103,7 @@ void Widget::startButtonClicked()
         startDateTime = getStartTime();
 
         travelers[ui->TravelerComboBox->currentIndex()] = (Traveler(addtravelertimes-1, startDateTime,
-                                                                    getDeadline(), strategy, start, destination));
+                                                                    getDeadline(), strategy, start, destination, ui->ThroughCityCheckBox->isChecked(), throughcity));
         std::vector<Attribute> path = travelers[ui->TravelerComboBox->currentIndex()].getPlan();
         if (path.size() == 0)
         {
@@ -143,7 +143,9 @@ void Widget::startButtonClicked()
 //单击“添加旅客”按钮，开始运行
 void Widget::addTravelerButtonClicked()
 {
-    travelers.push_back(Traveler(addtravelertimes-1, getStartTime(), getDeadline(), getStrategy(), getStart(), getDestination()));
+    std::vector<bool> temp(12, false);
+    throughcity = temp;
+    travelers.push_back(Traveler(addtravelertimes-1, getStartTime(), getDeadline(), getStrategy(), getStart(), getDestination(), ui->ThroughCityCheckBox->isChecked(), throughcity));
     startclicked.push_back(false);
     addtravelertimes += 1;
     startclickedtimes = 0;
@@ -177,19 +179,31 @@ void Widget::travelerChanged()
     ui->StrategyComboBox->setCurrentIndex(travelers[ui->TravelerComboBox->currentIndex()].strategy);
     ui->StartComboBox->setCurrentIndex(travelers[ui->TravelerComboBox->currentIndex()].origin);
     ui->DestinationComboBox->setCurrentIndex(travelers[ui->TravelerComboBox->currentIndex()].destination);
+
     if (startclicked[ui->TravelerComboBox->currentIndex()])
     {
         displayFare(travelers[ui->TravelerComboBox->currentIndex()].getPlan());
         displayTotalTime(travelers[ui->TravelerComboBox->currentIndex()].getPlan());
         //displaySpentTime(travelers[ui->TravelerComboBox->currentIndex()].getPlan());
         displayPath(travelers[ui->TravelerComboBox->currentIndex()].getPlan());
+
+        ui->StartComboBox->setEnabled(false);
         ui->StartDateTimeEdit->setEnabled(false);
         ui->DeadlineDateTimeEdit->setEnabled(false);
+        ui->ThroughCityCheckBox->setChecked(travelers[ui->TravelerComboBox->currentIndex()].isChecked);
+        throughcity = travelers[ui->TravelerComboBox->currentIndex()].throughCity;
+        activeThroughCity();
     }
     else
     {
+        ui->StrategyComboBox->setEnabled(true);
+        ui->StartComboBox->setEnabled(true);
+        ui->DestinationComboBox->setEnabled(true);
         ui->StartDateTimeEdit->setEnabled(true);
         ui->DeadlineDateTimeEdit->setEnabled(true);
+        ui->ThroughCityCheckBox->setChecked(false);
+        throughcity = travelers[ui->TravelerComboBox->currentIndex()].throughCity;
+        activeThroughCity();
 
         ui->StartDateTimeEdit->setDateTime(QDateTime::currentDateTime());
         ui->DeadlineDateTimeEdit->setDateTime(QDateTime::currentDateTime());
@@ -556,6 +570,19 @@ void Widget::displayPath(std::vector<Attribute> path)
 //激活gridwidget中的checkbox并初始化throughcity
 void Widget::activeThroughCity()
 {
+    ui->city0cbox->setChecked(throughcity[0]);
+    ui->city1cbox->setChecked(throughcity[1]);
+    ui->city2cbox->setChecked(throughcity[2]);
+    ui->city3cbox->setChecked(throughcity[3]);
+    ui->city4cbox->setChecked(throughcity[4]);
+    ui->city5cbox->setChecked(throughcity[5]);
+    ui->city6cbox->setChecked(throughcity[6]);
+    ui->city7cbox->setChecked(throughcity[7]);
+    ui->city8cbox->setChecked(throughcity[8]);
+    ui->city9cbox->setChecked(throughcity[9]);
+    ui->city10cbox->setChecked(throughcity[10]);
+    ui->city11cbox->setChecked(throughcity[11]);
+
     if (ui->ThroughCityCheckBox->isChecked())
     {
         ui->city0cbox->setEnabled(true);
