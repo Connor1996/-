@@ -14,10 +14,10 @@ public:
     bool isChecked;
     int id, strategy;
     int origin, destination;
-    QDateTime startTime, deadlineTime;
+    QDateTime startTime, deadlineTime, systemStartime;
     std::vector<bool> throughCity;
 
-    Traveler(int, QDateTime, QDateTime, int, int, int, bool, std::vector<bool>);
+    Traveler(int, QDateTime, QDateTime, QDateTime, int, int, int, bool, std::vector<bool>);
     void getTotalTime(int &, int &, int &);
     std::vector<Attribute> getPlan();
     std::vector<Attribute> changePlan(int ,int);

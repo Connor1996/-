@@ -73,8 +73,6 @@ private:
     int currentmin;
     int secondcnt;
 
-
-
     int startyear;
     int startmonth;
     int startday;

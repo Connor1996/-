@@ -103,7 +103,7 @@ void Widget::startButtonClicked()
         startDateTime = getStartTime();
 
         travelers[ui->TravelerComboBox->currentIndex()] = (Traveler(addtravelertimes-1, startDateTime,
-                                                                    getDeadline(), strategy, start, destination, ui->ThroughCityCheckBox->isChecked(), throughcity));
+                                                                    getDeadline(), QDateTime::currentDateTime(), strategy, start, destination, ui->ThroughCityCheckBox->isChecked(), throughcity));
         std::vector<Attribute> path = travelers[ui->TravelerComboBox->currentIndex()].getPlan();
         if (path.size() == 0)
         {
@@ -146,7 +146,8 @@ void Widget::addTravelerButtonClicked()
     std::vector<bool> temp(12, false);
     throughcity = temp;
     travelers.push_back(Traveler(addtravelertimes-1, getStartTime(), getDeadline(),
-                                 getStrategy(), getStart(), getDestination(),
+                                 QDateTime::currentDateTime(), getStrategy(),
+                                 getStart(), getDestination(),
                                  ui->ThroughCityCheckBox->isChecked(), throughcity));
     startclicked.push_back(false);
     addtravelertimes += 1;
@@ -186,7 +187,6 @@ void Widget::travelerChanged()
     {
         displayFare(travelers[ui->TravelerComboBox->currentIndex()].getPlan());
         displayTotalTime(travelers[ui->TravelerComboBox->currentIndex()].getPlan());
-        //displaySpentTime(travelers[ui->TravelerComboBox->currentIndex()].getPlan());
         displayPath(travelers[ui->TravelerComboBox->currentIndex()].getPlan());
 
         ui->StartComboBox->setEnabled(false);
@@ -273,92 +273,145 @@ void Widget::timeStart()
     emit DoStartTimer();
 }
 
-//计算开始出行到目前所用的时间
+//显示开始出行到目前所用的时间
 void Widget::displaySpentTime()
 {
-    if (startclickedtimes == 1)
-    {
-        secondcnt ++;
-        if(secondcnt == 360)
-        {
-            currentmin ++;
-            secondcnt = 0;
-            if (currentmin == 60)
-            {
-                currenthour ++;
-                currentmin = 0;
-                if (currenthour == 24)
-                {
-                    currentday ++;
-                    currenthour = 0;
-                    switch (currentmonth)
-                    {
-                    case 1:
-                    case 3:
-                    case 5:
-                    case 7:
-                    case 8:
-                    case 10:
-                        if (currentday == 32)
-                        {
-                            currentmonth ++;
-                            currentday = 1;
-                        }
-                        break;
-                    case 4:
-                    case 6:
-                    case 9:
-                    case 11:
-                        if (currentday == 31)
-                        {
-                            currentmonth ++;
-                            currentday = 1;
-                        }
-                        break;
-                    case 2:
-                        if (currentyear % 4 == 0 || currentyear % 400 == 0)
-                        {
-                            if (currentday == 30)
-                            {
-                                currentmonth ++;
-                                currentday = 1;
-                            }
-                        }
-                        if (currentyear % 4 != 0 && currentyear % 400 != 0)
-                        {
-                            if (currentday == 29)
-                            {
-                                currentmonth ++;
-                                currentday = 1;
-                            }
-                        }
-                        break;
-                    case 12:
-                        if (currentday == 32)
-                        {
-                            currentyear ++;
-                            currentmonth = 1;
-                        }
-                    default:
-                        break;
-                    }
-                }
-            }
-        }
-    }
-    int durday = currentday - startday;
-    int durhour = currenthour - starthour;
-    int durmin = currentmin - startmin;
+    QDate systemStartDay = travelers[ui->TravelerComboBox->currentIndex()].systemStartime.date();
+    QTime systemStartTime = travelers[ui->TravelerComboBox->currentIndex()].systemStartime.time();
+    int systemstartyear, systemstartmonth, systemstartday;
+    int systemstarthour, systemstartmin, systemstartsec, systemstartmsec;
+    systemStartDay.getDate(&systemstartyear, &systemstartmonth, &systemstartday);
+    systemstarthour = systemStartTime.hour();
+    systemstartmin = systemStartTime.minute();
+    systemstartsec = systemStartTime.second();
+    systemstartmsec = systemStartTime.msec();
 
+    QDate systemCurrentDay = QDate::currentDate();
+    QTime systemCurrentTime = QTime::currentTime();
+    int systemcurrentyear, systemcurrentmonth, systemcurrentday;
+    int systemcurrenthour, systemcurrentmin, systemcurrentsec, systemcurrentmsec;
+    systemCurrentDay.getDate(&systemcurrentyear, &systemcurrentmonth, &systemcurrentday);
+    systemcurrenthour = systemCurrentTime.hour();
+    systemcurrentmin = systemCurrentTime.minute();
+    systemcurrentsec = systemCurrentTime.second();
+    systemcurrentmsec = systemCurrentTime.msec();
+
+    int duryear = systemcurrentyear - systemstartyear;
+    int durmonth = systemcurrentmonth - systemstartmonth;
+    int durday = systemcurrentday - systemstartday;
+    int durhour = systemcurrenthour - systemstarthour;
+    int durmin = systemcurrentmin - systemstartmin;
+    int dursec = systemcurrentsec - systemstartsec;
+    int durmsec = systemcurrentmsec - systemstartmsec;
+
+    if (durmsec < 0)
+    {
+        dursec--;
+        durmsec += 1000;
+    }
+    if (dursec < 0)
+    {
+        durmin--;
+        dursec += 60;
+    }
     if (durmin < 0)
     {
-        durmin += 60;
         durhour--;
+        durmin += 60;
     }
     if (durhour < 0)
     {
-        durhour += 24;
         durday--;
+        durhour += 24;
+    }
+    if (durday < 0)
+    {
+        durmonth--;
+        switch (systemstartmonth)
+        {
+        case 1:
+        case 3:
+        case 5:
+        case 7:
+        case 8:
+        case 10:
+        case 12:
+            durday += 31;
+            break;
+        case 4:
+        case 6:
+        case 9:
+        case 11:
+            durday += 30;
+            break;
+        case 2:
+            if (systemstartyear % 4 == 0 || systemstartyear % 400 == 0)
+                durday += 29;
+            else
+                durday += 28;
+            break;
+        }
+    }
+    if (durmonth < 0)
+    {
+        duryear--;
+        durmonth += 12;
+    }
+
+    durmsec *= 360;
+    dursec *= 360;
+    durmin *= 360;
+    durhour *= 360;
+    durday *= 360;
+    durmonth *= 360;
+    duryear *= 360;
+
+    while (durmsec >= 1000)
+    {
+        durmsec -= 1000;
+        dursec++;
+    }
+    while (dursec >= 60)
+    {
+        dursec -= 60;
+        durmin++;
+    }
+    while (durmin >= 60)
+    {
+        durmin -= 60;
+        durhour++;
+    }
+    while (durhour >= 24)
+    {
+        durhour -= 24;
+        durday++;
+    }
+    durmonth += duryear * ((systemstartyear % 4 == 0 || systemstartyear % 400 == 0)?366:365);
+    durday += durmonth * 30;
+
+    if (startclickedtimes == 1)
+    {
+        durmsec++;
+        if(durmsec == 60)
+        {
+             dursec++;
+             durmsec = 0;
+             if (dursec == 60)
+             {
+                 durmin++;
+                 dursec = 0;
+                 if (durmin == 60)
+                 {
+                     durhour++;
+                     durmin = 0;
+                     if (durhour == 24)
+                     {
+                         durday++;
+                         durhour = 0;
+                     }
+                 }
+             }
+        }
     }
 
     QString durationday = QString::number(durday);
