@@ -574,8 +574,8 @@ void Widget::displayPath(std::vector<Attribute> path)
 
         textlabel->setText(" " + numToCity(path[index].from) + "->" + numToCity(path[index].to) +
                            QString::fromWCharArray(L" 车次:") + path[index].num + "\n" +
-                           " " + QString::fromWCharArray(L"出发时间:") + QString::number(beginhour) + ":" + QString::number(beginmin) +
-                           QString::fromWCharArray(L" 到站时间:") + QString::number(endhour) + ":" + QString::number(endmin) + "\n" +
+                           " " + QString::fromWCharArray(L"出发:") + QString::number(beginhour) + ":" + QString::number(beginmin) +
+                           QString::fromWCharArray(L" 到站:") + QString::number(endhour) + ":" + QString::number(endmin) + "\n" +
                            QString::fromWCharArray(L" 票价:") + QString::number(path[index].cost));
 
         QHBoxLayout *rowlayout = new QHBoxLayout;

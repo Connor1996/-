@@ -16,12 +16,16 @@ SOURCES += main.cpp\
         widget.cpp \
     schedule.cpp \
     attribute.cpp \
-    traveler.cpp
+    traveler.cpp \
+    mapwidget.cpp \
+    point.cpp
 
 HEADERS  += widget.h \
     schedule.h \
     attribute.h \
-    traveler.h
+    traveler.h \
+    mapwidget.h \
+    point.h
 
 FORMS    += widget.ui
 
