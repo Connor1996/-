@@ -265,6 +265,154 @@ QDateTime Widget::getStartTime()
     return datetime;
 }
 
+//获取已用时间
+QDateTime Widget::getSpentTime()
+{
+    QDate systemStartDay = travelers[ui->TravelerComboBox->currentIndex()].systemStartime.date();
+    QTime systemStartTime = travelers[ui->TravelerComboBox->currentIndex()].systemStartime.time();
+    int systemstartyear, systemstartmonth, systemstartday;
+    int systemstarthour, systemstartmin, systemstartsec, systemstartmsec;
+    systemStartDay.getDate(&systemstartyear, &systemstartmonth, &systemstartday);
+    systemstarthour = systemStartTime.hour();
+    systemstartmin = systemStartTime.minute();
+    systemstartsec = systemStartTime.second();
+    systemstartmsec = systemStartTime.msec();
+
+    QDate systemCurrentDay = QDate::currentDate();
+    QTime systemCurrentTime = QTime::currentTime();
+    int systemcurrentyear, systemcurrentmonth, systemcurrentday;
+    int systemcurrenthour, systemcurrentmin, systemcurrentsec, systemcurrentmsec;
+    systemCurrentDay.getDate(&systemcurrentyear, &systemcurrentmonth, &systemcurrentday);
+    systemcurrenthour = systemCurrentTime.hour();
+    systemcurrentmin = systemCurrentTime.minute();
+    systemcurrentsec = systemCurrentTime.second();
+    systemcurrentmsec = systemCurrentTime.msec();
+
+    int duryear = systemcurrentyear - systemstartyear;
+    int durmonth = systemcurrentmonth - systemstartmonth;
+    int durday = systemcurrentday - systemstartday;
+    int durhour = systemcurrenthour - systemstarthour;
+    int durmin = systemcurrentmin - systemstartmin;
+    int dursec = systemcurrentsec - systemstartsec;
+    int durmsec = systemcurrentmsec - systemstartmsec;
+
+    if (durmsec < 0)
+    {
+        dursec--;
+        durmsec += 1000;
+    }
+    if (dursec < 0)
+    {
+        durmin--;
+        dursec += 60;
+    }
+    if (durmin < 0)
+    {
+        durhour--;
+        durmin += 60;
+    }
+    if (durhour < 0)
+    {
+        durday--;
+        durhour += 24;
+    }
+    if (durday < 0)
+    {
+        durmonth--;
+        switch (systemstartmonth)
+        {
+        case 1:
+        case 3:
+        case 5:
+        case 7:
+        case 8:
+        case 10:
+        case 12:
+            durday += 31;
+            break;
+        case 4:
+        case 6:
+        case 9:
+        case 11:
+            durday += 30;
+            break;
+        case 2:
+            if (systemstartyear % 4 == 0 || systemstartyear % 400 == 0)
+                durday += 29;
+            else
+                durday += 28;
+            break;
+        }
+    }
+    if (durmonth < 0)
+    {
+        duryear--;
+        durmonth += 12;
+    }
+
+    durmsec *= 360;
+    dursec *= 360;
+    durmin *= 360;
+    durhour *= 360;
+    durday *= 360;
+    durmonth *= 360;
+    duryear *= 360;
+
+    while (durmsec >= 1000)
+    {
+        durmsec -= 1000;
+        dursec++;
+    }
+    while (dursec >= 60)
+    {
+        dursec -= 60;
+        durmin++;
+    }
+    while (durmin >= 60)
+    {
+        durmin -= 60;
+        durhour++;
+    }
+    while (durhour >= 24)
+    {
+        durhour -= 24;
+        durday++;
+    }
+    durmonth += duryear * ((systemstartyear % 4 == 0 || systemstartyear % 400 == 0)?366:365);
+    durday += durmonth * 30;
+
+    if (startclickedtimes == 1)
+    {
+        durmsec++;
+        if(durmsec == 60)
+        {
+             dursec++;
+             durmsec = 0;
+             if (dursec == 60)
+             {
+                 durmin++;
+                 dursec = 0;
+                 if (durmin == 60)
+                 {
+                     durhour++;
+                     durmin = 0;
+                     if (durhour == 24)
+                     {
+                         durday++;
+                         durhour = 0;
+                     }
+                 }
+             }
+        }
+    }
+    QDateTime spentDateTime;
+    QDate spentDate(0, 0, durday);
+    QTime spentTime(durhour, durmin, 0, 0);
+    spentDateTime.setDate(spentDate);
+    spentDateTime.setTime(spentTime);
+    return spentDateTime;
+}
+
 //如果mstimer未激活，那么发出DoStartTimer信号
 void Widget::timeStart()
 {
