@@ -40,6 +40,8 @@ public:
     ~Widget();
 
     Schedule schedule;
+    int currentTraveler;
+    std::vector<Traveler> travelers;
     int getStrategy();//获取用户所选策略
     int getStart();//获取用户所选始发地
     int getDestination();//获取用户所选目的地
@@ -87,7 +89,6 @@ private:
     QTime time;
     QDateTime datetime;
     std::vector<bool> throughcity;
-    std::vector<Traveler> travelers;
 
 private slots:
     void startButtonClicked();//开始按钮按下，开始计算路径图形输出

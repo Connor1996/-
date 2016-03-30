@@ -4,7 +4,8 @@
 Widget::Widget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Widget),
-    throughcity(12, false)
+    throughcity(12, false),
+    currentTraveler(-1)
 {
     ui->setupUi(this);
     this->setFixedSize(1280, 720);
@@ -111,6 +112,8 @@ void Widget::startButtonClicked()
             return;
         }
 
+        currentTraveler = ui->TravelerComboBox->currentIndex();
+
         displayTotalTime(path);
         displayFare(path);
         displayPath(path);
@@ -131,6 +134,8 @@ void Widget::startButtonClicked()
             //start = getStart();
             priordestination = destination = getDestination();
             std::vector<Attribute> path = travelers[ui->TravelerComboBox->currentIndex()].changePlan(strategy, destination);
+
+            currentTraveler = ui->TravelerComboBox->currentIndex();
 
             displayTotalTime(path);
             displayFare(path);
@@ -195,6 +200,8 @@ void Widget::travelerChanged()
         ui->ThroughCityCheckBox->setChecked(travelers[ui->TravelerComboBox->currentIndex()].isChecked);
         throughcity = travelers[ui->TravelerComboBox->currentIndex()].throughCity;
         activeThroughCity();
+
+        currentTraveler = ui->TravelerComboBox->currentIndex();
     }
     else
     {
@@ -219,6 +226,8 @@ void Widget::travelerChanged()
         ui->FareEdit->clear();
         ui->TotalTimeEdit->clear();
         ui->DurationText->clear();
+
+        currentTraveler = -1;
     }
 }
 

@@ -20,7 +20,7 @@ public:
 
     void paintEvent(QPaintEvent *);
     QPixmap setPointGraph();
-    QPointF setPointPos();
+    QPointF setPointPos(std::vector<Attribute> &path, QWidget *fatherPtr);
 
 signals:
 

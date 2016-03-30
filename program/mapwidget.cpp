@@ -51,7 +51,13 @@ MapWidget::MapWidget(QWidget *parent) :
 void MapWidget::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
-    painter.drawPixmap((setPointPos()), setPointGraph());
+    qDebug() << "99";
+    Widget *fatherPtr = (Widget *)parentWidget();
+    if (fatherPtr->currentTraveler != -1)
+    {
+        std::vector<Attribute> path = fatherPtr->travelers[fatherPtr->currentTraveler].getPlan();
+        painter.drawPixmap((setPointPos(path, fatherPtr)), setPointGraph());
+    }
     update();
 }
 
@@ -61,19 +67,14 @@ QPixmap MapWidget::setPointGraph()
     return pointGraph;
 }
 
-QPointF MapWidget::setPointPos()
+QPointF MapWidget::setPointPos(std::vector<Attribute> &path, QWidget *fatherPtr)
 {
-//    int x, y;
-//    x =50;
-//    y =50;
-//    QPointF pointPos;
-//    pointPos.setX(x);
-//    pointPos.setY(y);
     QPointF pointPos;
     for (std::vector<Attribute>::size_type index = 0;
-         index != path.size(); index++)
-    {
+        index != path.size(); index++)
+        {
 
-    }
+        }
+
     return pointPos;
 }
