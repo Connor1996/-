@@ -22,10 +22,12 @@ public:
 
     void paintEvent(QPaintEvent *);
     QPixmap setPointGraph();
-    QPointF setPointPos(std::vector<Attribute> &path, QWidget *fatherPtr);
+    QPointF setPointPos(std::vector<Attribute> &path);
     QDateTime getSplitTime(QDateTime former, QDateTime later);
     QPointF getCityCor(int city);
-
+    float getTimeDifference(QDateTime shorterDateTime, QDateTime longerDateTime);
+    QPointF getMoveDistance(QDateTime spentTime, QDateTime start2Begin, QDateTime start2End,
+                            int from, int to);
 signals:
 
 };

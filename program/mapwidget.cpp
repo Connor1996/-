@@ -51,12 +51,12 @@ MapWidget::MapWidget(QWidget *parent) :
 void MapWidget::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
-    qDebug() << "99";
+    qDebug() << "updating";
     Widget *fatherPtr = (Widget *)parentWidget();
     if (fatherPtr->currentTraveler != -1)
     {
         std::vector<Attribute> path = fatherPtr->travelers[fatherPtr->currentTraveler].getPlan();
-        painter.drawPixmap((setPointPos(path, fatherPtr)), setPointGraph());
+        painter.drawPixmap((setPointPos(path)), setPointGraph());
     }
     update();
 }
@@ -67,15 +67,34 @@ QPixmap MapWidget::setPointGraph()
     return pointGraph;
 }
 
-QPointF MapWidget::setPointPos(std::vector<Attribute> &path, QWidget *fatherPtr)
+QPointF MapWidget::setPointPos(std::vector<Attribute> &path)
 {
+    Widget *fatherPtr = (Widget *)parentWidget();
     QPointF pointPos;
     for (std::vector<Attribute>::size_type index = 0;
         index != path.size(); index++)
+    {
+        if (fatherPtr->getSpentTime() <=
+                getSplitTime(fatherPtr->travelers[fatherPtr->currentTraveler].startTime, path[index].begin))
         {
-
+            pointPos = getCityCor(path[index].from);
+            break;
+        }
+        else if (fatherPtr->getSpentTime <=
+                 getSplitTime(fatherPtr->travelers[fatherPtr->currentTraveler].startTime, path[index].end))
+        {
+            pointPos = getCityCor(path[index].from);
+            QDateTime spentTime = fatherPtr->getSpentTime();
+            QDateTime start2Begin = getSplitTime(fatherPtr->travelers[fatherPtr->currentTraveler].startTime,
+                    path[index].begin);
+            QDateTime start2End = getSplitTime(fatherPtr->travelers[fatherPtr->currentTraveler].startTime,
+                    path[index].end);
+            pointPos += getMoveDistance( spentTime, start2Begin, start2End, path[index].from, path[index].to);
+        }
+        else {
+            continue;
+        }
     }
-
     return pointPos;
 }
 
@@ -212,4 +231,50 @@ QPointF MapWidget::getCityCor(int city)
     coordinate.setX(x);
     coordinate.setY(y);
     return coordinate;
+}
+
+float MapWidget::getTimeDifference(QDateTime shorterDateTime, QDateTime longerDateTime)
+{
+    int shorterYear, shorterMonth, shorterDay,
+            shorterHour, shorterMin;
+    int longerYear, longerMonth, longerDay,
+            longerHour, longerMin;
+    QDate shorterDate = shorterDateTime.date();
+    QTime shorterTime = shorterDateTime.time();
+    QDate longerDate = longerDateTime.date();
+    QTime longerTime = longerDateTime.time();
+    shorterDate.getDate(&shorterYear, &shorterMonth, &shorterDay);
+    shorterHour = shorterTime.hour();
+    shorterMin = shorterTime.minute();
+    longerDate.getDate(&longerYear, &longerMonth, &longerDay);
+    longerHour = longerTime.hour();
+    longerMin = longerTime.minute();
+
+    int diffYear, diffMonth, diffDay,
+            diffHour, diffMin;
+    diffYear = longerYear - shorterYear;
+    diffMonth = longerMonth - shorterMonth;
+    diffDay = longerDay - shorterDay;
+    diffHour = longerHour - shorterHour;
+    diffMin = longerMin - shorterMin;
+
+    diffMonth += 12 * diffYear;
+    diffDay += 30 * diffMonth;
+    diffHour += 24 * diffDay;
+    diffMin += 60 * diffHour;
+
+    return (float)diffMin;
+}
+
+QPointF MapWidget::getMoveDistance(QDateTime spentTime, QDateTime start2Begin, QDateTime start2End,
+                                   int from, int to)
+{
+    QPointF moveDistance;
+    float increaseRatio = getTimeDifference(start2Begin, spentTime)/getTimeDifference(start2Begin, start2End);
+    float xIncrease, yIncrease;
+    xIncrease = (getCityCor(to) - getCityCor(from)).x() * increaseRatio;
+    yIncrease = (getCityCor(to) - getCityCor(from)).y() * increaseRatio;
+    moveDistance.setX(xIncrease);
+    moveDistance.setY(yIncrease);
+    return moveDistance;
 }
