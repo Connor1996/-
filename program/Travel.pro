@@ -17,15 +17,13 @@ SOURCES += main.cpp\
     schedule.cpp \
     attribute.cpp \
     traveler.cpp \
-    mapwidget.cpp \
-    point.cpp
+    mapwidget.cpp
 
 HEADERS  += widget.h \
     schedule.h \
     attribute.h \
     traveler.h \
-    mapwidget.h \
-    point.h
+    mapwidget.h
 
 FORMS    += widget.ui
 

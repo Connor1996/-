@@ -14,18 +14,20 @@ public:
     bool isChecked;
     int id, strategy;
     int origin, destination;
-    QDateTime startTime, deadlineTime, systemStartime;
+    QDateTime startTime, deadlineTime, systemStartTime;
     std::vector<bool> throughCity;
 
     Traveler(int, QDateTime, QDateTime, QDateTime, int, int, int, bool, std::vector<bool>);
-    void getTotalTime(int &, int &, int &);
+    //void getTotalTime(int &, int &, int &);
     std::vector<Attribute> getPlan();
+    QDateTime getCityArrivalDateTime(int);
+    QDateTime getCityDepartureDateTime(int);
     std::vector<Attribute> changePlan(int ,int);
 
 
 private:
     std::vector<Attribute> plan;
-    std::vector<QDateTime> time;
+    std::vector<QDateTime> time; //记录每个城市的到达时间
 
 };
 

@@ -22,36 +22,13 @@ MapWidget::MapWidget(QWidget *parent) :
 //    label->setScaledContents(true);
 
 
-//    QStateMachine *machine = new QStateMachine;     //新建状态机
-
-//    QState *state1 = new QState(machine);     //状态
-//    state1->assignProperty(label, "geometry",QRect(0,0,80,80));    //绑定button的geomertry属性
-//    QState *state2 = new QState(machine);
-//    state2->assignProperty(label,"geometry",QRect(400,400,80,80));
-//    machine->setInitialState(state1);     //state1设为初始化状态
-
-
-//    QPropertyAnimation *ani=new QPropertyAnimation(label,"geometry");
-//    ani->setDuration(2000);
-//    ani->setStartValue(QRect(100, 100, 120, 120));
-//    ani->setEndValue(QRect(250, 250, 120, 120));
-//    ani->setEasingCurve(QEasingCurve::OutBounce);   //动画效果—弹跳
-//    ani->start();
-
-//    QSignalTransition *transition1=state1->addTransition(label,SIGNAL(arrival()),state2);//动画触发信号
-//    transition1->addAnimation(ani);
-//    QSignalTransition *transition2=state2->addTransition(label,SIGNAL(arrival()),state1);
-//    transition2->addAnimation(ani);
-
-//    //machine->addDefaultAnimation(ani);
-//    machine->start();     //开启状态机
 
 }
 
 void MapWidget::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
-    qDebug() << "updating";
+
     Widget *fatherPtr = (Widget *)parentWidget();
     if (fatherPtr->currentTraveler != -1)
     {
@@ -75,26 +52,29 @@ QPointF MapWidget::setPointPos(std::vector<Attribute> &path)
         index != path.size(); index++)
     {
         if (fatherPtr->getSpentTime() <=
-                getSplitTime(fatherPtr->travelers[fatherPtr->currentTraveler].startTime, path[index].begin))
+                getSplitTime(fatherPtr->travelers[fatherPtr->currentTraveler].startTime,
+                             fatherPtr->travelers[fatherPtr->currentTraveler].getCityDepartureDateTime(path[index].from)))
         {
             pointPos = getCityCor(path[index].from);
             break;
         }
-        else if (fatherPtr->getSpentTime <=
-                 getSplitTime(fatherPtr->travelers[fatherPtr->currentTraveler].startTime, path[index].end))
+        else if (fatherPtr->getSpentTime() <=
+                 getSplitTime(fatherPtr->travelers[fatherPtr->currentTraveler].startTime,
+                              fatherPtr->travelers[fatherPtr->currentTraveler].getCityArrivalDateTime(path[index].to)))
         {
             pointPos = getCityCor(path[index].from);
             QDateTime spentTime = fatherPtr->getSpentTime();
             QDateTime start2Begin = getSplitTime(fatherPtr->travelers[fatherPtr->currentTraveler].startTime,
-                    path[index].begin);
+                    fatherPtr->travelers[fatherPtr->currentTraveler].getCityDepartureDateTime(path[index].from));
             QDateTime start2End = getSplitTime(fatherPtr->travelers[fatherPtr->currentTraveler].startTime,
-                    path[index].end);
+                    fatherPtr->travelers[fatherPtr->currentTraveler].getCityArrivalDateTime(path[index].to));
             pointPos += getMoveDistance( spentTime, start2Begin, start2End, path[index].from, path[index].to);
         }
         else {
             continue;
         }
     }
+    qDebug() << pointPos.x() << pointPos.y();
     return pointPos;
 }
 

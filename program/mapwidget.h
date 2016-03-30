@@ -3,7 +3,6 @@
 
 //#include "ui_widget.h"
 #include "widget.h"
-#include "point.h"
 #include <QWidget>
 #include <QTextEdit>
 #include <QBrush>
