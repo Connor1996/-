@@ -12,6 +12,8 @@
 #include <QPen>
 #include <QDebug>
 #include <QRectF>
+#include <QDateTime>
+#include <QPointF>
 
 class MapWidget : public QWidget
 {
@@ -21,6 +23,8 @@ public:
     void paintEvent(QPaintEvent *);
     QPixmap setPointGraph();
     QPointF setPointPos(std::vector<Attribute> &path, QWidget *fatherPtr);
+    QDateTime getSplitTime(QDateTime former, QDateTime later);
+    QPointF getCityCor(int city);
 
 signals:
 

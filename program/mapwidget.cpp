@@ -74,7 +74,142 @@ QPointF MapWidget::setPointPos(std::vector<Attribute> &path, QWidget *fatherPtr)
         index != path.size(); index++)
         {
 
-        }
+    }
 
     return pointPos;
+}
+
+QDateTime MapWidget::getSplitTime(QDateTime former, QDateTime later)
+{
+    int formerYear, formerMonth, formerDay,
+            formerHour, formerMin;
+    int laterYear, laterMonth, laterDay,
+            laterHour, laterMin;
+    QDate formerDate = former.date();
+    QTime formerTime = former.time();
+    QDate laterDate = later.date();
+    QTime laterTime = later.time();
+    formerDate.getDate(&formerYear, &formerMonth, &formerDay);
+    formerHour = formerTime.hour();
+    formerMin = formerTime.minute();
+    laterDate.getDate(&laterYear, &laterMonth, &laterDay);
+    laterHour = laterTime.hour();
+    laterMin = laterTime.minute();
+
+    QDateTime splitDateTime;
+    int splitYear, splitMonth, splitDay,
+            splitHour, splitMin;
+    splitYear = laterYear - formerYear;
+    splitMonth = laterMonth - formerMonth;
+    splitDay = laterDay - formerDay;
+    splitHour = laterHour - formerHour;
+    splitMin = laterMin - formerMin;
+
+    if (splitMin < 0)
+    {
+        splitMin += 60;
+        splitHour--;
+    }
+    if (splitHour < 0)
+    {
+        splitHour += 24;
+        splitDay--;
+    }
+    if (splitDay < 0)
+    {
+        splitMonth--;
+        switch (formerMonth)
+        {
+        case 1:
+        case 3:
+        case 5:
+        case 7:
+        case 8:
+        case 10:
+        case 12:
+            splitDay += 31;
+            break;
+        case 4:
+        case 6:
+        case 9:
+        case 11:
+            splitDay += 30;
+            break;
+        case 2:
+            if (formerYear % 4 == 0 || formerYear % 400 == 0)
+                splitDay += 29;
+            else
+                splitDay += 28;
+            break;
+        }
+    }
+    if (splitMonth < 0)
+    {
+        splitMonth += 12;
+        splitYear--;
+    }
+    QDate splitDate(splitYear, splitMonth, splitDay);
+    QTime splitTime(splitHour, splitMin, 0, 0);
+    splitDateTime.setDate(splitDate);
+    splitDateTime.setTime(splitTime);
+    return splitDateTime;
+}
+
+QPointF MapWidget::getCityCor(int city)
+{
+    QPointF coordinate;
+    int x, y;
+    switch (city)
+    {
+    case 0:
+        x = 20;
+        y = 20;
+        break;
+    case 1:
+        x = 95;
+        y = 20;
+        break;
+    case 2:
+        x = 170;
+        y = 20;
+        break;
+    case 3:
+        x = 245;
+        y = 20;
+        break;
+    case 4:
+        x = 20;
+        y = 95;
+        break;
+    case 5:
+        x = 95;
+        y = 95;
+        break;
+    case 6:
+        x = 170;
+        y = 95;
+        break;
+    case 7:
+        x = 245;
+        y = 95;
+        break;
+    case 8:
+        x = 20;
+        y = 170;
+        break;
+    case 9:
+        x = 95;
+        y = 170;
+        break;
+    case 10:
+        x = 170;
+        y = 170;
+        break;
+    case 11:
+        x = 245;
+        y = 170;
+    }
+    coordinate.setX(x);
+    coordinate.setY(y);
+    return coordinate;
 }
