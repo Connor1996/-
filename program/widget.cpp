@@ -154,6 +154,7 @@ void Widget::addTravelerButtonClicked()
                                  QDateTime::currentDateTime(), getStrategy(),
                                  getStart(), getDestination(),
                                  ui->ThroughCityCheckBox->isChecked(), throughcity));
+    totaltime.push_back(TotalTime(0, 0, 0));
     startclicked.push_back(false);
     addtravelertimes += 1;
     startclickedtimes = 0;
@@ -193,6 +194,7 @@ void Widget::travelerChanged()
         displayFare(travelers[ui->TravelerComboBox->currentIndex()].getPlan());
         displayTotalTime(travelers[ui->TravelerComboBox->currentIndex()].getPlan());
         displayPath(travelers[ui->TravelerComboBox->currentIndex()].getPlan());
+        displaySpentTime();
 
         ui->StartComboBox->setEnabled(false);
         ui->StartDateTimeEdit->setEnabled(false);
@@ -575,9 +577,26 @@ void Widget::displaySpentTime()
     QString durationhour = QString::number(durhour);
     QString durationmin = QString::number(durmin);
     if (startclicked[ui->TravelerComboBox->currentIndex()])
-        ui->DurationText->setText(durationday + QString::fromWCharArray(L"天 ") + durationhour +
-                              QString::fromWCharArray(L"小时 ") + durationmin +
-                              QString::fromWCharArray(L"分钟"));
+    {
+        if (totaltime[ui->TravelerComboBox->currentIndex()].day*24*60 +
+                totaltime[ui->TravelerComboBox->currentIndex()].hour*60 +
+                totaltime[ui->TravelerComboBox->currentIndex()].min >=
+                durday*24*60 + durhour*60 + durmin)
+        {
+            ui->DurationText->setText(durationday + QString::fromWCharArray(L"天 ") + durationhour +
+                                  QString::fromWCharArray(L"小时 ") + durationmin +
+                                  QString::fromWCharArray(L"分钟"));
+        }
+        else
+        {
+            ui->DurationText->setText(QString::number(totaltime[ui->TravelerComboBox->currentIndex()].day)
+                    + QString::fromWCharArray(L"天 ") +
+                    QString::number(totaltime[ui->TravelerComboBox->currentIndex()].hour)
+                    + QString::fromWCharArray(L"小时 ") +
+                    QString::number(totaltime[ui->TravelerComboBox->currentIndex()].min)
+                    + QString::fromWCharArray(L"分钟"));
+        }
+    }
     else
         ui->DurationText->clear();
 }
@@ -587,44 +606,12 @@ void Widget::displayTotalTime(std::vector<Attribute> path)
 {
     int durationDay, durationHour, durationMin;
     travelers[ui->TravelerComboBox->currentIndex()].getTotalTime(durationDay, durationHour, durationMin);
-
-/*    QTime endtime = path[path.size()-1].end;
-    int durationhour = endtime.hour() - starthour;
-    int durationmin = endtime.minute() - startmin;
-    int durationday = 0;
-
-    if (starthour > path[0].begin.hour())
-        durationday++;
-    else if (startmin > path[0].begin.minute())
-        durationday++;
-
-    for(std::vector<Attribute>::size_type index = 0;
-            index != path.size()-1; index++)
-    {
-        for(std::vector<Attribute>::size_type jndex = index + 1;
-                jndex != path.size(); jndex++)
-        {
-            if (path[jndex].begin.hour() < path[index].end.hour())
-            durationday ++;
-            else if (path[jndex].begin.minute() < path[index].end.minute())
-                durationday++;
-        }
-    }
-
-    if (durationmin < 0)
-    {
-        durationmin = 60 + durationmin;
-        durationhour--;
-    }
-    if (durationhour < 0)
-    {
-        durationhour = 24 + durationhour;
-        durationday--;
-    }
-*/
     ui->TotalTimeEdit->setText(QString::number(durationDay) + QString::fromWCharArray(L"天 ") +
                                QString::number(durationHour) + QString::fromWCharArray(L"小时 ") +
                                QString::number(durationMin) + QString::fromWCharArray(L"分钟"));
+    totaltime[ui->TravelerComboBox->currentIndex()].day = durationDay;
+    totaltime[ui->TravelerComboBox->currentIndex()].hour = durationHour;
+    totaltime[ui->TravelerComboBox->currentIndex()].min = durationMin;
 }
 
 //显示方案所需经费

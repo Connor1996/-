@@ -69,7 +69,7 @@ QPointF MapWidget::setPointPos(std::vector<Attribute> &path)
             pointPos += getMoveDistance(spentTime, start2Begin, start2End, path[index].from, path[index].to);
         }
         else {
-            continue;
+             pointPos = getCityCor(path[index].to);
         }
     }
     qDebug() << pointPos.x() << pointPos.y();

@@ -1,6 +1,7 @@
 ﻿#ifndef WIDGET_H
 #define WIDGET_H
 
+#include "totaltime.h"
 #include "schedule.h"
 #include "traveler.h"
 #include "mapwidget.h"
@@ -89,6 +90,8 @@ private:
     QTime time;
     QDateTime datetime;
     std::vector<bool> throughcity;
+
+    std::vector<TotalTime> totaltime;
 
 private slots:
     void startButtonClicked();//开始按钮按下，开始计算路径图形输出
