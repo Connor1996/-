@@ -15,10 +15,10 @@ public:
     int id, strategy;
     int origin, destination;
     QDateTime startTime, deadlineTime, systemStartTime;
+    QDateTime totalTime;
     std::vector<bool> throughCity;
 
     Traveler(int, QDateTime, QDateTime, QDateTime, int, int, int, bool, std::vector<bool>);
-    void getTotalTime(int &, int &, int &);
     std::vector<Attribute> getPlan();
     QDateTime getCityArrivalDateTime(int);
     QDateTime getCityDepartureDateTime(int);
@@ -29,6 +29,7 @@ private:
     std::vector<Attribute> plan;
     std::vector<QDateTime> time; //记录每个城市的到达时间
 
+    QDateTime TotalDateTime();
 };
 
 #endif // TRAVELER_H

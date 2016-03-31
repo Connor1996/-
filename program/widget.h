@@ -1,7 +1,6 @@
 ﻿#ifndef WIDGET_H
 #define WIDGET_H
 
-#include "totaltime.h"
 #include "schedule.h"
 #include "traveler.h"
 #include "mapwidget.h"
@@ -49,7 +48,7 @@ public:
     QDateTime getStartTime();//获取开始时间
     QDateTime getSpentTime();//获取已用时间
     QDateTime getDeadline();//获取截止时间
-    void displayTotalTime(std::vector<Attribute> path);//显示方案所需总时间
+    void displayTotalTime();//显示方案所需总时间
     void displayFare(std::vector<Attribute> path);//显示方案所需经费
     void displayPath(std::vector<Attribute> path);//在pathlist窗口中显示路径
     QString numToCity(int index);//将城市编号转为城市名称
@@ -90,8 +89,6 @@ private:
     QTime time;
     QDateTime datetime;
     std::vector<bool> throughcity;
-
-    std::vector<TotalTime> totaltime;
 
 private slots:
     void startButtonClicked();//开始按钮按下，开始计算路径图形输出

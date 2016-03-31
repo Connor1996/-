@@ -114,7 +114,7 @@ void Widget::startButtonClicked()
 
         currentTraveler = ui->TravelerComboBox->currentIndex();
 
-        displayTotalTime(path);
+        displayTotalTime();
         displayFare(path);
         displayPath(path);
 
@@ -137,7 +137,7 @@ void Widget::startButtonClicked()
 
             currentTraveler = ui->TravelerComboBox->currentIndex();
 
-            displayTotalTime(path);
+            displayTotalTime();
             displayFare(path);
             displayPath(path);
             //getDeadline();//如果涉及第三策略下截止时间修订，则保留
@@ -154,7 +154,7 @@ void Widget::addTravelerButtonClicked()
                                  QDateTime::currentDateTime(), getStrategy(),
                                  getStart(), getDestination(),
                                  ui->ThroughCityCheckBox->isChecked(), throughcity));
-    totaltime.push_back(TotalTime(0, 0, 0));
+    //totaltime.push_back(TotalTime(0, 0, 0));
     startclicked.push_back(false);
     addtravelertimes += 1;
     startclickedtimes = 0;
@@ -192,7 +192,7 @@ void Widget::travelerChanged()
     if (startclicked[ui->TravelerComboBox->currentIndex()])
     {
         displayFare(travelers[ui->TravelerComboBox->currentIndex()].getPlan());
-        displayTotalTime(travelers[ui->TravelerComboBox->currentIndex()].getPlan());
+        displayTotalTime();
         displayPath(travelers[ui->TravelerComboBox->currentIndex()].getPlan());
         displaySpentTime();
 
@@ -283,6 +283,7 @@ QDateTime Widget::getSpentTime()
     QTime systemStartTime = travelers[ui->TravelerComboBox->currentIndex()].systemStartTime.time();
     int systemstartyear, systemstartmonth, systemstartday;
     int systemstarthour, systemstartmin, systemstartsec, systemstartmsec;
+
     systemStartDay.getDate(&systemstartyear, &systemstartmonth, &systemstartday);
     systemstarthour = systemStartTime.hour();
     systemstartmin = systemStartTime.minute();
@@ -435,6 +436,7 @@ void Widget::timeStart()
 //显示开始出行到目前所用的时间
 void Widget::displaySpentTime()
 {
+
     QDate systemStartDay = travelers[ui->TravelerComboBox->currentIndex()].systemStartTime.date();
     QTime systemStartTime = travelers[ui->TravelerComboBox->currentIndex()].systemStartTime.time();
     int systemstartyear, systemstartmonth, systemstartday;
@@ -578,9 +580,9 @@ void Widget::displaySpentTime()
     QString durationmin = QString::number(durmin);
     if (startclicked[ui->TravelerComboBox->currentIndex()])
     {
-        if (totaltime[ui->TravelerComboBox->currentIndex()].day*24*60 +
-                totaltime[ui->TravelerComboBox->currentIndex()].hour*60 +
-                totaltime[ui->TravelerComboBox->currentIndex()].min >=
+        if (travelers[ui->TravelerComboBox->currentIndex()].totalTime.date().day()*24*60 +
+                travelers[ui->TravelerComboBox->currentIndex()].totalTime.time().hour()*60 +
+                travelers[ui->TravelerComboBox->currentIndex()].totalTime.time().minute() >=
                 durday*24*60 + durhour*60 + durmin)
         {
             ui->DurationText->setText(durationday + QString::fromWCharArray(L"天 ") + durationhour +
@@ -589,11 +591,11 @@ void Widget::displaySpentTime()
         }
         else
         {
-            ui->DurationText->setText(QString::number(totaltime[ui->TravelerComboBox->currentIndex()].day)
+            ui->DurationText->setText(QString::number(travelers[ui->TravelerComboBox->currentIndex()].totalTime.date().day())
                     + QString::fromWCharArray(L"天 ") +
-                    QString::number(totaltime[ui->TravelerComboBox->currentIndex()].hour)
+                    QString::number(travelers[ui->TravelerComboBox->currentIndex()].totalTime.time().hour())
                     + QString::fromWCharArray(L"小时 ") +
-                    QString::number(totaltime[ui->TravelerComboBox->currentIndex()].min)
+                    QString::number(travelers[ui->TravelerComboBox->currentIndex()].totalTime.time().minute())
                     + QString::fromWCharArray(L"分钟"));
         }
     }
@@ -602,16 +604,12 @@ void Widget::displaySpentTime()
 }
 
 //直接在TotalTimeEdit显示方案所需总时间
-void Widget::displayTotalTime(std::vector<Attribute> path)
+void Widget::displayTotalTime()
 {
-    int durationDay, durationHour, durationMin;
-    travelers[ui->TravelerComboBox->currentIndex()].getTotalTime(durationDay, durationHour, durationMin);
-    ui->TotalTimeEdit->setText(QString::number(durationDay) + QString::fromWCharArray(L"天 ") +
-                               QString::number(durationHour) + QString::fromWCharArray(L"小时 ") +
-                               QString::number(durationMin) + QString::fromWCharArray(L"分钟"));
-    totaltime[ui->TravelerComboBox->currentIndex()].day = durationDay;
-    totaltime[ui->TravelerComboBox->currentIndex()].hour = durationHour;
-    totaltime[ui->TravelerComboBox->currentIndex()].min = durationMin;
+    QDateTime totalTime = travelers[ui->TravelerComboBox->currentIndex()].totalTime;
+    ui->TotalTimeEdit->setText(QString::number(totalTime.date().day()) + QString::fromWCharArray(L"天 ") +
+                               QString::number(totalTime.time().hour()) + QString::fromWCharArray(L"小时 ") +
+                               QString::number(totalTime.time().minute()) + QString::fromWCharArray(L"分钟"));
 }
 
 //显示方案所需经费

@@ -7,19 +7,21 @@ Traveler::Traveler(int id, QDateTime startTime, QDateTime deadlineTime, QDateTim
     time(11, QDateTime(QDate(7999, 12, 31), QTime(23, 59, 59)))
 {
     plan = Schedule::Dijkstra(startTime, strategy, origin, destination, time);
+    totalTime = TotalDateTime();
 }
-
-void Traveler::getTotalTime(int &durationDay, int &durationHour, int &durationMin)
+QDateTime Traveler::TotalDateTime()
 {
     QDateTime endTime = time[destination];
 
-    qDebug() << endTime.time().hour() << startTime.time().hour();
-    durationMin = (endTime.time().minute() - startTime.time().minute());
-    durationHour = (endTime.time().hour() - startTime.time().hour() - (int)((durationMin >= 0)?0:1));
-    durationDay = (endTime.date().day() - startTime.date().day() - (int)((durationHour >= 0)?0:1) + startTime.date().daysInMonth())
+    //qDebug() << endTime.time().hour() << startTime.time().hour();
+    int durationMin = (endTime.time().minute() - startTime.time().minute());
+    int durationHour = (endTime.time().hour() - startTime.time().hour() - (int)((durationMin >= 0)?0:1));
+    int durationDay = (endTime.date().day() - startTime.date().day() - (int)((durationHour >= 0)?0:1) + startTime.date().daysInMonth())
             % startTime.date().daysInMonth();
     durationMin = (durationMin + 60) % 60;
     durationHour = (durationHour + 24) % 24;
+
+    return QDateTime(QDate(0, 0, durationDay), QTime(durationHour, durationMin, 0));
 }
 
 std::vector<Attribute> Traveler::getPlan()
@@ -31,6 +33,7 @@ std::vector<Attribute> Traveler::changePlan(int strategy, int destination)
 {
     this->strategy = strategy;
     this->destination = destination;
+    this->totalTime = TotalDateTime();
 
     return plan = Schedule::Dijkstra(startTime, strategy, origin, destination, time);
 }
@@ -42,7 +45,16 @@ QDateTime Traveler::getCityArrivalDateTime(int index)
 
 QDateTime Traveler::getCityDepartureDateTime(int index)
 {
-    QTime tempTime = this->plan[index].begin; //获得当前城市的出发时间
+    std::vector<Attribute>::size_type id = 0;
+    QTime tempTime;
+
+    for(; id != plan.size(); id++)
+        if(plan[id].from == index)
+        {
+            tempTime = plan[id].begin; //获得当前城市的出发时间
+            break;
+        }
+
     QDateTime DepartureDateTime = time[index];
     if(DepartureDateTime.time() <= tempTime)
         return QDateTime(DepartureDateTime.date(), tempTime);

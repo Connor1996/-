@@ -15,12 +15,6 @@ MapWidget::MapWidget(QWidget *parent) :
     QPalette palette = this->palette();
     palette.setBrush(QPalette::Background, QBrush(QPixmap(":/map.jpg")));
     this->setPalette(palette);
-
-//    Point *label = new Point(this);
-//    label->setPixmap(QPixmap(":/point.png"));
-//    label->setGeometry(0, 0, 120, 120);
-//    label->setScaledContents(true);
-
 }
 
 void MapWidget::paintEvent(QPaintEvent *)
@@ -46,32 +40,39 @@ QPointF MapWidget::setPointPos(std::vector<Attribute> &path)
 {
     Widget *fatherPtr = (Widget *)parentWidget();
     QPointF pointPos;
-    for (std::vector<Attribute>::size_type index = 0;
-        index != path.size(); index++)
+
+    if(fatherPtr->getSpentTime() >= fatherPtr->travelers[fatherPtr->currentTraveler].totalTime)
     {
-        if (fatherPtr->getSpentTime() <=
-                getSplitTime(fatherPtr->travelers[fatherPtr->currentTraveler].startTime,
-                             fatherPtr->travelers[fatherPtr->currentTraveler].getCityDepartureDateTime(path[index].from)))
-        {
-            pointPos = getCityCor(path[index].from);
-            break;
-        }
-        else if (fatherPtr->getSpentTime() <=
-                 getSplitTime(fatherPtr->travelers[fatherPtr->currentTraveler].startTime,
-                              fatherPtr->travelers[fatherPtr->currentTraveler].getCityArrivalDateTime(path[index].to)))
-        {
-            pointPos = getCityCor(path[index].from);
-            QDateTime spentTime = fatherPtr->getSpentTime();
-            QDateTime start2Begin = getSplitTime(fatherPtr->travelers[fatherPtr->currentTraveler].startTime,
-                    fatherPtr->travelers[fatherPtr->currentTraveler].getCityDepartureDateTime(path[index].from));
-            QDateTime start2End = getSplitTime(fatherPtr->travelers[fatherPtr->currentTraveler].startTime,
-                    fatherPtr->travelers[fatherPtr->currentTraveler].getCityArrivalDateTime(path[index].to));
-            pointPos += getMoveDistance(spentTime, start2Begin, start2End, path[index].from, path[index].to);
-        }
-        else {
-             pointPos = getCityCor(path[index].to);
-        }
+         pointPos = getCityCor(path[path.size()-1].to);
+         qDebug() << "State: Arrival";
     }
+    else
+        for (std::vector<Attribute>::size_type index = 0;
+            index != path.size(); index++)
+        {
+            if (fatherPtr->getSpentTime() <=
+                    getSplitTime(fatherPtr->travelers[fatherPtr->currentTraveler].startTime,
+                                 fatherPtr->travelers[fatherPtr->currentTraveler].getCityDepartureDateTime(path[index].from)))
+            {
+                pointPos = getCityCor(path[index].from);
+                qDebug() << "State: Stop" << index << fatherPtr->travelers[fatherPtr->currentTraveler].getCityDepartureDateTime(path[index].from).time().hour() << fatherPtr->travelers[fatherPtr->currentTraveler].getCityDepartureDateTime(path[index].from).time().minute();
+                break;
+            }
+            else if (fatherPtr->getSpentTime() <=
+                     getSplitTime(fatherPtr->travelers[fatherPtr->currentTraveler].startTime,
+                                  fatherPtr->travelers[fatherPtr->currentTraveler].getCityArrivalDateTime(path[index].to)))
+            {
+                pointPos = getCityCor(path[index].from);
+                QDateTime spentTime = fatherPtr->getSpentTime();
+                QDateTime start2Begin = getSplitTime(fatherPtr->travelers[fatherPtr->currentTraveler].startTime,
+                        fatherPtr->travelers[fatherPtr->currentTraveler].getCityDepartureDateTime(path[index].from));
+                QDateTime start2End = getSplitTime(fatherPtr->travelers[fatherPtr->currentTraveler].startTime,
+                        fatherPtr->travelers[fatherPtr->currentTraveler].getCityArrivalDateTime(path[index].to));
+                pointPos += getMoveDistance(spentTime, start2Begin, start2End, path[index].from, path[index].to);
+                qDebug() << "State: Run" << index;
+                break;
+            }
+        }
     qDebug() << pointPos.x() << pointPos.y();
     qDebug() << "----------------------------";
     return pointPos;
