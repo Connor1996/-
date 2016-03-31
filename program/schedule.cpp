@@ -159,9 +159,16 @@ void Schedule::UpdateAdjacents(int city, std::vector<int>& value, std::vector<QD
             {
                 value[iter->second.to] = value[city] + iter->second.cost;
                 path[iter->second.to] = iter->second;
-                time[iter->second.to].setTime(iter->second.end);
-                if(span)
-                    time[iter->second.to] = time[iter->second.to].addDays(1);
+                //time[iter->second.to]
+                //time[iter->second.to].setTime(iter->second.end);
+                if(!span && time[iter->second.from].time() <= iter->second.begin)
+                    time[iter->second.to] = QDateTime(time[iter->second.from].date(), iter->second.end);
+                else if(!span && time[iter->second.from].time() > iter->second.begin)
+                    time[iter->second.to] = QDateTime(time[iter->second.from].date().addDays(1), iter->second.end);
+                else if(span && time[iter->second.from].time() <= iter->second.begin)
+                    time[iter->second.to] = QDateTime(time[iter->second.from].date().addDays(1), iter->second.end);
+                else if(span && time[iter->second.from].time() > iter->second.begin)
+                    time[iter->second.to] = QDateTime(time[iter->second.from].date().addDays(2), iter->second.end);
             }
         }
         else if(strategy == 1)

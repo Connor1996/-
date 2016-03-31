@@ -21,8 +21,6 @@ MapWidget::MapWidget(QWidget *parent) :
 //    label->setGeometry(0, 0, 120, 120);
 //    label->setScaledContents(true);
 
-
-
 }
 
 void MapWidget::paintEvent(QPaintEvent *)
@@ -68,18 +66,28 @@ QPointF MapWidget::setPointPos(std::vector<Attribute> &path)
                     fatherPtr->travelers[fatherPtr->currentTraveler].getCityDepartureDateTime(path[index].from));
             QDateTime start2End = getSplitTime(fatherPtr->travelers[fatherPtr->currentTraveler].startTime,
                     fatherPtr->travelers[fatherPtr->currentTraveler].getCityArrivalDateTime(path[index].to));
-            pointPos += getMoveDistance( spentTime, start2Begin, start2End, path[index].from, path[index].to);
+            pointPos += getMoveDistance(spentTime, start2Begin, start2End, path[index].from, path[index].to);
         }
         else {
             continue;
         }
     }
     qDebug() << pointPos.x() << pointPos.y();
+    qDebug() << "----------------------------";
     return pointPos;
 }
 
 QDateTime MapWidget::getSplitTime(QDateTime former, QDateTime later)
 {
+    int durationMin = (later.time().minute() - former.time().minute());
+    int durationHour = (later.time().hour() - former.time().hour() - (int)((durationMin >= 0)?0:1));
+    int durationDay = (later.date().day() - former.date().day() - (int)((durationHour >= 0)?0:1) + former.date().daysInMonth())
+            % former.date().daysInMonth();
+    durationMin = (durationMin + 60) % 60;
+    durationHour = (durationHour + 24) % 24;
+
+    return QDateTime(QDate(0, 0, durationDay), QTime(durationHour, durationMin, 0));
+    /*
     int formerYear, formerMonth, formerDay,
             formerHour, formerMin;
     int laterYear, laterMonth, laterDay,
@@ -152,6 +160,7 @@ QDateTime MapWidget::getSplitTime(QDateTime former, QDateTime later)
     splitDateTime.setDate(splitDate);
     splitDateTime.setTime(splitTime);
     return splitDateTime;
+    */
 }
 
 QPointF MapWidget::getCityCor(int city)

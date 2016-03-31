@@ -277,8 +277,8 @@ QDateTime Widget::getStartTime()
 //获取已用时间
 QDateTime Widget::getSpentTime()
 {
-    QDate systemStartDay = travelers[ui->TravelerComboBox->currentIndex()].systemStartime.date();
-    QTime systemStartTime = travelers[ui->TravelerComboBox->currentIndex()].systemStartime.time();
+    QDate systemStartDay = travelers[ui->TravelerComboBox->currentIndex()].systemStartTime.date();
+    QTime systemStartTime = travelers[ui->TravelerComboBox->currentIndex()].systemStartTime.time();
     int systemstartyear, systemstartmonth, systemstartday;
     int systemstarthour, systemstartmin, systemstartsec, systemstartmsec;
     systemStartDay.getDate(&systemstartyear, &systemstartmonth, &systemstartday);
@@ -433,8 +433,8 @@ void Widget::timeStart()
 //显示开始出行到目前所用的时间
 void Widget::displaySpentTime()
 {
-    QDate systemStartDay = travelers[ui->TravelerComboBox->currentIndex()].systemStartime.date();
-    QTime systemStartTime = travelers[ui->TravelerComboBox->currentIndex()].systemStartime.time();
+    QDate systemStartDay = travelers[ui->TravelerComboBox->currentIndex()].systemStartTime.date();
+    QTime systemStartTime = travelers[ui->TravelerComboBox->currentIndex()].systemStartTime.time();
     int systemstartyear, systemstartmonth, systemstartday;
     int systemstarthour, systemstartmin, systemstartsec, systemstartmsec;
     systemStartDay.getDate(&systemstartyear, &systemstartmonth, &systemstartday);
@@ -585,7 +585,10 @@ void Widget::displaySpentTime()
 //直接在TotalTimeEdit显示方案所需总时间
 void Widget::displayTotalTime(std::vector<Attribute> path)
 {
-    QTime endtime = path[path.size()-1].end;
+    int durationDay, durationHour, durationMin;
+    travelers[ui->TravelerComboBox->currentIndex()].getTotalTime(durationDay, durationHour, durationMin);
+
+/*    QTime endtime = path[path.size()-1].end;
     int durationhour = endtime.hour() - starthour;
     int durationmin = endtime.minute() - startmin;
     int durationday = 0;
@@ -618,8 +621,10 @@ void Widget::displayTotalTime(std::vector<Attribute> path)
         durationhour = 24 + durationhour;
         durationday--;
     }
-
-    ui->TotalTimeEdit->setText(QString::number(durationday) + QString::fromWCharArray(L"天 ") + QString::number(durationhour) + QString::fromWCharArray(L"小时 ") + QString::number(durationmin) + QString::fromWCharArray(L"分钟"));
+*/
+    ui->TotalTimeEdit->setText(QString::number(durationDay) + QString::fromWCharArray(L"天 ") +
+                               QString::number(durationHour) + QString::fromWCharArray(L"小时 ") +
+                               QString::number(durationMin) + QString::fromWCharArray(L"分钟"));
 }
 
 //显示方案所需经费

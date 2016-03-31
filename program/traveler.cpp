@@ -9,16 +9,18 @@ Traveler::Traveler(int id, QDateTime startTime, QDateTime deadlineTime, QDateTim
     plan = Schedule::Dijkstra(startTime, strategy, origin, destination, time);
 }
 
-//void Traveler::getTotalTime(int &durationDay, int &durationHour, int &durationMin)
-//{
-//    QDateTime endTime = time[destination];
+void Traveler::getTotalTime(int &durationDay, int &durationHour, int &durationMin)
+{
+    QDateTime endTime = time[destination];
 
-//    durationMin = (endTime.time().minute() - startTime.time().minute()) % 60;
-//    durationHour = (endTime.time().hour() - startTime.time().hour() - (durationMin >= 0)?0:1) % 24;
-//    durationDay = (endTime.date().day() - startTime.date().day() - (durationHour >= 0)?0:1)
-//            % startTime.date().daysInMonth();
-
-//}
+    qDebug() << endTime.time().hour() << startTime.time().hour();
+    durationMin = (endTime.time().minute() - startTime.time().minute());
+    durationHour = (endTime.time().hour() - startTime.time().hour() - (int)((durationMin >= 0)?0:1));
+    durationDay = (endTime.date().day() - startTime.date().day() - (int)((durationHour >= 0)?0:1) + startTime.date().daysInMonth())
+            % startTime.date().daysInMonth();
+    durationMin = (durationMin + 60) % 60;
+    durationHour = (durationHour + 24) % 24;
+}
 
 std::vector<Attribute> Traveler::getPlan()
 {
