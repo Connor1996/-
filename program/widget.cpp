@@ -708,11 +708,11 @@ void Widget::displayPath(std::vector<Attribute> path)
         QLabel *textlabel = new QLabel;
 
         if (path[index].vehicle == 0)
-            vehiclelabel->setPixmap(QPixmap(":/new/vehicle/resource/car.ico"));
+            vehiclelabel->setPixmap(QPixmap(":/car.ico"));
         else if (path[index].vehicle == 1)
-            vehiclelabel->setPixmap(QPixmap(":/new/vehicle/resource/train.ico"));
+            vehiclelabel->setPixmap(QPixmap(":/train.ico"));
         else if (path[index].vehicle == 2)
-            vehiclelabel->setPixmap(QPixmap(":/new/vehicle/resource/plane.ico"));
+            vehiclelabel->setPixmap(QPixmap(":/plane.ico"));
 
         int beginhour = path[index].begin.hour();
         int beginmin = path[index].begin.minute();

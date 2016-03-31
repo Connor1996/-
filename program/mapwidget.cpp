@@ -9,7 +9,7 @@
 #include <QLabel>
 
 MapWidget::MapWidget(QWidget *parent) :
-    QWidget(parent)
+    QWidget(parent), state(-1)
 {
     this->setAutoFillBackground(true);
     QPalette palette = this->palette();
@@ -32,11 +32,30 @@ void MapWidget::paintEvent(QPaintEvent *)
 
 QPixmap MapWidget::setPointGraph()
 {
-    QPixmap pointGraph(":/point.png");
+    QPixmap pointGraph;
+    switch(state)
+    {
+    case -2:
+        pointGraph = QPixmap(":/point.png");
+        break;
+    case -1:
+        pointGraph = QPixmap(":/point.png");
+        break;
+    case 0:
+        pointGraph = QPixmap(":/car.ico");
+        break;
+    case 1:
+        pointGraph = QPixmap(":/train.ico");
+        break;
+    case 2:
+        pointGraph = QPixmap(":/plane.ico");
+        break;
+    }
+
     return pointGraph;
 }
 
-QPointF MapWidget::setPointPos(std::vector<Attribute> &path)
+QPointF MapWidget::setPointPos(const std::vector<Attribute> &path)
 {
     Widget *fatherPtr = (Widget *)parentWidget();
     QPointF pointPos;
@@ -44,6 +63,7 @@ QPointF MapWidget::setPointPos(std::vector<Attribute> &path)
     if(fatherPtr->getSpentTime() >= fatherPtr->travelers[fatherPtr->currentTraveler].totalTime)
     {
          pointPos = getCityCor(path[path.size()-1].to);
+         state = -2;
          qDebug() << "State: Arrival";
     }
     else
@@ -55,6 +75,7 @@ QPointF MapWidget::setPointPos(std::vector<Attribute> &path)
                                  fatherPtr->travelers[fatherPtr->currentTraveler].getCityDepartureDateTime(path[index].from)))
             {
                 pointPos = getCityCor(path[index].from);
+                state = -1;
                 qDebug() << "State: Stop" << index << fatherPtr->travelers[fatherPtr->currentTraveler].getCityDepartureDateTime(path[index].from).time().hour() << fatherPtr->travelers[fatherPtr->currentTraveler].getCityDepartureDateTime(path[index].from).time().minute();
                 break;
             }
@@ -69,6 +90,7 @@ QPointF MapWidget::setPointPos(std::vector<Attribute> &path)
                 QDateTime start2End = getSplitTime(fatherPtr->travelers[fatherPtr->currentTraveler].startTime,
                         fatherPtr->travelers[fatherPtr->currentTraveler].getCityArrivalDateTime(path[index].to));
                 pointPos += getMoveDistance(spentTime, start2Begin, start2End, path[index].from, path[index].to);
+                state = path[index].vehicle;
                 qDebug() << "State: Run" << index;
                 break;
             }

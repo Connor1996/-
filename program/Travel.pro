@@ -27,7 +27,6 @@ HEADERS  += widget.h \
 
 FORMS    += widget.ui
 
-RESOURCES += resource.qrc \
-    vehicle-icons.qrc
+RESOURCES += resource.qrc
 
 
