@@ -419,7 +419,7 @@ QDateTime Widget::getSpentTime()
     }
     QDateTime spentDateTime;
     QDate spentDate(0, 0, durday);
-    QTime spentTime(durhour, durmin, 0, 0);
+    QTime spentTime(durhour, durmin, dursec, 0);
     spentDateTime.setDate(spentDate);
     spentDateTime.setTime(spentTime);
     return spentDateTime;
@@ -591,6 +591,7 @@ void Widget::displaySpentTime()
         }
         else
         {
+            ui->StartButton->setEnabled(false);
             ui->DurationText->setText(QString::number(travelers[ui->TravelerComboBox->currentIndex()].totalTime.date().day())
                     + QString::fromWCharArray(L"天 ") +
                     QString::number(travelers[ui->TravelerComboBox->currentIndex()].totalTime.time().hour())
