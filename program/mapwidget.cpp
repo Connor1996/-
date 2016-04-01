@@ -102,14 +102,17 @@ QPointF MapWidget::setPointPos(const std::vector<Attribute> &path)
 
 QDateTime MapWidget::getSplitTime(QDateTime former, QDateTime later)
 {
-    int durationMin = (later.time().minute() - former.time().minute());
+    int durationSec = (later.time().second() - former.time().second());
+    int durationMin = (later.time().minute() - former.time().minute() - (int)((durationSec >= 0)?0:1));
     int durationHour = (later.time().hour() - former.time().hour() - (int)((durationMin >= 0)?0:1));
     int durationDay = (later.date().day() - former.date().day() - (int)((durationHour >= 0)?0:1) + former.date().daysInMonth())
             % former.date().daysInMonth();
+    durationSec = (durationSec + 60) % 60;
     durationMin = (durationMin + 60) % 60;
     durationHour = (durationHour + 24) % 24;
 
-    return QDateTime(QDate(1, 1, durationDay), QTime(durationHour, durationMin, 0));
+    return QDateTime(QDate(1, 1, durationDay), QTime(durationHour, durationMin, durationSec));
+
     /*
     int formerYear, formerMonth, formerDay,
             formerHour, formerMin;
@@ -245,12 +248,12 @@ QPointF MapWidget::getCityCor(int city)
     return coordinate;
 }
 
-float MapWidget::getTimeDifference(QDateTime shorterDateTime, QDateTime longerDateTime)
+double MapWidget::getTimeDifference(QDateTime shorterDateTime, QDateTime longerDateTime)
 {
     int shorterYear, shorterMonth, shorterDay,
-            shorterHour, shorterMin;
+            shorterHour, shorterMin, shorterSec;
     int longerYear, longerMonth, longerDay,
-            longerHour, longerMin;
+            longerHour, longerMin, longerSec;
     QDate shorterDate = shorterDateTime.date();
     QTime shorterTime = shorterDateTime.time();
     QDate longerDate = longerDateTime.date();
@@ -258,32 +261,36 @@ float MapWidget::getTimeDifference(QDateTime shorterDateTime, QDateTime longerDa
     shorterDate.getDate(&shorterYear, &shorterMonth, &shorterDay);
     shorterHour = shorterTime.hour();
     shorterMin = shorterTime.minute();
+    shorterSec = shorterTime.second();
     longerDate.getDate(&longerYear, &longerMonth, &longerDay);
     longerHour = longerTime.hour();
     longerMin = longerTime.minute();
+    longerSec = longerTime.second();
 
     int diffYear, diffMonth, diffDay,
-            diffHour, diffMin;
+            diffHour, diffMin, diffSec;
     diffYear = longerYear - shorterYear;
     diffMonth = longerMonth - shorterMonth;
     diffDay = longerDay - shorterDay;
     diffHour = longerHour - shorterHour;
     diffMin = longerMin - shorterMin;
+    diffSec = longerTime.second() - shorterTime.second();
 
     diffMonth += 12 * diffYear;
     diffDay += 30 * diffMonth;
     diffHour += 24 * diffDay;
     diffMin += 60 * diffHour;
+    diffSec += 60 * diffMin;
 
-    return (float)diffMin;
+    return (double)diffSec;
 }
 
 QPointF MapWidget::getMoveDistance(QDateTime spentTime, QDateTime start2Begin, QDateTime start2End,
                                    int from, int to)
 {
     QPointF moveDistance;
-    float increaseRatio = getTimeDifference(start2Begin, spentTime)/getTimeDifference(start2Begin, start2End);
-    float xIncrease, yIncrease;
+    double increaseRatio = getTimeDifference(start2Begin, spentTime)/getTimeDifference(start2Begin, start2End);
+    double xIncrease, yIncrease;
     xIncrease = (getCityCor(to) - getCityCor(from)).x() * increaseRatio;
     yIncrease = (getCityCor(to) - getCityCor(from)).y() * increaseRatio;
     moveDistance.setX(xIncrease);
