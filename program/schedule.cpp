@@ -159,8 +159,7 @@ void Schedule::UpdateAdjacents(int city, std::vector<int>& value, std::vector<QD
             {
                 value[iter->second.to] = value[city] + iter->second.cost;
                 path[iter->second.to] = iter->second;
-                //time[iter->second.to]
-                //time[iter->second.to].setTime(iter->second.end);
+                //更新
                 if(!span && time[iter->second.from].time() <= iter->second.begin)
                     time[iter->second.to] = QDateTime(time[iter->second.from].date(), iter->second.end);
                 else if(!span && time[iter->second.from].time() > iter->second.begin)

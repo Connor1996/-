@@ -109,7 +109,7 @@ QDateTime MapWidget::getSplitTime(QDateTime former, QDateTime later)
     durationMin = (durationMin + 60) % 60;
     durationHour = (durationHour + 24) % 24;
 
-    return QDateTime(QDate(0, 0, durationDay), QTime(durationHour, durationMin, 0));
+    return QDateTime(QDate(1, 1, durationDay), QTime(durationHour, durationMin, 0));
     /*
     int formerYear, formerMonth, formerDay,
             formerHour, formerMin;
