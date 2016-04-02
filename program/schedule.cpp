@@ -1,5 +1,5 @@
 ﻿#include "schedule.h"
-
+#include "log.h"
 std::multimap<int, Attribute> Schedule::database;
 
 Schedule::Schedule()

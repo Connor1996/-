@@ -1,6 +1,6 @@
 ﻿#include "widget.h"
 #include "ui_widget.h"
-
+#include "log.h"
 Widget::Widget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Widget),

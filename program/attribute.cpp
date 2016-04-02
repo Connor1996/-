@@ -1,5 +1,5 @@
 #include "attribute.h"
-
+#include "log.h"
 Attribute::Attribute()
 {
     this->from = -1;

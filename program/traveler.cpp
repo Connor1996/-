@@ -1,5 +1,5 @@
 ﻿#include "traveler.h"
-
+#include "log.h"
 Traveler::Traveler(int id, QDateTime startTime, QDateTime deadlineTime, QDateTime systemStartTime, int strategy, int origin,
                    int destination, bool isChecked, std::vector<bool> throughCity) :
     id(id), startTime(startTime), deadlineTime(deadlineTime), systemStartTime(systemStartTime), strategy(strategy), origin(origin),
