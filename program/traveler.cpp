@@ -1,5 +1,6 @@
 ﻿#include "traveler.h"
 #include "log.h"
+
 Traveler::Traveler(int id, QDateTime startTime, QDateTime deadlineTime, QDateTime systemStartTime, int strategy, int origin,
                    int destination, bool isChecked, std::vector<bool> throughCity) :
     id(id), startTime(startTime), deadlineTime(deadlineTime), systemStartTime(systemStartTime), strategy(strategy), origin(origin),
@@ -21,7 +22,7 @@ QDateTime Traveler::TotalDateTime()
     durationMin = (durationMin + 60) % 60;
     durationHour = (durationHour + 24) % 24;
 
-    return QDateTime(QDate(1, 1, durationDay), QTime(durationHour, durationMin, 0));
+    return QDateTime(QDate(1, 1, durationDay+1), QTime(durationHour, durationMin, 0));
 }
 
 std::vector<Attribute> Traveler::getPlan()

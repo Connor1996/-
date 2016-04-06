@@ -1,5 +1,6 @@
 #include "attribute.h"
 #include "log.h"
+
 Attribute::Attribute()
 {
     this->from = -1;
@@ -16,8 +17,5 @@ Attribute::Attribute(int from, int to, QString num, QTime begin, QTime end, int 
     this->vehicle = vehicle;
 }
 
-//QDate Attribute::getDuration(int from, int to)
-//{
-//    return this->end - this->begin;
-//}
+
 

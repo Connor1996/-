@@ -42,16 +42,10 @@ public:
     Schedule schedule;
     int currentTraveler;
     std::vector<Traveler> travelers;
-    int getStrategy();//获取用户所选策略
-    int getStart();//获取用户所选始发地
-    int getDestination();//获取用户所选目的地
+
     QDateTime getStartTime();//获取开始时间
     QDateTime getSpentTime();//获取已用时间
     QDateTime getDeadline();//获取截止时间
-    void displayTotalTime();//显示方案所需总时间
-    void displayFare(std::vector<Attribute> path);//显示方案所需经费
-    void displayPath(std::vector<Attribute> path);//在pathlist窗口中显示路径
-    QString numToCity(int index);//将城市编号转为城市名称
 
 private:
     Ui::Widget *ui;
@@ -62,33 +56,39 @@ private:
     int destination;
     int addtravelertimes;
     int startclickedtimes;//“开始”按钮点击次数，0次表示首次运行，1表示其他
-    std::vector<bool> startclicked;//“开始”按钮第一次按下
     int priordestination;//保留目的地，如果运行过程中目的地改变，作为两个目的地比较的前者，与currentIndex比较
-    int totalday;//策略所需总时间--天数
-    int totalhour;//策略所需总时间--小时数
-    int totalmin;//策略所需总时间--分钟数
-    int fare;
 
     //参与时间进程的变量
-    int currentyear;
-    int currentmonth;
-    int currentday;
-    int currenthour;
-    int currentmin;
     int secondcnt;
-
-    int startyear;
-    int startmonth;
-    int startday;
-    int starthour;
-    int startmin;
-
     QTimer *mstimer;
     QThread *timethread;
-    QDate date;
-    QTime time;
-    QDateTime datetime;
+
+//    int startyear;
+//    int startmonth;
+//    int startday;
+//    int starthour;
+//    int startmin;
+//    QDate date;
+//    QTime time;
+//    QDateTime datetime;
+
+    std::vector<bool> startclicked;//“开始”按钮第一次按下
     std::vector<bool> throughcity;
+
+    void initUI();
+    void initConnect();
+    void initTimeThread();
+
+    int getStrategy();//获取用户所选策略
+    int getStart();//获取用户所选始发地
+    int getDestination();//获取用户所选目的地
+
+    void displayTotalTime();//显示方案所需总时间
+    void displayFare(std::vector<Attribute> path);//显示方案所需经费
+    void displayPath(std::vector<Attribute> path);//在pathlist窗口中显示路径
+
+    QString numToCity(int index);//将城市编号转为城市名称
+
 
 private slots:
     void startButtonClicked();//开始按钮按下，开始计算路径图形输出

@@ -1,12 +1,14 @@
 ﻿#ifndef TRAVELER_H
 #define TRAVELER_H
 
+#include "attribute.h"
+#include "schedule.h"
+
 #include <vector>
 #include <QDateTime>
 #include <QDate>
 #include <QTime>
-#include "attribute.h"
-#include "schedule.h"
+
 
 class Traveler
 {

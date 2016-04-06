@@ -18,18 +18,18 @@
     <rect>
      <x>11</x>
      <y>11</y>
-     <width>928</width>
+     <width>941</width>
      <height>698</height>
     </rect>
    </property>
   </widget>
-  <widget class="QWidget" name="RightWidget" native="true">
+  <widget class="QFrame" name="RightFrame">
    <property name="geometry">
     <rect>
      <x>968</x>
      <y>11</y>
      <width>301</width>
-     <height>691</height>
+     <height>698</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -37,6 +37,9 @@
      <horstretch>0</horstretch>
      <verstretch>100</verstretch>
     </sizepolicy>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::NoFrame</enum>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_4">
     <item>
@@ -533,7 +536,7 @@
            <x>0</x>
            <y>0</y>
            <width>275</width>
-           <height>158</height>
+           <height>165</height>
           </rect>
          </property>
         </widget>

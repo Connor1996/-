@@ -1,16 +1,24 @@
 ﻿#include "widget.h"
 #include "ui_widget.h"
 #include "log.h"
+
 Widget::Widget(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::Widget),
-    throughcity(12, false),
-    currentTraveler(-1)
+    QWidget(parent), ui(new Ui::Widget),
+    throughcity(12, false), currentTraveler(-1),
+    startclickedtimes(0), priordestination(0),
+    secondcnt(0), addtravelertimes(0)
 {
     ui->setupUi(this);
+    initUI();
+    initTimeThread();
+    initConnect();
+}
+
+
+void Widget::initUI()
+{
     this->setFixedSize(1280, 720);
     this->setWindowTitle("Travel-Query-System");
-
 
     ui->StartDateTimeEdit->setDateTime(QDateTime::currentDateTime());
     ui->DeadlineDateTimeEdit->setDateTime(QDateTime::currentDateTime());
@@ -39,21 +47,10 @@ Widget::Widget(QWidget *parent) :
     ui->DurationText->setEnabled(false);
     ui->FareEdit->setEnabled(false);
     ui->TotalTimeEdit->setEnabled(false);
+}
 
-    //计时功能及所需的线程
-    mstimer = new QTimer;
-    mstimer->setInterval(1);
-
-    timethread = new QThread();
-    timethread->start();
-
-    mstimer->moveToThread(timethread);
-
-    //开始点击次数初始化--前目的地初始化--计秒初始化
-    startclickedtimes = 0;
-    priordestination = 0;
-    secondcnt = 0;
-    addtravelertimes = 0;
+void Widget::initConnect()
+{
 
     QObject::connect(ui->addTravelerButton, SIGNAL(clicked()), this, SLOT(addTravelerButtonClicked()));
     QObject::connect(ui->TravelerComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(travelerChanged()));
@@ -78,6 +75,18 @@ Widget::Widget(QWidget *parent) :
     QObject::connect(ui->StartButton, SIGNAL(clicked()), this, SLOT(timeStart()));
     QObject::connect(this, SIGNAL(DoStartTimer()), mstimer, SLOT(start()));
 
+}
+
+void Widget::initTimeThread()
+{
+    //计时功能及所需的线程
+    mstimer = new QTimer;
+    mstimer->setInterval(1);
+
+    timethread = new QThread();
+    timethread->start();
+
+    mstimer->moveToThread(timethread);
 }
 
 Widget::~Widget()
@@ -260,20 +269,21 @@ QDateTime Widget::getDeadline()
 //获取开始时间
 QDateTime Widget::getStartTime()
 {
-    date = ui->StartDateTimeEdit->date();
-    time = ui->StartDateTimeEdit->time();
-    datetime = ui->StartDateTimeEdit->dateTime();
-    date.getDate(&currentyear, &currentmonth, &currentday);
-    currenthour = time.hour();
-    currentmin = time.minute();
 
-    startyear = currentyear;
-    startmonth = currentmonth;
-    startday = currentday;
-    starthour = currenthour;
-    startmin = currentmin;
+//    date = ui->StartDateTimeEdit->date();
+//    time = ui->StartDateTimeEdit->time();
+//    datetime = ui->StartDateTimeEdit->dateTime();
+//    date.getDate(&currentyear, &currentmonth, &currentday);
+//    currenthour = time.hour();
+//    currentmin = time.minute();
 
-    return datetime;
+//    startyear = currentyear;
+//    startmonth = currentmonth;
+//    startday = currentday;
+//    starthour = currenthour;
+//    startmin = currentmin;
+
+    return ui->StartDateTimeEdit->dateTime();
 }
 
 //获取已用时间
@@ -417,12 +427,12 @@ QDateTime Widget::getSpentTime()
              }
         }
     }
-    QDateTime spentDateTime;
-    QDate spentDate(0, 0, durday);
-    QTime spentTime(durhour, durmin, dursec, 0);
-    spentDateTime.setDate(spentDate);
-    spentDateTime.setTime(spentTime);
-    return spentDateTime;
+//    QDateTime spentDateTime;
+//    QDate spentDate(0, 0, durday);
+//    QTime spentTime(durhour, durmin, dursec, 0);
+//    spentDateTime.setDate(spentDate);
+//    spentDateTime.setTime(spentTime);
+    return QDateTime(QDate(1, 1, durday+1), QTime(durhour, durmin, dursec));
 }
 
 //如果mstimer未激活，那么发出DoStartTimer信号
@@ -437,162 +447,163 @@ void Widget::timeStart()
 void Widget::displaySpentTime()
 {
 
-    QDate systemStartDay = travelers[ui->TravelerComboBox->currentIndex()].systemStartTime.date();
-    QTime systemStartTime = travelers[ui->TravelerComboBox->currentIndex()].systemStartTime.time();
-    int systemstartyear, systemstartmonth, systemstartday;
-    int systemstarthour, systemstartmin, systemstartsec, systemstartmsec;
-    systemStartDay.getDate(&systemstartyear, &systemstartmonth, &systemstartday);
-    systemstarthour = systemStartTime.hour();
-    systemstartmin = systemStartTime.minute();
-    systemstartsec = systemStartTime.second();
-    systemstartmsec = systemStartTime.msec();
+//    QDate systemStartDay = travelers[ui->TravelerComboBox->currentIndex()].systemStartTime.date();
+//    QTime systemStartTime = travelers[ui->TravelerComboBox->currentIndex()].systemStartTime.time();
+//    int systemstartyear, systemstartmonth, systemstartday;
+//    int systemstarthour, systemstartmin, systemstartsec, systemstartmsec;
+//    systemStartDay.getDate(&systemstartyear, &systemstartmonth, &systemstartday);
+//    systemstarthour = systemStartTime.hour();
+//    systemstartmin = systemStartTime.minute();
+//    systemstartsec = systemStartTime.second();
+//    systemstartmsec = systemStartTime.msec();
 
-    QDate systemCurrentDay = QDate::currentDate();
-    QTime systemCurrentTime = QTime::currentTime();
-    int systemcurrentyear, systemcurrentmonth, systemcurrentday;
-    int systemcurrenthour, systemcurrentmin, systemcurrentsec, systemcurrentmsec;
-    systemCurrentDay.getDate(&systemcurrentyear, &systemcurrentmonth, &systemcurrentday);
-    systemcurrenthour = systemCurrentTime.hour();
-    systemcurrentmin = systemCurrentTime.minute();
-    systemcurrentsec = systemCurrentTime.second();
-    systemcurrentmsec = systemCurrentTime.msec();
+//    QDate systemCurrentDay = QDate::currentDate();
+//    QTime systemCurrentTime = QTime::currentTime();
+//    int systemcurrentyear, systemcurrentmonth, systemcurrentday;
+//    int systemcurrenthour, systemcurrentmin, systemcurrentsec, systemcurrentmsec;
+//    systemCurrentDay.getDate(&systemcurrentyear, &systemcurrentmonth, &systemcurrentday);
+//    systemcurrenthour = systemCurrentTime.hour();
+//    systemcurrentmin = systemCurrentTime.minute();
+//    systemcurrentsec = systemCurrentTime.second();
+//    systemcurrentmsec = systemCurrentTime.msec();
 
-    int duryear = systemcurrentyear - systemstartyear;
-    int durmonth = systemcurrentmonth - systemstartmonth;
-    int durday = systemcurrentday - systemstartday;
-    int durhour = systemcurrenthour - systemstarthour;
-    int durmin = systemcurrentmin - systemstartmin;
-    int dursec = systemcurrentsec - systemstartsec;
-    int durmsec = systemcurrentmsec - systemstartmsec;
+//    int duryear = systemcurrentyear - systemstartyear;
+//    int durmonth = systemcurrentmonth - systemstartmonth;
+//    int durday = systemcurrentday - systemstartday;
+//    int durhour = systemcurrenthour - systemstarthour;
+//    int durmin = systemcurrentmin - systemstartmin;
+//    int dursec = systemcurrentsec - systemstartsec;
+//    int durmsec = systemcurrentmsec - systemstartmsec;
 
-    if (durmsec < 0)
-    {
-        dursec--;
-        durmsec += 1000;
-    }
-    if (dursec < 0)
-    {
-        durmin--;
-        dursec += 60;
-    }
-    if (durmin < 0)
-    {
-        durhour--;
-        durmin += 60;
-    }
-    if (durhour < 0)
-    {
-        durday--;
-        durhour += 24;
-    }
-    if (durday < 0)
-    {
-        durmonth--;
-        switch (systemstartmonth)
-        {
-        case 1:
-        case 3:
-        case 5:
-        case 7:
-        case 8:
-        case 10:
-        case 12:
-            durday += 31;
-            break;
-        case 4:
-        case 6:
-        case 9:
-        case 11:
-            durday += 30;
-            break;
-        case 2:
-            if (systemstartyear % 4 == 0 || systemstartyear % 400 == 0)
-                durday += 29;
-            else
-                durday += 28;
-            break;
-        }
-    }
-    if (durmonth < 0)
-    {
-        duryear--;
-        durmonth += 12;
-    }
+//    if (durmsec < 0)
+//    {
+//        dursec--;
+//        durmsec += 1000;
+//    }
+//    if (dursec < 0)
+//    {
+//        durmin--;
+//        dursec += 60;
+//    }
+//    if (durmin < 0)
+//    {
+//        durhour--;
+//        durmin += 60;
+//    }
+//    if (durhour < 0)
+//    {
+//        durday--;
+//        durhour += 24;
+//    }
+//    if (durday < 0)
+//    {
+//        durmonth--;
+//        switch (systemstartmonth)
+//        {
+//        case 1:
+//        case 3:
+//        case 5:
+//        case 7:
+//        case 8:
+//        case 10:
+//        case 12:
+//            durday += 31;
+//            break;
+//        case 4:
+//        case 6:
+//        case 9:
+//        case 11:
+//            durday += 30;
+//            break;
+//        case 2:
+//            if (systemstartyear % 4 == 0 || systemstartyear % 400 == 0)
+//                durday += 29;
+//            else
+//                durday += 28;
+//            break;
+//        }
+//    }
+//    if (durmonth < 0)
+//    {
+//        duryear--;
+//        durmonth += 12;
+//    }
 
-    durmsec *= 360;
-    dursec *= 360;
-    durmin *= 360;
-    durhour *= 360;
-    durday *= 360;
-    durmonth *= 360;
-    duryear *= 360;
+//    durmsec *= 360;
+//    dursec *= 360;
+//    durmin *= 360;
+//    durhour *= 360;
+//    durday *= 360;
+//    durmonth *= 360;
+//    duryear *= 360;
 
-    while (durmsec >= 1000)
-    {
-        durmsec -= 1000;
-        dursec++;
-    }
-    while (dursec >= 60)
-    {
-        dursec -= 60;
-        durmin++;
-    }
-    while (durmin >= 60)
-    {
-        durmin -= 60;
-        durhour++;
-    }
-    while (durhour >= 24)
-    {
-        durhour -= 24;
-        durday++;
-    }
-    durmonth += duryear * ((systemstartyear % 4 == 0 || systemstartyear % 400 == 0)?366:365);
-    durday += durmonth * 30;
+//    while (durmsec >= 1000)
+//    {
+//        durmsec -= 1000;
+//        dursec++;
+//    }
+//    while (dursec >= 60)
+//    {
+//        dursec -= 60;
+//        durmin++;
+//    }
+//    while (durmin >= 60)
+//    {
+//        durmin -= 60;
+//        durhour++;
+//    }
+//    while (durhour >= 24)
+//    {
+//        durhour -= 24;
+//        durday++;
+//    }
+//    durmonth += duryear * ((systemstartyear % 4 == 0 || systemstartyear % 400 == 0)?366:365);
+//    durday += durmonth * 30;
 
-    if (startclickedtimes == 1)
-    {
-        durmsec++;
-        if(durmsec == 60)
-        {
-             dursec++;
-             durmsec = 0;
-             if (dursec == 60)
-             {
-                 durmin++;
-                 dursec = 0;
-                 if (durmin == 60)
-                 {
-                     durhour++;
-                     durmin = 0;
-                     if (durhour == 24)
-                     {
-                         durday++;
-                         durhour = 0;
-                     }
-                 }
-             }
-        }
-    }
-
-    QString durationday = QString::number(durday);
-    QString durationhour = QString::number(durhour);
-    QString durationmin = QString::number(durmin);
+//    if (startclickedtimes == 1)
+//    {
+//        durmsec++;
+//        if(durmsec == 60)
+//        {
+//             dursec++;
+//             durmsec = 0;
+//             if (dursec == 60)
+//             {
+//                 durmin++;
+//                 dursec = 0;
+//                 if (durmin == 60)
+//                 {
+//                     durhour++;
+//                     durmin = 0;
+//                     if (durhour == 24)
+//                     {
+//                         durday++;
+//                         durhour = 0;
+//                     }
+//                 }
+//             }
+//        }
+//    }
+    QDateTime spentTime = getSpentTime();
+//    QString durationday = QString::number(durday);
+//    QString durationhour = QString::number(durhour);
+//    QString durationmin = QString::number(durmin);
     if (startclicked[ui->TravelerComboBox->currentIndex()])
     {
-        if (travelers[ui->TravelerComboBox->currentIndex()].totalTime.date().day()*24*60 +
-                travelers[ui->TravelerComboBox->currentIndex()].totalTime.time().hour()*60 +
-                travelers[ui->TravelerComboBox->currentIndex()].totalTime.time().minute() >=
-                durday*24*60 + durhour*60 + durmin)
+//        if ((travelers[ui->TravelerComboBox->currentIndex()].totalTime.date().day()-1)*24*60 +
+//                travelers[ui->TravelerComboBox->currentIndex()].totalTime.time().hour()*60 +
+//                travelers[ui->TravelerComboBox->currentIndex()].totalTime.time().minute() >=
+//                durday*24*60 + durhour*60 + durmin)
+        if (travelers[ui->TravelerComboBox->currentIndex()].totalTime >= spentTime)
         {
-            ui->DurationText->setText(durationday + QString::fromWCharArray(L"天 ") + durationhour +
-                                  QString::fromWCharArray(L"小时 ") + durationmin +
-                                  QString::fromWCharArray(L"分钟"));
+            ui->DurationText->setText(QString::number(spentTime.date().day()-1) + QString::fromWCharArray(L"天 ")
+                    + QString::number(spentTime.time().hour()) + QString::fromWCharArray(L"小时 ")
+                    + QString::number(spentTime.time().minute()) + QString::fromWCharArray(L"分钟"));
         }
         else
         {
             ui->StartButton->setEnabled(false);
-            ui->DurationText->setText(QString::number(travelers[ui->TravelerComboBox->currentIndex()].totalTime.date().day())
+            ui->DurationText->setText(QString::number(travelers[ui->TravelerComboBox->currentIndex()].totalTime.date().day()-1)
                     + QString::fromWCharArray(L"天 ") +
                     QString::number(travelers[ui->TravelerComboBox->currentIndex()].totalTime.time().hour())
                     + QString::fromWCharArray(L"小时 ") +
@@ -608,7 +619,7 @@ void Widget::displaySpentTime()
 void Widget::displayTotalTime()
 {
     QDateTime totalTime = travelers[ui->TravelerComboBox->currentIndex()].totalTime;
-    ui->TotalTimeEdit->setText(QString::number(totalTime.date().day()) + QString::fromWCharArray(L"天 ") +
+    ui->TotalTimeEdit->setText(QString::number(totalTime.date().day()-1) + QString::fromWCharArray(L"天 ") +
                                QString::number(totalTime.time().hour()) + QString::fromWCharArray(L"小时 ") +
                                QString::number(totalTime.time().minute()) + QString::fromWCharArray(L"分钟"));
 }

@@ -1,4 +1,5 @@
 ﻿#include "mapwidget.h"
+
 #include <QApplication>
 #include <QStateMachine>
 #include <QPushButton>
@@ -58,7 +59,7 @@ QPixmap MapWidget::setPointGraph()
 QPointF MapWidget::setPointPos(const std::vector<Attribute> &path)
 {
     Widget *fatherPtr = (Widget *)parentWidget();
-    QPointF pointPos;
+    static QPointF pointPos;
 
     if(fatherPtr->getSpentTime() >= fatherPtr->travelers[fatherPtr->currentTraveler].totalTime)
     {
@@ -111,7 +112,7 @@ QDateTime MapWidget::getSplitTime(QDateTime former, QDateTime later)
     durationMin = (durationMin + 60) % 60;
     durationHour = (durationHour + 24) % 24;
 
-    return QDateTime(QDate(1, 1, durationDay), QTime(durationHour, durationMin, durationSec));
+    return QDateTime(QDate(1, 1, durationDay+1), QTime(durationHour, durationMin, durationSec, 999));
 
     /*
     int formerYear, formerMonth, formerDay,
@@ -191,7 +192,7 @@ QDateTime MapWidget::getSplitTime(QDateTime former, QDateTime later)
 
 QPointF MapWidget::getCityCor(int city)
 {
-    QPointF coordinate;
+    //QPointF coordinate;
     int x, y;
     switch (city)
     {
@@ -243,9 +244,9 @@ QPointF MapWidget::getCityCor(int city)
         x = 245;
         y = 170;
     }
-    coordinate.setX(x);
-    coordinate.setY(y);
-    return coordinate;
+   // coordinate.setX(x);
+   // coordinate.setY(y);
+    return QPointF(x, y);
 }
 
 double MapWidget::getTimeDifference(QDateTime shorterDateTime, QDateTime longerDateTime)
@@ -288,12 +289,11 @@ double MapWidget::getTimeDifference(QDateTime shorterDateTime, QDateTime longerD
 QPointF MapWidget::getMoveDistance(QDateTime spentTime, QDateTime start2Begin, QDateTime start2End,
                                    int from, int to)
 {
-    QPointF moveDistance;
+    //QPointF moveDistance;
     double increaseRatio = getTimeDifference(start2Begin, spentTime)/getTimeDifference(start2Begin, start2End);
-    double xIncrease, yIncrease;
-    xIncrease = (getCityCor(to) - getCityCor(from)).x() * increaseRatio;
-    yIncrease = (getCityCor(to) - getCityCor(from)).y() * increaseRatio;
-    moveDistance.setX(xIncrease);
-    moveDistance.setY(yIncrease);
-    return moveDistance;
+    double xIncrease = (getCityCor(to) - getCityCor(from)).x() * increaseRatio;
+    double yIncrease = (getCityCor(to) - getCityCor(from)).y() * increaseRatio;
+    //moveDistance.setX(xIncrease);
+    //moveDistance.setY(yIncrease);
+    return QPointF(xIncrease, yIncrease);
 }

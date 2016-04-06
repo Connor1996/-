@@ -4,6 +4,7 @@
 #
 #-------------------------------------------------
 
+
 QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -11,6 +12,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = Travel
 TEMPLATE = app
 
+UI_DIR=./UI
 
 SOURCES += main.cpp\
         widget.cpp \
@@ -23,7 +25,8 @@ HEADERS  += widget.h \
     schedule.h \
     attribute.h \
     traveler.h \
-    mapwidget.h
+    mapwidget.h \
+    log.h
 
 FORMS    += widget.ui
 

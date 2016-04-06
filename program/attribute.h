@@ -2,7 +2,7 @@
 #define ATTRIBUTE_H
 
 #include <QString>
-#include <QDate>
+#include <QTime>
 
 class Attribute
 {
@@ -14,7 +14,6 @@ public:
     QString num;
     QTime begin, end;
 
-    QTime getDuration(int , int);
 };
 
 #endif // ATTRIBUTE_H

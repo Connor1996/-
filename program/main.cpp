@@ -1,11 +1,8 @@
 ﻿#include "widget.h"
 #include "log.h"
+
 #include <QApplication>
 #include <QTextCodec>
-
-
-
-
 
 
 //消息传递函数 传输到LOG.TXT
@@ -18,18 +15,19 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
     QFile file(":/log.txt");
     file.open(QFile::WriteOnly|QIODevice::Append);
     QTextStream out(&file);
+
     switch (type) {
     case QtDebugMsg:
-        out << "Debug: "<< msg<< timestr<<"\r\n";
+        out << "Debug: "<< msg << timestr << "\r\n";
         break;
     case QtWarningMsg:
-        out << "warning: "<< msg<< timestr<< "\r\n";
+        out << "warning: "<< msg<< timestr << "\r\n";
         break;
     case QtCriticalMsg:
-        out << "critical: "<< msg<< timestr<< "\r\n";
+        out << "critical: "<< msg << timestr << "\r\n";
         break;
     case QtFatalMsg:
-        out << "fatal: "<< msg<< timestr << "\r\n";
+        out << "fatal: "<< msg << timestr << "\r\n";
         abort();
     }
 }
@@ -42,11 +40,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     //输出log.txt文件
-    qInstallMessageHandler(myMessageOutput);
-
-
-
-
+    //qInstallMessageHandler(myMessageOutput);
 
     //支持中文编码
     QTextCodec *codec = QTextCodec::codecForName("UTF-8");
@@ -54,7 +48,6 @@ int main(int argc, char *argv[])
 
     Widget window;
     window.show();
-
 
     return a.exec();
 }

@@ -1,8 +1,8 @@
 ﻿#ifndef MAPWIDGET_H
 #define MAPWIDGET_H
 
-//#include "ui_widget.h"
 #include "widget.h"
+
 #include <QWidget>
 #include <QTextEdit>
 #include <QBrush>
