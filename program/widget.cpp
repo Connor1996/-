@@ -19,6 +19,8 @@ void Widget::initUI()
 {
     this->setFixedSize(1280, 720);
     this->setWindowTitle("Travel-Query-System");
+    QIcon exeIcon(":/exe.ico");
+    this->setWindowIcon(exeIcon);
 
     ui->StartDateTimeEdit->setDateTime(QDateTime::currentDateTime());
     ui->DeadlineDateTimeEdit->setDateTime(QDateTime::currentDateTime());

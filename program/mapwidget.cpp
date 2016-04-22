@@ -36,11 +36,11 @@ QPixmap MapWidget::setPointGraph()
     QPixmap pointGraph;
     switch(state)
     {
-    case -2:
-        pointGraph = QPixmap(":/point.png");
+    case -2://arrived destination
+        pointGraph = QPixmap(":/arrive.ico");
         break;
-    case -1:
-        pointGraph = QPixmap(":/point.png");
+    case -1://pause waiting
+        pointGraph = QPixmap(":/pause.ico");
         break;
     case 0:
         pointGraph = QPixmap(":/car.ico");

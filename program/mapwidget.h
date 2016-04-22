@@ -13,6 +13,7 @@
 #include <QRectF>
 #include <QDateTime>
 #include <QPointF>
+#include <QMessageBox>
 
 class MapWidget : public QWidget
 {

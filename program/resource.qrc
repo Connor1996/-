@@ -7,5 +7,8 @@
         <file alias="train.ico">resource/train.ico</file>
         <file alias="log.txt">resource/log.txt</file>
         <file alias="point.png">resource/point.png</file>
+        <file alias="pause.ico">resource/pause.ico</file>
+        <file alias="arrive.ico">resource/arrive.ico</file>
+        <file alias="exe.ico">resource/exe.ico</file>
     </qresource>
 </RCC>
