@@ -110,6 +110,7 @@ void Widget::startButtonClicked()
         if (start == destination)
         {
             QMessageBox::information(this, "Error", QString::fromWCharArray(L"出发地和目的地相同"));
+            startclicked[ui->TravelerComboBox->currentIndex()] = false;
             return;
         }
         startDateTime = getStartTime();
@@ -120,6 +121,7 @@ void Widget::startButtonClicked()
         if (path.size() == 0)
         {
             QMessageBox::information(this, "Error", QString::fromWCharArray(L"无有效路径"));
+            startclicked[ui->TravelerComboBox->currentIndex()] = false;
             return;
         }
 
@@ -129,6 +131,7 @@ void Widget::startButtonClicked()
         displayFare(path);
         displayPath(path);
 
+        ui->StartButton->setEnabled(false);
         ui->StartComboBox->setEnabled(false);
         ui->StrategyComboBox->setEnabled(false);
         ui->StartDateTimeEdit->setEnabled(false);
@@ -161,10 +164,12 @@ void Widget::addTravelerButtonClicked()
 {
     std::vector<bool> temp(12, false);
     throughcity = temp;
+    qDebug() << "throughcity creat success.";
     travelers.push_back(Traveler(addtravelertimes-1, getStartTime(), getDeadline(),
                                  QDateTime::currentDateTime(), getStrategy(),
                                  getStart(), getDestination(),
                                  ui->ThroughCityCheckBox->isChecked(), throughcity));
+    qDebug() << "travelers.pushback...";
     //totaltime.push_back(TotalTime(0, 0, 0));
     startclicked.push_back(false);
     addtravelertimes += 1;
@@ -604,7 +609,7 @@ void Widget::displaySpentTime()
         }
         else
         {
-            ui->StartButton->setEnabled(false);
+//          ui->StartButton->setEnabled(false);
             ui->DurationText->setText(QString::number(travelers[ui->TravelerComboBox->currentIndex()].totalTime.date().day()-1)
                     + QString::fromWCharArray(L"天 ") +
                     QString::number(travelers[ui->TravelerComboBox->currentIndex()].totalTime.time().hour())

@@ -19,11 +19,11 @@ class Schedule
 public:
     Schedule();
 
-    static std::vector<Attribute> Dijkstra(QDateTime, int, int, int, std::vector<QDateTime>&);
+//    static std::vector<Attribute> Dijkstra(QDateTime, int, int, int, std::vector<QDateTime>&);
     static int CityToNum(QString);
-    static void MakePlan(std::vector<Attribute>&, const std::vector<Attribute>&, int, int);
-    static void UpdateAdjacents(int, std::vector<int>&, std::vector<QDateTime>&, std::vector<bool>&,
-                         std::vector<Attribute>&, int);
+//    static void MakePlan(std::vector<Attribute>&, const std::vector<Attribute>&, int, int);
+//    static void UpdateAdjacents(int, std::vector<int>&, std::vector<QDateTime>&, std::vector<bool>&,
+//                         std::vector<Attribute>&, int);
 
     static std::multimap<int, Attribute> database;
 
