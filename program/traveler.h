@@ -28,12 +28,15 @@ public:
 
 
 private:
-    std::vector<Attribute> plan;
+    std::vector<Attribute> plan; //记录最优路径
     std::vector<QDateTime> time; //记录每个城市的到达时间
     std::vector<Attribute> Dijkstra();
-    void MakePlan(int, const std::vector<Attribute>&);
+    void DFS(int city, std::vector<Attribute>& path, std::vector<bool>& known);
+    void MakePlan(int, const std::vector<Attribute>&, std::vector<Attribute> &);
     void UpdateAdjacents(int, std::vector<int>&, std::vector<bool>&, std::vector<Attribute>&);
     QDateTime TotalDateTime();
+
+    int min;
 };
 
 #endif // TRAVELER_H

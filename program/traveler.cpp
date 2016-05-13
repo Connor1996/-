@@ -5,9 +5,18 @@ Traveler::Traveler(int id, QDateTime startTime, QDateTime deadlineTime, QDateTim
                    int destination, bool isChecked, std::vector<bool> throughCity) :
     id(id), startTime(startTime), deadlineTime(deadlineTime), systemStartTime(systemStartTime), strategy(strategy), origin(origin),
     destination(destination), isChecked(isChecked), throughCity(throughCity),
-    time(12, QDateTime(QDate(7999, 12, 31), QTime(23, 59, 59)))
+    time(12, QDateTime(QDate(7999, 12, 31), QTime(23, 59, 59))), min(0x7FFFFFFF)
 {
-    Dijkstra();
+    if(strategy == 2)
+    {
+        std::vector<bool> known(12, false);  //标记每个点是否被访问过
+        std::vector<Attribute> path;     //记录每个点的移动路径
+        time[origin] = startTime;
+
+        DFS(origin, path, known);
+    }
+    else
+        plan = Dijkstra();
     totalTime = TotalDateTime();
 }
 
@@ -64,6 +73,97 @@ QDateTime Traveler::getCityDepartureDateTime(int index)
 }
 
 
+void Traveler::DFS(int city, std::vector<Attribute>& path, std::vector<bool>& known)
+{
+    if (time[city] > deadlineTime) //总时间大于截至时间，不满足约束条件
+        return;
+
+    known[city] = true; //标记此城市已访问过
+
+    if (city == destination)
+    {
+        int cost = 0; //路径的总花费
+        std::vector<bool> mark = throughCity;
+
+        for (std::vector<Attribute>::size_type ix = 0; ix != path.size(); ix++) //将路径上的所有城市取消标志
+        {
+            if (mark[path[ix].to] == true)
+            {
+                //qDebug() << path[ix].to << ' ' << endl;
+                mark[path[ix].to] = false;
+            }
+            cost += path[ix].cost;
+        }
+        if(cost < min)
+        {
+            int ok = true;
+
+            if (isChecked)
+            {
+                qDebug() << mark.size() << endl;
+                for (std::vector<bool>::size_type ix = 0; ix != mark.size(); ix++) //若必经城市还有点未取消标志，所有有城市未经过
+                {
+                    if (mark[ix] == true)
+                    {
+                        ok = false;
+                        break;
+                    }
+                }
+            }
+            if (ok) //若满足约束条件，则更新最小值并记录路径
+            {
+                qDebug() << "ok..." << city << endl;
+                min = cost;
+                plan = path;
+            }
+        }
+    }
+    else
+    {
+        typedef std::multimap<int, Attribute>::size_type sz_type;
+        sz_type entries = Schedule::database.count(city);
+
+        std::multimap<int, Attribute>::iterator iter = Schedule::database.find(city);
+        for(sz_type cnt = 0; cnt != entries; cnt++, iter++)
+        {
+            if (known[iter->second.to] == true) //如果去往城市已经访问过，则忽略该路径
+                continue;
+
+            path.push_back(iter->second);
+            //判断是否时间跨天
+            bool span;
+            if(iter->second.begin <= iter->second.end)
+                span = false;
+            else
+                span = true;
+
+            //更新
+            if(!span && time[iter->second.from].time() <= iter->second.begin)
+                time[iter->second.to] = QDateTime(time[iter->second.from].date(), iter->second.end);
+            else if(!span && time[iter->second.from].time() > iter->second.begin)
+                time[iter->second.to] = QDateTime(time[iter->second.from].date().addDays(1), iter->second.end);
+            else if(span && time[iter->second.from].time() <= iter->second.begin)
+                time[iter->second.to] = QDateTime(time[iter->second.from].date().addDays(1), iter->second.end);
+            else if(span && time[iter->second.from].time() > iter->second.begin)
+                time[iter->second.to] = QDateTime(time[iter->second.from].date().addDays(2), iter->second.end);
+
+            DFS(iter->second.to, path, known);
+
+            known[iter->second.to] = false;
+            path.erase(path.end());
+        }
+    }
+}
+
+//std::vector<Attribute> Traveler::WrapDijkstra()
+//{
+//    std::vector<Attribute> tempPlan;
+//    while(true)
+//    {
+//        tempPlan = Dijkstra()
+//    }
+//}
+
 std::vector<Attribute> Traveler::Dijkstra()
 {
     std::vector<int> value(12, INT_MAX); //记录原点到每个点的权值之和
@@ -119,19 +219,19 @@ std::vector<Attribute> Traveler::Dijkstra()
     }
     qDebug() << "loop finish...";
     std::vector<Attribute> plan;
-    MakePlan(destination, path);
+    MakePlan(destination, path, plan);
     qDebug() << "makeplan finish...";
 
     return plan;
 }
 
-void Traveler::MakePlan(int city, const std::vector<Attribute>& path)
+void Traveler::MakePlan(int city, const std::vector<Attribute>& path, std::vector<Attribute> &plan)
 {
     if(path[city].from == -1)
         return;
     if(city != origin)
     {
-        MakePlan(path[city].from, path);
+        MakePlan(path[city].from, path, plan);
         plan.push_back(path[city]);
         qDebug() << path[city].from << path[city].num << path[city].to;
     }

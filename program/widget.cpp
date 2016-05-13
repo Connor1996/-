@@ -100,8 +100,8 @@ Widget::~Widget()
 //单击“开始”按钮，获取用户输入信息
 void Widget::startButtonClicked()
 {
-    startclicked[ui->TravelerComboBox->currentIndex()] = true;
     QDateTime startDateTime;
+
     if (startclickedtimes == 0)//首次运行，目的地和始发地不能相同，相同则弹出窗口，重新来过
     {
         strategy = getStrategy();
@@ -113,6 +113,7 @@ void Widget::startButtonClicked()
             startclicked[ui->TravelerComboBox->currentIndex()] = false;
             return;
         }
+        startclicked[ui->TravelerComboBox->currentIndex()] = true;
         startDateTime = getStartTime();
 
         travelers[ui->TravelerComboBox->currentIndex()] = (Traveler(addtravelertimes-1, startDateTime,
