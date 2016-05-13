@@ -59,18 +59,8 @@ private:
     int priordestination;//保留目的地，如果运行过程中目的地改变，作为两个目的地比较的前者，与currentIndex比较
 
     //参与时间进程的变量
-    int secondcnt;
     QTimer *mstimer;
     QThread *timethread;
-
-//    int startyear;
-//    int startmonth;
-//    int startday;
-//    int starthour;
-//    int startmin;
-//    QDate date;
-//    QTime time;
-//    QDateTime datetime;
 
     std::vector<bool> startclicked;//“开始”按钮第一次按下
     std::vector<bool> throughcity;

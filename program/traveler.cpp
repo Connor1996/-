@@ -3,17 +3,19 @@
 
 Traveler::Traveler(int id, QDateTime startTime, QDateTime deadlineTime, QDateTime systemStartTime, int strategy, int origin,
                    int destination, bool isChecked, std::vector<bool> throughCity) :
-    id(id), startTime(startTime), deadlineTime(deadlineTime), systemStartTime(systemStartTime), strategy(strategy), origin(origin),
-    destination(destination), isChecked(isChecked), throughCity(throughCity),
-    time(12, QDateTime(QDate(7999, 12, 31), QTime(23, 59, 59))), min(0x7FFFFFFF)
+    isChecked(isChecked), id(id), strategy(strategy), origin(origin), destination(destination),
+    startTime(startTime), deadlineTime(deadlineTime), systemStartTime(systemStartTime),
+    throughCity(throughCity), time(12, QDateTime(QDate(7999, 12, 31), QTime(23, 59, 59))),
+    min(0x7FFFFFFF), minTime(QDateTime(QDate(7999, 12, 31), QTime(23, 59, 59)))
 {
-    if(strategy == 2)
+    if(strategy == 2 || isChecked)
     {
+        std::vector<QDateTime> tempTime(12, QDateTime(QDate(7999, 12, 31), QTime(23, 59, 59)));
         std::vector<bool> known(12, false);  //标记每个点是否被访问过
         std::vector<Attribute> path;     //记录每个点的移动路径
-        time[origin] = startTime;
+        tempTime[origin] = startTime;
 
-        DFS(origin, path, known);
+        DFS(origin, path, known, tempTime);
     }
     else
         plan = Dijkstra();
@@ -73,9 +75,10 @@ QDateTime Traveler::getCityDepartureDateTime(int index)
 }
 
 
-void Traveler::DFS(int city, std::vector<Attribute>& path, std::vector<bool>& known)
+void Traveler::DFS(int city, std::vector<Attribute>& path, std::vector<bool>& known,
+                   std::vector<QDateTime>& tempTime)
 {
-    if (time[city] > deadlineTime) //总时间大于截至时间，不满足约束条件
+    if (strategy == 2 && tempTime[city] > deadlineTime) //总时间大于截至时间，不满足约束条件
         return;
 
     known[city] = true; //标记此城市已访问过
@@ -83,39 +86,39 @@ void Traveler::DFS(int city, std::vector<Attribute>& path, std::vector<bool>& kn
     if (city == destination)
     {
         int cost = 0; //路径的总花费
+        int ok = true;
         std::vector<bool> mark = throughCity;
 
         for (std::vector<Attribute>::size_type ix = 0; ix != path.size(); ix++) //将路径上的所有城市取消标志
         {
             if (mark[path[ix].to] == true)
             {
-                //qDebug() << path[ix].to << ' ' << endl;
                 mark[path[ix].to] = false;
             }
             cost += path[ix].cost;
         }
-        if(cost < min)
+        if (isChecked)
         {
-            int ok = true;
-
-            if (isChecked)
+            for (std::vector<bool>::size_type ix = 0; ix != mark.size(); ix++) //若必经城市还有点未取消标志，所有有城市未经过
             {
-                qDebug() << mark.size() << endl;
-                for (std::vector<bool>::size_type ix = 0; ix != mark.size(); ix++) //若必经城市还有点未取消标志，所有有城市未经过
+                if (mark[ix] == true)
                 {
-                    if (mark[ix] == true)
-                    {
-                        ok = false;
-                        break;
-                    }
+                    ok = false;
+                    break;
                 }
             }
-            if (ok) //若满足约束条件，则更新最小值并记录路径
-            {
-                qDebug() << "ok..." << city << endl;
-                min = cost;
-                plan = path;
-            }
+        }
+        if(strategy != 1 && cost < min && ok) //若满足约束条件，则更新最小值并记录路径
+        {
+            min = cost;
+            time = tempTime;
+            plan = path;
+        }
+        else if (strategy == 1 && tempTime[city] < minTime && ok)
+        {
+            minTime = tempTime[city];
+            time = tempTime;
+            plan = path;
         }
     }
     else
@@ -138,16 +141,16 @@ void Traveler::DFS(int city, std::vector<Attribute>& path, std::vector<bool>& kn
                 span = true;
 
             //更新
-            if(!span && time[iter->second.from].time() <= iter->second.begin)
-                time[iter->second.to] = QDateTime(time[iter->second.from].date(), iter->second.end);
-            else if(!span && time[iter->second.from].time() > iter->second.begin)
-                time[iter->second.to] = QDateTime(time[iter->second.from].date().addDays(1), iter->second.end);
-            else if(span && time[iter->second.from].time() <= iter->second.begin)
-                time[iter->second.to] = QDateTime(time[iter->second.from].date().addDays(1), iter->second.end);
-            else if(span && time[iter->second.from].time() > iter->second.begin)
-                time[iter->second.to] = QDateTime(time[iter->second.from].date().addDays(2), iter->second.end);
+            if(!span && tempTime[iter->second.from].time() <= iter->second.begin)
+                tempTime[iter->second.to] = QDateTime(tempTime[iter->second.from].date(), iter->second.end);
+            else if(!span && tempTime[iter->second.from].time() > iter->second.begin)
+                tempTime[iter->second.to] = QDateTime(tempTime[iter->second.from].date().addDays(1), iter->second.end);
+            else if(span && tempTime[iter->second.from].time() <= iter->second.begin)
+                tempTime[iter->second.to] = QDateTime(tempTime[iter->second.from].date().addDays(1), iter->second.end);
+            else if(span && tempTime[iter->second.from].time() > iter->second.begin)
+                tempTime[iter->second.to] = QDateTime(tempTime[iter->second.from].date().addDays(2), iter->second.end);
 
-            DFS(iter->second.to, path, known);
+            DFS(iter->second.to, path, known, tempTime);
 
             known[iter->second.to] = false;
             path.erase(path.end());
@@ -274,6 +277,7 @@ void Traveler::UpdateAdjacents(int city, std::vector<int>& value, std::vector<bo
         {
             //策略二:时间最短
             if(!known[iter->second.to])
+            {
                 //判断条件有四种情况：
                 //第一种：行程不跨天，time[出发城市]的时间在行程出发时间之前，则用time[出发城市]的当天日期+行程到达时间与time[到达城市]比较
                 //第二种：行程不跨天，time[出发城市]的时间在行程出发时间之后，则用time[出发城市]的下一天日期+行程到达时间与time[到达城市]比较
@@ -304,6 +308,7 @@ void Traveler::UpdateAdjacents(int city, std::vector<int>& value, std::vector<bo
                     time[iter->second.to] = QDateTime(time[iter->second.from].addDays(2).date(), iter->second.end);
                     path[iter->second.to] = iter->second;
                 }
+            }
         }
     }
 }
