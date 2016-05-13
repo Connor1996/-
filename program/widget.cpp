@@ -21,10 +21,16 @@ void Widget::initUI()
     this->setWindowIcon(exeIcon);
 
     ui->StartDateTimeEdit->setDateTime(QDateTime::currentDateTime());
-    ui->DeadlineDateTimeEdit->setDateTime(QDateTime::currentDateTime());
+    int deaDay = QDateTime::currentDateTime().date().day();
+    deaDay += 1;
+    QDateTime deadlineDateTime;
+    deadlineDateTime.setDate(QDate(QDateTime::currentDateTime().date().year(), QDateTime::currentDateTime().date().month(), deaDay));
+    deadlineDateTime.setTime(QTime(QDateTime::currentDateTime().time()));
+    ui->DeadlineDateTimeEdit->setDateTime(deadlineDateTime);
     ui->StrategyComboBox->setEnabled(false);
     ui->StartComboBox->setEnabled(false);
     ui->DestinationComboBox->setEnabled(false);
+    ui->DestinationComboBox->setCurrentIndex(1);
     ui->TravelerComboBox->setEnabled(false);
     ui->ThroughCityCheckBox->setEnabled(false);
 
@@ -134,7 +140,7 @@ void Widget::startButtonClicked()
         displayFare(path);
         displayPath(path);
 
-        ui->StartButton->setEnabled(false);
+        ui->StartButton->setText(QString::fromWCharArray(L"更改"));
         ui->StartComboBox->setEnabled(false);
         ui->StrategyComboBox->setEnabled(false);
         ui->StartDateTimeEdit->setEnabled(false);
@@ -182,38 +188,49 @@ void Widget::addTravelerButtonClicked()
     ui->TravelerComboBox->addItem(QString::number(addtravelertimes));
     ui->TravelerComboBox->setCurrentText(QString::number(addtravelertimes));
 
+    ui->StartButton->setText(QString::fromWCharArray(L"开始"));
     ui->TravelerComboBox->setEnabled(true);
     ui->StartComboBox->setEnabled(true);
     ui->StrategyComboBox->setEnabled(true);
     ui->DestinationComboBox->setEnabled(true);
     ui->StrategyComboBox->setCurrentIndex(0);
     ui->StartComboBox->setCurrentIndex(0);
-    ui->DestinationComboBox->setCurrentIndex(0);
+    ui->DestinationComboBox->setCurrentIndex(1);
     ui->ThroughCityCheckBox->setEnabled(true);
     ui->DeadlineDateTimeEdit->setEnabled(true);
     ui->StartDateTimeEdit->setEnabled(true);
     ui->StartButton->setEnabled(true);
 
     ui->StartDateTimeEdit->setDateTime(QDateTime::currentDateTime());
-    ui->DeadlineDateTimeEdit->setDateTime(QDateTime::currentDateTime());
+    int deaDay = QDateTime::currentDateTime().date().day();
+    deaDay += 1;
+    QDateTime deadlineDateTime;
+    deadlineDateTime.setDate(QDate(QDateTime::currentDateTime().date().year(), QDateTime::currentDateTime().date().month(), deaDay));
+    deadlineDateTime.setTime(QTime(QDateTime::currentDateTime().time()));
+    ui->DeadlineDateTimeEdit->setDateTime(deadlineDateTime);
 }
 
 //旅客选择更改，显示更改
 void Widget::travelerChanged()
 {
-    ui->StartDateTimeEdit->setDateTime(travelers[ui->TravelerComboBox->currentIndex()].startTime);
-    ui->DeadlineDateTimeEdit->setDateTime(travelers[ui->TravelerComboBox->currentIndex()].deadlineTime);
-    ui->StrategyComboBox->setCurrentIndex(travelers[ui->TravelerComboBox->currentIndex()].strategy);
-    ui->StartComboBox->setCurrentIndex(travelers[ui->TravelerComboBox->currentIndex()].origin);
-    ui->DestinationComboBox->setCurrentIndex(travelers[ui->TravelerComboBox->currentIndex()].destination);
-
     if (startclicked[ui->TravelerComboBox->currentIndex()])
     {
+        ui->StartDateTimeEdit->setDateTime(travelers[ui->TravelerComboBox->currentIndex()].startTime);
+        int deaDay = travelers[ui->TravelerComboBox->currentIndex()].deadlineTime.date().day();
+        QDateTime deadlineDateTime;
+        deadlineDateTime.setDate(QDate(travelers[ui->TravelerComboBox->currentIndex()].deadlineTime.date().year(), travelers[ui->TravelerComboBox->currentIndex()].deadlineTime.date().month(), deaDay));
+        deadlineDateTime.setTime(QTime(travelers[ui->TravelerComboBox->currentIndex()].deadlineTime.time()));
+        ui->DeadlineDateTimeEdit->setDateTime(deadlineDateTime);
+        ui->StrategyComboBox->setCurrentIndex(travelers[ui->TravelerComboBox->currentIndex()].strategy);
+        ui->StartComboBox->setCurrentIndex(travelers[ui->TravelerComboBox->currentIndex()].origin);
+        ui->DestinationComboBox->setCurrentIndex(travelers[ui->TravelerComboBox->currentIndex()].destination);
+
         displayFare(travelers[ui->TravelerComboBox->currentIndex()].getPlan());
         displayTotalTime();
         displayPath(travelers[ui->TravelerComboBox->currentIndex()].getPlan());
         displaySpentTime();
 
+        ui->StartButton->setText(QString::fromWCharArray(L"更改"));
         ui->StartComboBox->setEnabled(false);
         ui->StartDateTimeEdit->setEnabled(false);
         ui->DeadlineDateTimeEdit->setEnabled(false);
@@ -225,6 +242,7 @@ void Widget::travelerChanged()
     }
     else
     {
+        ui->StartButton->setText(QString::fromWCharArray(L"开始"));
         ui->StrategyComboBox->setEnabled(true);
         ui->StartComboBox->setEnabled(true);
         ui->DestinationComboBox->setEnabled(true);
@@ -235,10 +253,15 @@ void Widget::travelerChanged()
         activeThroughCity();
 
         ui->StartDateTimeEdit->setDateTime(QDateTime::currentDateTime());
-        ui->DeadlineDateTimeEdit->setDateTime(QDateTime::currentDateTime());
+        int deaDay = QDateTime::currentDateTime().date().day();
+        deaDay += 1;
+        QDateTime deadlineDateTime;
+        deadlineDateTime.setDate(QDate(QDateTime::currentDateTime().date().year(), QDateTime::currentDateTime().date().month(), deaDay));
+        deadlineDateTime.setTime(QTime(QDateTime::currentDateTime().time()));
+        ui->DeadlineDateTimeEdit->setDateTime(deadlineDateTime);
         ui->StrategyComboBox->setCurrentIndex(0);
         ui->StartComboBox->setCurrentIndex(0);
-        ui->DestinationComboBox->setCurrentIndex(0);
+        ui->DestinationComboBox->setCurrentIndex(1);
         QVBoxLayout *listlayout = new QVBoxLayout;
         QWidget *containwidget = new QWidget(ui->PathList);
         containwidget->setLayout(listlayout);
