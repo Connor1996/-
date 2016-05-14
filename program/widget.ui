@@ -171,7 +171,7 @@
               </item>
               <item>
                <property name="text">
-                <string>海南</string>
+                <string>海口</string>
                </property>
               </item>
               <item>
@@ -246,7 +246,7 @@
               </item>
               <item>
                <property name="text">
-                <string>海南</string>
+                <string>海口</string>
                </property>
               </item>
               <item>
@@ -379,7 +379,7 @@
          <item row="2" column="0">
           <widget class="QCheckBox" name="city6cbox">
            <property name="text">
-            <string>海南</string>
+            <string>海口</string>
            </property>
           </widget>
          </item>

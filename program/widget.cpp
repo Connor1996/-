@@ -541,9 +541,9 @@ QString Widget::numToCity(int index){
         city = QString::fromWCharArray(L"郑州");
         break;
     case 6:
-        //海南
-        //city = tr("海南");
-        city = QString::fromWCharArray(L"海南");
+        //海口
+        //city = tr("海口");
+        city = QString::fromWCharArray(L"海口");
         break;
     case 7:
         //拉萨
@@ -582,6 +582,7 @@ void Widget::displayPath(std::vector<Attribute> path)
 {
     QVBoxLayout *listlayout = new QVBoxLayout;
     QWidget *containwidget = new QWidget(ui->PathList);
+
     for(std::vector<Attribute>::size_type index = 0;
             index != path.size(); index++)
     {
@@ -595,20 +596,16 @@ void Widget::displayPath(std::vector<Attribute> path)
         else if (path[index].vehicle == 2)
             vehiclelabel->setPixmap(QPixmap(":/plane.ico"));
 
-        int beginhour = path[index].begin.hour();
-        int beginmin = path[index].begin.minute();
-        int endhour = path[index].end.hour();
-        int endmin = path[index].end.minute();
-
         textlabel->setText(" " + numToCity(path[index].from) + "->" + numToCity(path[index].to) +
                            QString::fromWCharArray(L" 车次:") + path[index].num + "\n" +
-                           " " + QString::fromWCharArray(L"出发:") + QString::number(beginhour) + ":" + QString::number(beginmin) +
-                           QString::fromWCharArray(L" 到站:") + QString::number(endhour) + ":" + QString::number(endmin) + "\n" +
+                           " " + QString::fromWCharArray(L"出发:") + path[index].begin.toString("hh:mm") +
+                           QString::fromWCharArray(L" 到站:") + path[index].end.toString("hh:mm") + "\n" +
                            QString::fromWCharArray(L" 票价:") + QString::number(path[index].cost));
 
         QHBoxLayout *rowlayout = new QHBoxLayout;
         rowlayout->addWidget(vehiclelabel);
         rowlayout->addWidget(textlabel);
+        rowlayout->setContentsMargins(11, 11, 11, 11);
         listlayout->addLayout(rowlayout);
     }
     containwidget->setLayout(listlayout);
