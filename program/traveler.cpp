@@ -11,11 +11,12 @@ Traveler::Traveler(int id, QDateTime startTime, QDateTime deadlineTime, QDateTim
     if(strategy == 2 || isChecked)
     {
         std::vector<QDateTime> tempTime(12, QDateTime(QDate(7999, 12, 31), QTime(23, 59, 59)));
+        std::vector<int> tempValue(12);
         std::vector<bool> known(12, false);  //标记每个点是否被访问过
         std::vector<Attribute> path;     //记录每个点的移动路径
         tempTime[origin] = startTime;
 
-        DFS(origin, path, known, tempTime);
+        DFS(origin, path, known, tempTime, tempValue);
     }
     else
         plan = Dijkstra();
@@ -76,27 +77,26 @@ QDateTime Traveler::getCityDepartureDateTime(int index)
 
 
 void Traveler::DFS(int city, std::vector<Attribute>& path, std::vector<bool>& known,
-                   std::vector<QDateTime>& tempTime)
+                   std::vector<QDateTime>& tempTime, std::vector<int>& tempValue)
 {
-    if (strategy == 2 && tempTime[city] > deadlineTime) //总时间大于截至时间，不满足约束条件
+    if (strategy == 2 && (tempTime[city] > deadlineTime || tempValue[city] > min)) //总时间大于截至时间，不满足约束条件
+        return;
+    if (strategy == 1 && tempTime[city] > minTime)
+        return;
+    if (strategy == 0 && tempValue[city] > min)
         return;
 
     known[city] = true; //标记此城市已访问过
 
     if (city == destination)
     {
-        int cost = 0; //路径的总花费
         int ok = true;
         std::vector<bool> mark = throughCity;
 
         for (std::vector<Attribute>::size_type ix = 0; ix != path.size(); ix++) //将路径上的所有城市取消标志
-        {
-            if (mark[path[ix].to] == true)
-            {
                 mark[path[ix].to] = false;
-            }
-            cost += path[ix].cost;
-        }
+        mark[origin] = false;
+
         if (isChecked)
         {
             for (std::vector<bool>::size_type ix = 0; ix != mark.size(); ix++) //若必经城市还有点未取消标志，所有有城市未经过
@@ -108,9 +108,9 @@ void Traveler::DFS(int city, std::vector<Attribute>& path, std::vector<bool>& kn
                 }
             }
         }
-        if(strategy != 1 && cost < min && ok) //若满足约束条件，则更新最小值并记录路径
+        if(strategy != 1 && tempValue[city] < min && ok) //若满足约束条件，则更新最小值并记录路径
         {
-            min = cost;
+            min = tempValue[city];
             time = tempTime;
             plan = path;
         }
@@ -127,45 +127,98 @@ void Traveler::DFS(int city, std::vector<Attribute>& path, std::vector<bool>& kn
         sz_type entries = Schedule::database.count(city);
 
         std::multimap<int, Attribute>::iterator iter = Schedule::database.find(city);
+        std::multimap<int, Attribute>::iterator min = iter;
+        bool start = true;
         for(sz_type cnt = 0; cnt != entries; cnt++, iter++)
         {
             if (known[iter->second.to] == true) //如果去往城市已经访问过，则忽略该路径
+            {
+                if (start)
+                    min++;
                 continue;
+            }
+            start = false;
+            if (strategy != 2)
+            {
+                if (iter->second.to != min->second.to)
+                {
+                    path.push_back(min->second);
 
-            path.push_back(iter->second);
-            //判断是否时间跨天
-            bool span;
-            if(iter->second.begin <= iter->second.end)
-                span = false;
+                    tempTime[min->second.to] = CalculateTime(iter, tempTime);
+                    tempValue[min->second.to] = tempValue[city] + min->second.cost;
+
+                    DFS(min->second.to, path, known, tempTime, tempValue);
+
+                    known[min->second.to] = false;
+                    path.erase(path.end());
+
+                    //min更新为新的城市
+                    //priCity = iter->second.to;
+                    min = iter;
+                }
+                else
+                {
+                    if (strategy == 0)
+                        if (iter->second.cost < min->second.cost)
+                            min = iter;
+                    if (strategy == 1)
+                        if (CalculateTime(iter, tempTime) < CalculateTime(min, tempTime))
+                            min = iter;
+                }
+            }
             else
-                span = true;
+            {
+                path.push_back(iter->second);
 
-            //更新
-            if(!span && tempTime[iter->second.from].time() <= iter->second.begin)
-                tempTime[iter->second.to] = QDateTime(tempTime[iter->second.from].date(), iter->second.end);
-            else if(!span && tempTime[iter->second.from].time() > iter->second.begin)
-                tempTime[iter->second.to] = QDateTime(tempTime[iter->second.from].date().addDays(1), iter->second.end);
-            else if(span && tempTime[iter->second.from].time() <= iter->second.begin)
-                tempTime[iter->second.to] = QDateTime(tempTime[iter->second.from].date().addDays(1), iter->second.end);
-            else if(span && tempTime[iter->second.from].time() > iter->second.begin)
-                tempTime[iter->second.to] = QDateTime(tempTime[iter->second.from].date().addDays(2), iter->second.end);
+                //更新时间和花费
+                tempTime[iter->second.to] = CalculateTime(iter, tempTime);
+                tempValue[iter->second.to] = tempValue[city] + iter->second.cost;
 
-            DFS(iter->second.to, path, known, tempTime);
+                DFS(iter->second.to, path, known, tempTime, tempValue);
 
-            known[iter->second.to] = false;
+                known[iter->second.to] = false;
+                path.erase(path.end());
+            }
+        }
+        //循环结束后还需要处理一次min
+        if (strategy != 2)
+        {
+            path.push_back(min->second);
+
+            tempTime[min->second.to] = CalculateTime(iter, tempTime);
+            tempValue[min->second.to] = tempValue[city] + min->second.cost;
+
+            DFS(min->second.to, path, known, tempTime, tempValue);
+
+            known[min->second.to] = false;
             path.erase(path.end());
         }
     }
 }
 
-//std::vector<Attribute> Traveler::WrapDijkstra()
-//{
-//    std::vector<Attribute> tempPlan;
-//    while(true)
-//    {
-//        tempPlan = Dijkstra()
-//    }
-//}
+QDateTime Traveler::CalculateTime(const std::multimap<int, Attribute>::iterator& iter,
+                                  std::vector<QDateTime>& tempTime) //计算时间
+{
+    QDateTime temp;
+
+    //判断是否时间跨天
+    bool span;
+    if(iter->second.begin <= iter->second.end)
+        span = false;
+    else
+        span = true;
+
+    if(!span && tempTime[iter->second.from].time() <= iter->second.begin)
+        temp = QDateTime(tempTime[iter->second.from].date(), iter->second.end);
+    else if(!span && tempTime[iter->second.from].time() > iter->second.begin)
+        temp = QDateTime(tempTime[iter->second.from].date().addDays(1), iter->second.end);
+    else if(span && tempTime[iter->second.from].time() <= iter->second.begin)
+        temp = QDateTime(tempTime[iter->second.from].date().addDays(1), iter->second.end);
+    else if(span && tempTime[iter->second.from].time() > iter->second.begin)
+        temp = QDateTime(tempTime[iter->second.from].date().addDays(2), iter->second.end);
+
+    return temp;
+}
 
 std::vector<Attribute> Traveler::Dijkstra()
 {
