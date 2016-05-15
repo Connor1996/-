@@ -16,19 +16,21 @@ MapWidget::MapWidget(QWidget *parent) :
     QPalette palette = this->palette();
     palette.setBrush(QPalette::Background, QBrush(QPixmap(":/map.jpg")));
     this->setPalette(palette);
+
+    paintmstimer = new QTimer;
+    paintmstimer->start(1000/60);
+    QObject::connect(paintmstimer, SIGNAL(timeout()), this, SLOT(update()));
 }
 
 void MapWidget::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
-
     Widget *fatherPtr = (Widget *)parentWidget();
     if (fatherPtr->currentTraveler != -1)
     {
         std::vector<Attribute> path = fatherPtr->travelers[fatherPtr->currentTraveler].getPlan();
         painter.drawPixmap((setPointPos(path)), setPointGraph());
     }
-    update();
 }
 
 QPixmap MapWidget::setPointGraph()
@@ -60,8 +62,8 @@ QPointF MapWidget::setPointPos(const std::vector<Attribute> &path)
 {
     Widget *fatherPtr = (Widget *)parentWidget();
     static QPointF pointPos;
-
-    if(fatherPtr->getSpentTime() >= fatherPtr->travelers[fatherPtr->currentTraveler].totalTime)
+    QDateTime spenttime = fatherPtr->getSpentTime();
+    if(spenttime >= fatherPtr->travelers[fatherPtr->currentTraveler].totalTime)
     {
          pointPos = getCityCor(path[path.size()-1].to);
          state = -2;
@@ -71,25 +73,23 @@ QPointF MapWidget::setPointPos(const std::vector<Attribute> &path)
         for (std::vector<Attribute>::size_type index = 0;
             index != path.size(); index++)
         {
-            if (fatherPtr->getSpentTime() <=
-                    getSplitTime(fatherPtr->travelers[fatherPtr->currentTraveler].startTime,
-                                 fatherPtr->travelers[fatherPtr->currentTraveler].getCityDepartureDateTime(path[index].from)))
+            QDateTime starttime = fatherPtr->travelers[fatherPtr->currentTraveler].startTime;
+            QDateTime departuredatetime = fatherPtr->travelers[fatherPtr->currentTraveler].getCityDepartureDateTime(path[index].from);
+            QDateTime cityarrivaltime = fatherPtr->travelers[fatherPtr->currentTraveler].getCityArrivalDateTime(path[index].to);
+            if (spenttime <= getSplitTime(starttime, departuredatetime))
             {
                 pointPos = getCityCor(path[index].from);
                 state = -1;
-                qDebug() << "State: Stop" << index << fatherPtr->travelers[fatherPtr->currentTraveler].getCityDepartureDateTime(path[index].from).time().hour() << fatherPtr->travelers[fatherPtr->currentTraveler].getCityDepartureDateTime(path[index].from).time().minute();
+                qDebug() << "State: Stop" << index << departuredatetime.time().hour() << departuredatetime.time().minute();
                 break;
             }
-            else if (fatherPtr->getSpentTime() <=
-                     getSplitTime(fatherPtr->travelers[fatherPtr->currentTraveler].startTime,
-                                  fatherPtr->travelers[fatherPtr->currentTraveler].getCityArrivalDateTime(path[index].to)))
+            else if (spenttime <=
+                     getSplitTime(starttime, cityarrivaltime))
             {
                 pointPos = getCityCor(path[index].from);
-                QDateTime spentTime = fatherPtr->getSpentTime();
-                QDateTime start2Begin = getSplitTime(fatherPtr->travelers[fatherPtr->currentTraveler].startTime,
-                        fatherPtr->travelers[fatherPtr->currentTraveler].getCityDepartureDateTime(path[index].from));
-                QDateTime start2End = getSplitTime(fatherPtr->travelers[fatherPtr->currentTraveler].startTime,
-                        fatherPtr->travelers[fatherPtr->currentTraveler].getCityArrivalDateTime(path[index].to));
+                QDateTime spentTime = spenttime;
+                QDateTime start2Begin = getSplitTime(starttime, departuredatetime);
+                QDateTime start2End = getSplitTime(starttime, cityarrivaltime);
                 pointPos += getMoveDistance(spentTime, start2Begin, start2End, path[index].from, path[index].to);
                 state = path[index].vehicle;
                 qDebug() << "State: Run" << index;
@@ -149,8 +149,8 @@ QPointF MapWidget::getCityCor(int city)
         y = 95;
         break;
     case 7:
-        x = 245;
-        y = 95;
+        x = 800;
+        y = 800;
         break;
     case 8:
         x = 20;
