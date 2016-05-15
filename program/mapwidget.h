@@ -14,12 +14,13 @@
 #include <QDateTime>
 #include <QPointF>
 #include <QMessageBox>
+#include <QTimer>
+#include <QThread>
 
 class MapWidget : public QWidget
 {
 public:
     MapWidget(QWidget *);
-
     void paintEvent(QPaintEvent *);
     QPixmap setPointGraph();
     QPointF setPointPos(const std::vector<Attribute> &path);
@@ -28,9 +29,12 @@ public:
     double getTimeDifference(QDateTime shorterDateTime, QDateTime longerDateTime);
     QPointF getMoveDistance(QDateTime spentTime, QDateTime start2Begin, QDateTime start2End,
                             int from, int to);
+
+private slots:
+    void update();
 private:
     int state;
-
+    QTimer * paintmstimer;
 };
 
 #endif // MAPWIDGET_H

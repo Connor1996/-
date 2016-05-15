@@ -43,11 +43,11 @@ int Schedule::CityToNum(QString city)
         num = 4;
     else if(city == "Zhengzhou")
         num = 5;
-    else if(city == "Hainan")
+    else if(city == "Haikou")
         num = 6;
     else if(city == "Lasa")
         num = 7;
-    else if(city == "NewYork")
+    else if(city == "Tokyo")
         num = 8;
     else if(city == "Seoul")
         num = 9;

@@ -551,9 +551,9 @@ QString Widget::numToCity(int index){
         city = QString::fromWCharArray(L"拉萨");
         break;
     case 8:
-        //纽约
-        //city = tr("纽约");
-        city = QString::fromWCharArray(L"纽约");
+        //东京
+        //city = tr("东京");
+        city = QString::fromWCharArray(L"东京");
         break;
     case 9:
         //首尔
@@ -597,7 +597,7 @@ void Widget::displayPath(std::vector<Attribute> path)
             vehiclelabel->setPixmap(QPixmap(":/plane.ico"));
 
         textlabel->setText(" " + numToCity(path[index].from) + "->" + numToCity(path[index].to) +
-                           QString::fromWCharArray(L" 车次:") + path[index].num + "\n" +
+                           QString::fromWCharArray(L" 班次:") + path[index].num + "\n" +
                            " " + QString::fromWCharArray(L"出发:") + path[index].begin.toString("hh:mm") +
                            QString::fromWCharArray(L" 到站:") + path[index].end.toString("hh:mm") + "\n" +
                            QString::fromWCharArray(L" 票价:") + QString::number(path[index].cost));

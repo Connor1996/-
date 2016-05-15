@@ -393,7 +393,7 @@
          <item row="2" column="2">
           <widget class="QCheckBox" name="city8cbox">
            <property name="text">
-            <string>纽约</string>
+            <string>东京</string>
            </property>
           </widget>
          </item>
@@ -550,8 +550,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>275</width>
-           <height>165</height>
+           <width>279</width>
+           <height>222</height>
           </rect>
          </property>
         </widget>
