@@ -4,7 +4,7 @@
 
 Widget::Widget(QWidget *parent) :
     QWidget(parent), currentTraveler(-1), ui(new Ui::Widget),
-    addtravelertimes(0), startclickedtimes(0), priordestination(0), throughcity(12, false)
+    addtravelertimes(0), startclickedtimes(0),  throughcity(12, false)
 {
     ui->setupUi(this);
     initUI();
@@ -109,11 +109,12 @@ void Widget::startButtonClicked()
 {
     QDateTime startDateTime;
 
-    if (startclickedtimes == 0)//首次运行，目的地和始发地不能相同，相同则弹出窗口，重新来过
+    if (startclicked[ui->TravelerComboBox->currentIndex()] == false)
     {
+        qDebug() << "traveler clicked false";
         strategy = getStrategy();
         start = getStart();
-        priordestination = destination = getDestination();
+        destination = getDestination();
         if (start == destination)
         {
             QMessageBox::information(this, "Error", QString::fromWCharArray(L"出发地和目的地相同"));
@@ -146,26 +147,82 @@ void Widget::startButtonClicked()
         ui->StartDateTimeEdit->setEnabled(false);
         ui->DeadlineDateTimeEdit->setEnabled(false);
         startclickedtimes += 1;
+        startclicked[ui->TravelerComboBox->currentIndex()] = true;
         return;
     }
-    if (startclickedtimes == 1)//不是首次运行，执行以下代码，如果目的地没有改变那么不作操作
+    if (startclicked[ui->TravelerComboBox->currentIndex()] == true)
     {
-        if (priordestination != ui->DestinationComboBox->currentIndex())
+        qDebug() << "traveler clicked is true";
+        strategy = getStrategy();//如果涉及途中策略更改，则保留
+        destination = getDestination();
+        int nextCity2Arrive = ui->LeftWidget->nextCity();
+        if (nextCity2Arrive != -1)
         {
-            strategy = getStrategy();//如果涉及途中策略更改，则保留
-            destination = getDestination();
-            //start = getStart();
-            priordestination = destination = getDestination();
-            std::vector<Attribute> path = travelers[ui->TravelerComboBox->currentIndex()].changePlan(strategy, destination);
+            std::vector<Attribute> path = travelers[ui->TravelerComboBox->currentIndex()].changePlan(nextCity2Arrive, strategy, destination, getDeadline(),
+                                                                                                     ui->ThroughCityCheckBox->isChecked(),throughcity);
 
             currentTraveler = ui->TravelerComboBox->currentIndex();
-
             displayTotalTime();
             displayFare(path);
             displayPath(path);
-            //getDeadline();//如果涉及第三策略下截止时间修订，则保留
         }
     }
+//    if (startclickedtimes == 0)//首次运行，目的地和始发地不能相同，相同则弹出窗口，重新来过
+//    {
+//        strategy = getStrategy();
+//        start = getStart();
+//        destination = getDestination();
+//        if (start == destination)
+//        {
+//            QMessageBox::information(this, "Error", QString::fromWCharArray(L"出发地和目的地相同"));
+//            startclicked[ui->TravelerComboBox->currentIndex()] = false;
+//            return;
+//        }
+
+//        startDateTime = getStartTime();
+
+//        travelers[ui->TravelerComboBox->currentIndex()] = (Traveler(addtravelertimes-1, startDateTime,
+//                                                                    getDeadline(), QDateTime::currentDateTime(), strategy, start, destination, ui->ThroughCityCheckBox->isChecked(), throughcity));
+//        std::vector<Attribute> path = travelers[ui->TravelerComboBox->currentIndex()].getPlan();
+//        if (path.size() == 0)
+//        {
+//            QMessageBox::information(this, "Error", QString::fromWCharArray(L"无有效路径"));
+//            startclicked[ui->TravelerComboBox->currentIndex()] = false;
+//            return;
+//        }
+
+//        startclicked[ui->TravelerComboBox->currentIndex()] = true;
+//        currentTraveler = ui->TravelerComboBox->currentIndex();
+
+//        displayTotalTime();
+//        displayFare(path);
+//        displayPath(path);
+
+//        ui->StartButton->setText(QString::fromWCharArray(L"更改"));
+//        ui->StartComboBox->setEnabled(false);
+//        ui->StrategyComboBox->setEnabled(false);
+//        ui->StartDateTimeEdit->setEnabled(false);
+//        ui->DeadlineDateTimeEdit->setEnabled(false);
+//        startclickedtimes += 1;
+//        return;
+//    }
+//    if (startclickedtimes == 1)//不是首次运行，执行以下代码，如果目的地没有改变那么不作操作
+//    {
+//        qDebug() << "startclickedtimes == 1";
+//        strategy = getStrategy();//如果涉及途中策略更改，则保留
+//        destination = getDestination();
+//        int nextCity2Arrive = ui->LeftWidget->nextCity(path);
+//        if (nextCity2Arrive != -1)
+//        {
+//            std::vector<Attribute> path = travelers[ui->TravelerComboBox->currentIndex()].changePlan(nextCity2Arrive, strategy, destination, getDeadline(),
+//                                                                                                     ui->ThroughCityCheckBox->isChecked(),throughcity);
+
+//            currentTraveler = ui->TravelerComboBox->currentIndex();
+//            displayTotalTime();
+//            displayFare(path);
+//            displayPath(path);
+//        }
+//    }
 }
 
 //单击“添加旅客”按钮，开始运行
@@ -183,7 +240,7 @@ void Widget::addTravelerButtonClicked()
     startclicked.push_back(false);
     addtravelertimes += 1;
     startclickedtimes = 0;
-    priordestination = 0;
+    //priordestination = 0;
 
     ui->TravelerComboBox->addItem(QString::number(addtravelertimes));
     ui->TravelerComboBox->setCurrentText(QString::number(addtravelertimes));

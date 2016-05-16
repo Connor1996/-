@@ -28,8 +28,8 @@ void MapWidget::paintEvent(QPaintEvent *)
     Widget *fatherPtr = (Widget *)parentWidget();
     if (fatherPtr->currentTraveler != -1)
     {
-        std::vector<Attribute> path = fatherPtr->travelers[fatherPtr->currentTraveler].getPlan();
-        painter.drawPixmap((setPointPos(path)), setPointGraph());
+        path = fatherPtr->travelers[fatherPtr->currentTraveler].getPlan();
+        painter.drawPixmap((setPointPos()), setPointGraph());
     }
 }
 
@@ -58,7 +58,7 @@ QPixmap MapWidget::setPointGraph()
     return pointGraph;
 }
 
-QPointF MapWidget::setPointPos(const std::vector<Attribute> &path)
+QPointF MapWidget::setPointPos(/*const std::vector<Attribute> &path*/)
 {
     Widget *fatherPtr = (Widget *)parentWidget();
     static QPointF pointPos;
@@ -67,7 +67,7 @@ QPointF MapWidget::setPointPos(const std::vector<Attribute> &path)
     {
          pointPos = getCityCor(path[path.size()-1].to);
          state = -2;
-         qDebug() << "State: Arrival";
+         //qDebug() << "State: Arrival";
     }
     else
         for (std::vector<Attribute>::size_type index = 0;
@@ -80,7 +80,7 @@ QPointF MapWidget::setPointPos(const std::vector<Attribute> &path)
             {
                 pointPos = getCityCor(path[index].from);
                 state = -1;
-                qDebug() << "State: Stop" << index << departuredatetime.time().hour() << departuredatetime.time().minute();
+                //qDebug() << "State: Stop" << index << departuredatetime.time().hour() << departuredatetime.time().minute();
                 break;
             }
             else if (spenttime <=
@@ -92,13 +92,51 @@ QPointF MapWidget::setPointPos(const std::vector<Attribute> &path)
                 QDateTime start2End = getSplitTime(starttime, cityarrivaltime);
                 pointPos += getMoveDistance(spentTime, start2Begin, start2End, path[index].from, path[index].to);
                 state = path[index].vehicle;
-                qDebug() << "State: Run" << index;
+                //qDebug() << "State: Run" << index;
                 break;
             }
         }
-    qDebug() << pointPos.x() << pointPos.y();
-    qDebug() << "----------------------------";
+    //qDebug() << pointPos.x() << pointPos.y();
+   // qDebug() << "----------------------------";
     return pointPos;
+}
+
+int MapWidget::nextCity(/*const std::vector<Attribute> &path*/)
+{
+    Widget *fatherPtr = (Widget *)parentWidget();
+    int nextCity2Arrive;
+    QDateTime spenttime = fatherPtr->getSpentTime();
+    if(spenttime >= fatherPtr->travelers[fatherPtr->currentTraveler].totalTime)
+    {
+         nextCity2Arrive = -1;
+         state = -2;
+         qDebug() << "State: Arrival--next City to arrive is NULL" << nextCity2Arrive;
+    }
+    else
+        for (std::vector<Attribute>::size_type index = 0;
+            index != path.size(); index++)
+        {
+            QDateTime starttime = fatherPtr->travelers[fatherPtr->currentTraveler].startTime;
+            QDateTime departuredatetime = fatherPtr->travelers[fatherPtr->currentTraveler].getCityDepartureDateTime(path[index].from);
+            QDateTime cityarrivaltime = fatherPtr->travelers[fatherPtr->currentTraveler].getCityArrivalDateTime(path[index].to);
+            if (spenttime <= getSplitTime(starttime, departuredatetime))
+            {
+                nextCity2Arrive = path[index].from;
+                state = -1;
+                //qDebug() << "State: Stop" << index << departuredatetime.time().hour() << departuredatetime.time().minute();
+                qDebug() << "State : Stop--next city to arrive is the city now at" << nextCity2Arrive;
+                break;
+            }
+            else if (spenttime <=
+                     getSplitTime(starttime, cityarrivaltime))
+            {
+                nextCity2Arrive = path[index].to;
+                state = path[index].vehicle;
+                qDebug() << "State: Run--next city to arrive is the city on the other side of current path" << nextCity2Arrive;
+                break;
+            }
+        }
+    return nextCity2Arrive;
 }
 
 QDateTime MapWidget::getSplitTime(QDateTime former, QDateTime later)

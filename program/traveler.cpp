@@ -46,6 +46,7 @@ std::vector<Attribute> Traveler::changePlan(int city, int strategy, int destinat
                                             bool isChecked, std::vector<bool> throughCity)
 {
     //对旅客信息进行更改
+    qDebug() << "in changePlan";
     std::vector<bool> known(12, false);  //标记每个点是否被访问过
     std::vector<Attribute> oldPlan = plan;
     //std::vector<QDateTime> oldTime = time;
@@ -282,7 +283,7 @@ std::vector<Attribute> Traveler::Dijkstra()
                 {
                     min = value[ix];
                     city = ix;
-                    qDebug() << city;
+                    //qDebug() << city;
                 }
             }
         }
@@ -297,7 +298,7 @@ std::vector<Attribute> Traveler::Dijkstra()
                 {
                     minn = time[ix];
                     city = ix;
-                    qDebug() << city;
+                    //qDebug() << city;
                 }
             }
         }
