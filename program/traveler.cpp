@@ -42,13 +42,49 @@ std::vector<Attribute> Traveler::getPlan()
     return this->plan;
 }
 
-std::vector<Attribute> Traveler::changePlan(int strategy, int destination)
+std::vector<Attribute> Traveler::changePlan(int city, int strategy, int destination, QDateTime deadlineTime,
+                                            bool isChecked, std::vector<bool> throughCity)
 {
+    //对旅客信息进行更改
+    std::vector<bool> known(12, false);  //标记每个点是否被访问过
+    std::vector<Attribute> oldPlan = plan;
+    //std::vector<QDateTime> oldTime = time;
+    for(std::vector<Attribute>::iterator iter = oldPlan.begin(); iter != oldPlan.end(); iter++)
+    {
+        known[iter->from] = true;
+        throughCity[iter->from] = false;
+
+        if (iter->to == city)
+        {
+            startTime = time[iter->to];
+            oldPlan.erase(++iter, oldPlan.end());
+            break;
+        }
+    }
+    plan.clear();
+    this->origin = city;
     this->strategy = strategy;
     this->destination = destination;
-    this->totalTime = TotalDateTime();
+    this->deadlineTime = deadlineTime;
+    this->isChecked = isChecked;
+    this->throughCity = throughCity;
 
-    return plan = Dijkstra();
+
+    if(strategy == 2 || isChecked)
+    {
+        std::vector<QDateTime> tempTime(12, QDateTime(QDate(7999, 12, 31), QTime(23, 59, 59)));
+        std::vector<int> tempValue(12);
+        std::vector<Attribute> path;     //记录每个点的移动路径
+        tempTime[origin] = startTime;
+
+        DFS(origin, path, known, tempTime, tempValue);
+    }
+    else
+        plan = Dijkstra();
+    totalTime = TotalDateTime();
+
+    oldPlan.insert(oldPlan.end(), plan.begin(), plan.end());
+    return oldPlan;
 }
 
 QDateTime Traveler::getCityArrivalDateTime(int index)
@@ -144,7 +180,7 @@ void Traveler::DFS(int city, std::vector<Attribute>& path, std::vector<bool>& kn
                 {
                     path.push_back(min->second);
 
-                    tempTime[min->second.to] = CalculateTime(iter, tempTime);
+                    tempTime[min->second.to] = CalculateTime(min, tempTime);
                     tempValue[min->second.to] = tempValue[city] + min->second.cost;
 
                     DFS(min->second.to, path, known, tempTime, tempValue);
@@ -158,12 +194,10 @@ void Traveler::DFS(int city, std::vector<Attribute>& path, std::vector<bool>& kn
                 }
                 else
                 {
-                    if (strategy == 0)
-                        if (iter->second.cost < min->second.cost)
-                            min = iter;
-                    if (strategy == 1)
-                        if (CalculateTime(iter, tempTime) < CalculateTime(min, tempTime))
-                            min = iter;
+                    if (strategy == 0 && iter->second.cost < min->second.cost)
+                        min = iter;
+                    if (strategy == 1 && CalculateTime(iter, tempTime) < CalculateTime(min, tempTime))
+                        min = iter;
                 }
             }
             else
@@ -185,7 +219,7 @@ void Traveler::DFS(int city, std::vector<Attribute>& path, std::vector<bool>& kn
         {
             path.push_back(min->second);
 
-            tempTime[min->second.to] = CalculateTime(iter, tempTime);
+            tempTime[min->second.to] = CalculateTime(min, tempTime);
             tempValue[min->second.to] = tempValue[city] + min->second.cost;
 
             DFS(min->second.to, path, known, tempTime, tempValue);

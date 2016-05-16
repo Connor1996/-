@@ -24,7 +24,8 @@ public:
     std::vector<Attribute> getPlan();
     QDateTime getCityArrivalDateTime(int);
     QDateTime getCityDepartureDateTime(int);
-    std::vector<Attribute> changePlan(int ,int);
+    std::vector<Attribute> changePlan(int city, int strategy, int destination, QDateTime deadlineTime,
+                                      bool isChecked, std::vector<bool> throughCity);
 
 
 private:
