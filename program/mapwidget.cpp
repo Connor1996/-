@@ -121,52 +121,52 @@ QPointF MapWidget::getCityCor(int city)
     switch (city)
     {
     case 0:
-        x = 20;
-        y = 20;
+        x = 466 - 24;
+        y = 150 - 24;
         break;
     case 1:
-        x = 95;
-        y = 20;
+        x = 722 - 24;
+        y = 393 - 24;
         break;
     case 2:
-        x = 170;
-        y = 20;
+        x = 281 -24;
+        y = 240 -24;
         break;
     case 3:
-        x = 245;
-        y = 20;
+        x = 549 - 24;
+        y = 316 - 24;
         break;
     case 4:
-        x = 20;
-        y = 95;
+        x = 494 - 24;
+        y = 474 - 24;
         break;
     case 5:
-        x = 95;
-        y = 95;
+        x = 385 - 24;
+        y = 316 - 24;
         break;
     case 6:
-        x = 170;
-        y = 95;
+        x = 385 - 24;
+        y = 671 - 24;
         break;
     case 7:
-        x = 800;
-        y = 800;
+        x = 58 - 24;
+        y = 363 - 24;
         break;
     case 8:
-        x = 20;
-        y = 170;
+        x = 880 - 24;
+        y = 500 - 24;
         break;
     case 9:
-        x = 95;
-        y = 170;
+        x = 832 - 24;
+        y = 212 - 24;
         break;
     case 10:
-        x = 170;
-        y = 170;
+        x = 750 - 24;
+        y = 57 - 24;
         break;
     case 11:
-        x = 245;
-        y = 170;
+        x = 86 - 24;
+        y = 80 - 24;
     }
 
     return QPointF(x, y);
