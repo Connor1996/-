@@ -8,6 +8,7 @@
 #include <QDateTime>
 #include <QDate>
 #include <QTime>
+#include <cmath>
 
 
 class Traveler

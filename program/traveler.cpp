@@ -45,35 +45,46 @@ std::vector<Attribute> Traveler::getPlan()
 std::vector<Attribute> Traveler::changePlan(int city, int strategy, int destination, QDateTime deadlineTime,
                                             bool isChecked, std::vector<bool> throughCity)
 {
+    min = 0x7FFFFFFF;
+    minTime = QDateTime(QDate(7999, 12, 31), QTime(23, 59, 59));
+
     //对旅客信息进行更改
-    qDebug() << "in changePlan";
+    qDebug() << "in changePlan" << city << strategy << destination << deadlineTime;
     std::vector<bool> known(12, false);  //标记每个点是否被访问过
     std::vector<Attribute> oldPlan = plan;
-    //std::vector<QDateTime> oldTime = time;
+
+    QDateTime oldStartTime = startTime;
+
     for(std::vector<Attribute>::iterator iter = oldPlan.begin(); iter != oldPlan.end(); iter++)
     {
-        known[iter->from] = true;
-        throughCity[iter->from] = false;
-
-        if (iter->to == city)
+        if (iter->from == city)
         {
-            startTime = time[iter->to];
-            oldPlan.erase(++iter, oldPlan.end());
+            {
+                origin = iter->from;
+                startTime = time[iter->from];
+                oldPlan.erase(iter, oldPlan.end());
+            }
             break;
         }
+
+        known[iter->from] = true;
+        throughCity[iter->from] = false;
     }
     plan.clear();
-    this->origin = city;
     this->strategy = strategy;
     this->destination = destination;
     this->deadlineTime = deadlineTime;
     this->isChecked = isChecked;
     this->throughCity = throughCity;
 
+    for (std::vector<bool>::size_type ix = 0; ix != known.size(); ix++)
+    {
+        qDebug() << throughCity[ix] << known[ix];
+    }
 
     if(strategy == 2 || isChecked)
     {
-        std::vector<QDateTime> tempTime(12, QDateTime(QDate(7999, 12, 31), QTime(23, 59, 59)));
+        std::vector<QDateTime> tempTime = time;
         std::vector<int> tempValue(12);
         std::vector<Attribute> path;     //记录每个点的移动路径
         tempTime[origin] = startTime;
@@ -84,8 +95,11 @@ std::vector<Attribute> Traveler::changePlan(int city, int strategy, int destinat
         plan = Dijkstra();
     totalTime = TotalDateTime();
 
+    qDebug() << oldPlan.size() << plan.size();
     oldPlan.insert(oldPlan.end(), plan.begin(), plan.end());
-    return oldPlan;
+    plan = oldPlan;
+    startTime = oldStartTime;
+    return plan;
 }
 
 QDateTime Traveler::getCityArrivalDateTime(int index)

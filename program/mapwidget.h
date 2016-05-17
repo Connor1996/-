@@ -23,7 +23,7 @@ public:
     MapWidget(QWidget *);
     void paintEvent(QPaintEvent *);
     QPixmap setPointGraph();
-    QPointF setPointPos(/*const std::vector<Attribute> &path*/);
+    QPointF setPointPos();
     QDateTime getSplitTime(QDateTime former, QDateTime later);
     QPointF getCityCor(int city);
     double getTimeDifference(QDateTime shorterDateTime, QDateTime longerDateTime);
@@ -36,7 +36,7 @@ private slots:
 private:
     int state;
     QTimer * paintmstimer;
-    std::vector<Attribute> path;
+    //std::vector<Attribute> path;
 };
 
 #endif // MAPWIDGET_H

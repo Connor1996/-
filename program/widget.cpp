@@ -160,7 +160,13 @@ void Widget::startButtonClicked()
         {
             std::vector<Attribute> path = travelers[ui->TravelerComboBox->currentIndex()].changePlan(nextCity2Arrive, strategy, destination, getDeadline(),
                                                                                                      ui->ThroughCityCheckBox->isChecked(),throughcity);
-
+            if (path.size() == 0)
+            {
+                QMessageBox::information(this, "Error", QString::fromWCharArray(L"无有效路径"));
+                startclicked[ui->TravelerComboBox->currentIndex()] = false;
+                return;
+            }
+            qDebug() << "change plan success.";
             currentTraveler = ui->TravelerComboBox->currentIndex();
             displayTotalTime();
             displayFare(path);

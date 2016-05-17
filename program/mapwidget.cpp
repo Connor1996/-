@@ -28,7 +28,6 @@ void MapWidget::paintEvent(QPaintEvent *)
     Widget *fatherPtr = (Widget *)parentWidget();
     if (fatherPtr->currentTraveler != -1)
     {
-        path = fatherPtr->travelers[fatherPtr->currentTraveler].getPlan();
         painter.drawPixmap((setPointPos()), setPointGraph());
     }
 }
@@ -58,29 +57,33 @@ QPixmap MapWidget::setPointGraph()
     return pointGraph;
 }
 
-QPointF MapWidget::setPointPos(/*const std::vector<Attribute> &path*/)
+QPointF MapWidget::setPointPos()
 {
     Widget *fatherPtr = (Widget *)parentWidget();
     static QPointF pointPos;
+    std::vector<Attribute> path = fatherPtr->travelers[fatherPtr->currentTraveler].getPlan();
     QDateTime spenttime = fatherPtr->getSpentTime();
+    QDateTime starttime = fatherPtr->travelers[fatherPtr->currentTraveler].startTime;
+
     if(spenttime >= fatherPtr->travelers[fatherPtr->currentTraveler].totalTime)
     {
          pointPos = getCityCor(path[path.size()-1].to);
          state = -2;
-         //qDebug() << "State: Arrival";
+         qDebug() << "State: Arrival";
     }
     else
         for (std::vector<Attribute>::size_type index = 0;
             index != path.size(); index++)
         {
-            QDateTime starttime = fatherPtr->travelers[fatherPtr->currentTraveler].startTime;
             QDateTime departuredatetime = fatherPtr->travelers[fatherPtr->currentTraveler].getCityDepartureDateTime(path[index].from);
             QDateTime cityarrivaltime = fatherPtr->travelers[fatherPtr->currentTraveler].getCityArrivalDateTime(path[index].to);
+
             if (spenttime <= getSplitTime(starttime, departuredatetime))
             {
                 pointPos = getCityCor(path[index].from);
                 state = -1;
-                //qDebug() << "State: Stop" << index << departuredatetime.time().hour() << departuredatetime.time().minute();
+                qDebug() << spenttime << getSplitTime(starttime, departuredatetime);
+                qDebug() << "State: Stop" << index << departuredatetime.time().hour() << departuredatetime.time().minute();
                 break;
             }
             else if (spenttime <=
@@ -92,7 +95,8 @@ QPointF MapWidget::setPointPos(/*const std::vector<Attribute> &path*/)
                 QDateTime start2End = getSplitTime(starttime, cityarrivaltime);
                 pointPos += getMoveDistance(spentTime, start2Begin, start2End, path[index].from, path[index].to);
                 state = path[index].vehicle;
-                //qDebug() << "State: Run" << index;
+                qDebug() << spenttime << getSplitTime(starttime, cityarrivaltime);
+                qDebug() << "State: Run" << index;
                 break;
             }
         }
@@ -104,8 +108,10 @@ QPointF MapWidget::setPointPos(/*const std::vector<Attribute> &path*/)
 int MapWidget::nextCity(/*const std::vector<Attribute> &path*/)
 {
     Widget *fatherPtr = (Widget *)parentWidget();
+    std::vector<Attribute> path = fatherPtr->travelers[fatherPtr->currentTraveler].getPlan();
     int nextCity2Arrive;
     QDateTime spenttime = fatherPtr->getSpentTime();
+
     if(spenttime >= fatherPtr->travelers[fatherPtr->currentTraveler].totalTime)
     {
          nextCity2Arrive = -1;
@@ -221,38 +227,6 @@ double MapWidget::getTimeDifference(QDateTime former, QDateTime later)
     durationSec = (durationSec + 60) % 60;
     durationMin = (durationMin + 60) % 60;
     durationHour = (durationHour + 24) % 24;
-
-//    int shorterYear, shorterMonth, shorterDay,
-//            shorterHour, shorterMin, shorterSec;
-//    int longerYear, longerMonth, longerDay,
-//            longerHour, longerMin, longerSec;
-//    QDate shorterDate = shorterDateTime.date();
-//    QTime shorterTime = shorterDateTime.time();
-//    QDate longerDate = longerDateTime.date();
-//    QTime longerTime = longerDateTime.time();
-//    shorterDate.getDate(&shorterYear, &shorterMonth, &shorterDay);
-//    shorterHour = shorterTime.hour();
-//    shorterMin = shorterTime.minute();
-//    shorterSec = shorterTime.second();
-//    longerDate.getDate(&longerYear, &longerMonth, &longerDay);
-//    longerHour = longerTime.hour();
-//    longerMin = longerTime.minute();
-//    longerSec = longerTime.second();
-
-//    int diffYear, diffMonth, diffDay,
-//            diffHour, diffMin, diffSec;
-//    diffYear = longerYear - shorterYear;
-//    diffMonth = longerMonth - shorterMonth;
-//    diffDay = longerDay - shorterDay;
-//    diffHour = longerHour - shorterHour;
-//    diffMin = longerMin - shorterMin;
-//    diffSec = longerTime.second() - shorterTime.second();
-
-//    diffMonth += 12 * diffYear;
-//    diffDay += 30 * diffMonth;
-//    diffHour += 24 * diffDay;
-//    diffMin += 60 * diffHour;
-//    diffSec += 60 * diffMin;
 
     return (double)(durationDay * 86400 + durationHour * 3600 + durationMin * 60 + durationSec);
 }
