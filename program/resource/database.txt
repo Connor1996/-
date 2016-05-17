@@ -203,7 +203,7 @@ Wuhan Shenzhen CA3353 16:10 18:05 780 2
 Wuhan Shenzhen MF1704 21:55 23:55 644 2
 Wuhan Zhengzhou HJ0304P 11:00 17:00 160 0
 Wuhan Zhengzhou 6230 16:00 22:00 162 0
-Wuhan Zhengzhou JJ2082A 18:00 24:00 140 0
+Wuhan Zhengzhou JJ2082A 18:00 23:00 140 0
 Wuhan Haikou JD5618 11:45 14:00 660 2
 Wuhan Haikou HU7842 16:45 19:05 1382 2
 Wuhan Haikou CZ6652 20:20 22:45 540 2

@@ -13,6 +13,8 @@ Schedule::Schedule()
 
     QTextStream in(&file);
     QString from, to, number, begin, end, cost, vechile; //分别为出发地、目的地、班次、开始时间、结束时间、费用、交通方式
+
+    //将时刻表信息读入database数据结构
     while(!in.atEnd())
     {
         in >> from >> to >> number >> begin >> end >> cost >> vechile >> endl;
@@ -27,6 +29,7 @@ Schedule::Schedule()
     qDebug() << "input success...";
 }
 
+//根据字符串转换为相应的序号
 int Schedule::CityToNum(QString city)
 {
     int num = -1;

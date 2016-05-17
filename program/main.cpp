@@ -6,13 +6,13 @@
 
 
 //消息传递函数 传输到LOG.TXT
-void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+void myMessageOutput(QtMsgType type, const QString &msg)
 {
 
     QDateTime time = QDateTime::currentDateTime();//获取系统现在的时间
     QString timestr = time.toString("yyyy-MM-dd hh:mm:ss ddd"); //设置显示格式
 
-    QFile file(":/log.txt");
+    QFile file("log.txt");
     file.open(QFile::WriteOnly|QIODevice::Append);
     QTextStream out(&file);
 

@@ -164,7 +164,7 @@ void Widget::startButtonClicked()
             if (path.size() == 0)
             {
                 QMessageBox::information(this, "Error", QString::fromWCharArray(L"无有效路径"));
-                startclicked[ui->TravelerComboBox->currentIndex()] = false;
+                //startclicked[ui->TravelerComboBox->currentIndex()] = false;
                 return;
             }
             qDebug() << "change plan success.";
@@ -178,14 +178,10 @@ void Widget::startButtonClicked()
 
 void Widget::enOrDisAbleDeadline(int currentStrategy)
 {
-    if (ui->StrategyComboBox->currentIndex() != 2)
-    {
+    if (currentStrategy != 2)
         ui->DeadlineDateTimeEdit->setEnabled(false);
-    }
     else
-    {
         ui->DeadlineDateTimeEdit->setEnabled(true);
-    }
 }
 
 //单击“添加旅客”按钮，开始运行
@@ -506,6 +502,7 @@ void Widget::displaySpentTime()
                     + QString::fromWCharArray(L"小时 ") +
                     QString::number(travelers[ui->TravelerComboBox->currentIndex()].totalTime.time().minute())
                     + QString::fromWCharArray(L"分钟"));
+            ui->StartButton->setEnabled(false);
         }
     }
     else
@@ -633,7 +630,8 @@ void Widget::displayPath(std::vector<Attribute> path)
         QHBoxLayout *rowlayout = new QHBoxLayout;
         rowlayout->addWidget(vehiclelabel);
         rowlayout->addWidget(textlabel);
-        rowlayout->setContentsMargins(11, 11, 11, 11);
+        rowlayout->addStretch(1);
+        //rowlayout->setContentsMargins(11, 11, 11, 11);
         listlayout->addLayout(rowlayout);
     }
     containwidget->setLayout(listlayout);
