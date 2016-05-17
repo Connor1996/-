@@ -22,21 +22,20 @@ class MapWidget : public QWidget
 public:
     MapWidget(QWidget *);
     void paintEvent(QPaintEvent *);
-    QPixmap setPointGraph();
-    QPointF setPointPos();
-    QDateTime getSplitTime(QDateTime former, QDateTime later);
-    QPointF getCityCor(int city);
-    double getTimeDifference(QDateTime shorterDateTime, QDateTime longerDateTime);
+    QPixmap setPointGraph();//设置图标
+    QPointF setPointPos();//设置图标位置
+    QDateTime getSplitTime(QDateTime former, QDateTime later);//获取两时间点时间间隔
+    QPointF getCityCor(int city);//获得城市对应坐标
+    double getTimeDifference(QDateTime shorterDateTime, QDateTime longerDateTime);//获得两时间间隔时间差
     QPointF getMoveDistance(QDateTime spentTime, QDateTime start2Begin, QDateTime start2End,
-                            int from, int to);
-    int nextCity(/*const std::vector<Attribute> &path*/);
+                            int from, int to);//获得坐标增量
+    int nextCity();//获得新计划的始发地
 
 private slots:
-    void update();
+    void update();//刷新画面
 private:
     int state;
     QTimer * paintmstimer;
-    //std::vector<Attribute> path;
 };
 
 #endif // MAPWIDGET_H

@@ -54,7 +54,7 @@ private:
     int strategy;
     int start;
     int destination;
-    int addtravelertimes;
+    int addtravelertimes;//添加旅客次数，即旅客编号最大值
     int startclickedtimes;//“开始”按钮点击次数，0次表示首次运行，1表示其他
     int priordestination;//保留目的地，如果运行过程中目的地改变，作为两个目的地比较的前者，与currentIndex比较
 
@@ -63,7 +63,7 @@ private:
     QThread *timethread;
 
     std::vector<bool> startclicked;//“开始”按钮第一次按下
-    std::vector<bool> throughcity;
+    std::vector<bool> throughcity;//途经城市是否选定的布尔型数组
 
     void initUI();
     void initConnect();
@@ -89,6 +89,7 @@ private slots:
     void displaySpentTime();//显示已经花费的时间
     void enOrDisAbleDeadline(int currentStrategy);//根据所选策略更改截止时间栏状态
 
+    //设置各个城市是否被选为途经城市
     void setThroungCity0();
     void setThroungCity1();
     void setThroungCity2();

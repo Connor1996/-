@@ -9,6 +9,7 @@
 #include <QState>
 #include <QLabel>
 
+//添加新的timer，使得绘图准确
 MapWidget::MapWidget(QWidget *parent) :
     QWidget(parent), state(-1)
 {
@@ -22,6 +23,7 @@ MapWidget::MapWidget(QWidget *parent) :
     QObject::connect(paintmstimer, SIGNAL(timeout()), this, SLOT(update()));
 }
 
+//绘图实践，绘制旅行过程
 void MapWidget::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
@@ -32,6 +34,7 @@ void MapWidget::paintEvent(QPaintEvent *)
     }
 }
 
+//根据当前状态、交通方式决定图标
 QPixmap MapWidget::setPointGraph()
 {
     QPixmap pointGraph;
@@ -57,6 +60,7 @@ QPixmap MapWidget::setPointGraph()
     return pointGraph;
 }
 
+//设置当前图标所处位置
 QPointF MapWidget::setPointPos()
 {
     Widget *fatherPtr = (Widget *)parentWidget();
@@ -105,7 +109,8 @@ QPointF MapWidget::setPointPos()
     return pointPos;
 }
 
-int MapWidget::nextCity(/*const std::vector<Attribute> &path*/)
+//中途更改计划时调用，用于获得新计划的始发地
+int MapWidget::nextCity()
 {
     Widget *fatherPtr = (Widget *)parentWidget();
     std::vector<Attribute> path = fatherPtr->travelers[fatherPtr->currentTraveler].getPlan();
@@ -145,6 +150,7 @@ int MapWidget::nextCity(/*const std::vector<Attribute> &path*/)
     return nextCity2Arrive;
 }
 
+//获得两时间点之间的时间差，判断当前所处的状态
 QDateTime MapWidget::getSplitTime(QDateTime former, QDateTime later)
 {
     int durationSec = (later.time().second() - former.time().second());
@@ -159,6 +165,7 @@ QDateTime MapWidget::getSplitTime(QDateTime former, QDateTime later)
     return QDateTime(QDate(1, 1, durationDay+1), QTime(durationHour, durationMin, durationSec, 999));
 }
 
+//获得图形中各个城市的位置
 QPointF MapWidget::getCityCor(int city)
 {
     int x, y;
@@ -216,6 +223,7 @@ QPointF MapWidget::getCityCor(int city)
     return QPointF(x, y);
 }
 
+///获得两个时间段的时间差，用于计算坐标增量
 double MapWidget::getTimeDifference(QDateTime former, QDateTime later)
 {
 
@@ -231,6 +239,7 @@ double MapWidget::getTimeDifference(QDateTime former, QDateTime later)
     return (double)(durationDay * 86400 + durationHour * 3600 + durationMin * 60 + durationSec);
 }
 
+//计算坐标增量
 QPointF MapWidget::getMoveDistance(QDateTime spentTime, QDateTime start2Begin, QDateTime start2End,
                                    int from, int to)
 {
