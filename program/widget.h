@@ -87,6 +87,7 @@ private slots:
     void timeStart();//此函数用于，如果mstimer未激活，那么this发出DoStartTimer信号
     void activeThroughCity();//得到途经城市
     void displaySpentTime();//显示已经花费的时间
+    void enOrDisAbleDeadline(int currentStrategy);//根据所选策略更改截止时间栏状态
 
     void setThroungCity0();
     void setThroungCity1();
