@@ -12,7 +12,7 @@ Widget::Widget(QWidget *parent) :
     initConnect();
 }
 
-
+//初始化图形界面
 void Widget::initUI()
 {
     this->setFixedSize(1280, 720);
@@ -55,6 +55,7 @@ void Widget::initUI()
     ui->TotalTimeEdit->setEnabled(false);
 }
 
+//建立信号与槽
 void Widget::initConnect()
 {
 
@@ -84,6 +85,7 @@ void Widget::initConnect()
 
 }
 
+//添加计时所用的线程和timer以确保时间计算的准确
 void Widget::initTimeThread()
 {
     //计时功能及所需的线程
@@ -96,6 +98,7 @@ void Widget::initTimeThread()
     mstimer->moveToThread(timethread);
 }
 
+//退出图形界面
 Widget::~Widget()
 {
     //安全退出时间线程
@@ -144,9 +147,7 @@ void Widget::startButtonClicked()
 
         ui->StartButton->setText(QString::fromWCharArray(L"更改"));
         ui->StartComboBox->setEnabled(false);
-        //ui->StrategyComboBox->setEnabled(false);
         ui->StartDateTimeEdit->setEnabled(false);
-        //ui->DeadlineDateTimeEdit->setEnabled(false);
         startclickedtimes += 1;
         startclicked[ui->TravelerComboBox->currentIndex()] = true;
         return;
@@ -176,6 +177,7 @@ void Widget::startButtonClicked()
     }
 }
 
+//根据策略决定截止日期栏状态
 void Widget::enOrDisAbleDeadline(int currentStrategy)
 {
     if (currentStrategy != 2)
@@ -195,11 +197,9 @@ void Widget::addTravelerButtonClicked()
                                  getStart(), getDestination(),
                                  ui->ThroughCityCheckBox->isChecked(), throughcity));
     qDebug() << "travelers.pushback...";
-    //totaltime.push_back(TotalTime(0, 0, 0));
     startclicked.push_back(false);
     addtravelertimes += 1;
     startclickedtimes = 0;
-    //priordestination = 0;
 
     ui->TravelerComboBox->addItem(QString::number(addtravelertimes));
     ui->TravelerComboBox->setCurrentText(QString::number(addtravelertimes));
@@ -231,14 +231,6 @@ void Widget::travelerChanged()
 {
     if (startclicked[ui->TravelerComboBox->currentIndex()])
     {
-//        if (travelers[ui->TravelerComboBox->currentIndex()].strategy != 2)
-//        {
-//            ui->DeadlineDateTimeEdit->setEnabled(false);
-//        }
-//        else
-//        {
-//            ui->DeadlineDateTimeEdit->setEnabled(true);
-//        }
         ui->StartDateTimeEdit->setDateTime(travelers[ui->TravelerComboBox->currentIndex()].startTime);
         int deaDay = travelers[ui->TravelerComboBox->currentIndex()].deadlineTime.date().day();
         QDateTime deadlineDateTime;
@@ -267,7 +259,6 @@ void Widget::travelerChanged()
     else
     {
         ui->StartButton->setText(QString::fromWCharArray(L"开始"));
-        //ui->StrategyComboBox->setEnabled(true);
         ui->StartComboBox->setEnabled(true);
         ui->DestinationComboBox->setEnabled(true);
         ui->StartDateTimeEdit->setEnabled(true);
@@ -602,7 +593,7 @@ QString Widget::numToCity(int index){
     return city;
 }
 
-//显示路径
+//在ScrollArea显示路径
 void Widget::displayPath(std::vector<Attribute> path)
 {
     QVBoxLayout *listlayout = new QVBoxLayout;
@@ -626,7 +617,6 @@ void Widget::displayPath(std::vector<Attribute> path)
                            " " + QString::fromWCharArray(L"出发:") + path[index].begin.toString("hh:mm") +
                            QString::fromWCharArray(L" 到站:") + path[index].end.toString("hh:mm") + "\n" +
                            QString::fromWCharArray(L" 票价:") + QString::number(path[index].cost));
-
         QHBoxLayout *rowlayout = new QHBoxLayout;
         rowlayout->addWidget(vehiclelabel);
         rowlayout->addWidget(textlabel);
