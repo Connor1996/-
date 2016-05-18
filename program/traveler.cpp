@@ -109,8 +109,8 @@ std::vector<Attribute> Traveler::changePlan(int city, int strategy, int destinat
     oldPlan.insert(oldPlan.end(), plan.begin(), plan.end());
     startTime = oldStartTime;
 
-    //判断新plan是否为空且
-    if (plan.size() == 0)
+    //判断新plan是否为空且city不为目的地城市，则说明无有效路径
+    if (plan.size() == 0 && city != destination)
     {
         std::vector<Attribute> nullPlan; //其实就是得到一个空路径，好返回给widget进入弹出“无有效路径”
         plan = tempPlan;
@@ -128,11 +128,13 @@ std::vector<Attribute> Traveler::changePlan(int city, int strategy, int destinat
 
 }
 
+//获得城市的到达时间
 QDateTime Traveler::getCityArrivalDateTime(int index)
 {
     return time[index];
 }
 
+//获得城市的离开时间
 QDateTime Traveler::getCityDepartureDateTime(int index)
 {
     std::vector<Attribute>::size_type id = 0;
@@ -152,10 +154,11 @@ QDateTime Traveler::getCityDepartureDateTime(int index)
         return QDateTime(DepartureDateTime.date().addDays(1), tempTime);
 }
 
-
+//递归求路径
 void Traveler::DFS(int city, std::vector<Attribute>& path, std::vector<bool>& known,
                    std::vector<QDateTime>& tempTime, std::vector<int>& tempValue)
 {
+    //分别各个策略进行剪枝
     if (strategy == 2 && (tempTime[city] > deadlineTime || tempValue[city] > min)) //总时间大于截至时间，不满足约束条件
         return;
     if (strategy == 1 && tempTime[city] > minTime)
@@ -165,18 +168,20 @@ void Traveler::DFS(int city, std::vector<Attribute>& path, std::vector<bool>& kn
 
     known[city] = true; //标记此城市已访问过
 
+    //已经递归到目的地城市
     if (city == destination)
     {
         int ok = true;
         std::vector<bool> mark = throughCity;
-
-        for (std::vector<Attribute>::size_type ix = 0; ix != path.size(); ix++) //将路径上的所有城市取消标志
+        //将路径上的所有城市取消标志
+        for (std::vector<Attribute>::size_type ix = 0; ix != path.size(); ix++)
                 mark[path[ix].to] = false;
         mark[origin] = false;
 
+        //若必经城市还有点未取消标志，所有有城市未经过
         if (isChecked)
         {
-            for (std::vector<bool>::size_type ix = 0; ix != mark.size(); ix++) //若必经城市还有点未取消标志，所有有城市未经过
+            for (std::vector<bool>::size_type ix = 0; ix != mark.size(); ix++)
             {
                 if (mark[ix] == true)
                 {
@@ -185,7 +190,8 @@ void Traveler::DFS(int city, std::vector<Attribute>& path, std::vector<bool>& kn
                 }
             }
         }
-        if(strategy != 1 && tempValue[city] < min && ok) //若满足约束条件，则更新最小值并记录路径
+        //若满足约束条件，则更新最小值并记录路径
+        if(strategy != 1 && tempValue[city] < min && ok)
         {
             min = tempValue[city];
             time = tempTime;
@@ -198,6 +204,7 @@ void Traveler::DFS(int city, std::vector<Attribute>& path, std::vector<bool>& kn
             plan = path;
         }
     }
+    //未到达目的地城市，继续向下一层递归
     else
     {
         typedef std::multimap<int, Attribute>::size_type sz_type;
@@ -217,6 +224,7 @@ void Traveler::DFS(int city, std::vector<Attribute>& path, std::vector<bool>& kn
             start = false;
             if (strategy != 2)
             {
+                //找到一条通往新的城市的路径
                 if (iter->second.to != min->second.to)
                 {
                     path.push_back(min->second);
@@ -226,13 +234,14 @@ void Traveler::DFS(int city, std::vector<Attribute>& path, std::vector<bool>& kn
 
                     DFS(min->second.to, path, known, tempTime, tempValue);
 
+                    //回溯状态
                     known[min->second.to] = false;
                     path.erase(path.end());
 
-                    //min更新为新的城市
-                    //priCity = iter->second.to;
+                    //更新min
                     min = iter;
                 }
+                //此路径的去往城市跟之前相同，则寻找最小值
                 else
                 {
                     if (strategy == 0 && iter->second.cost < min->second.cost)
@@ -241,6 +250,7 @@ void Traveler::DFS(int city, std::vector<Attribute>& path, std::vector<bool>& kn
                         min = iter;
                 }
             }
+            //策略三不能局部最优剪枝，所以每条路径都需要尝试
             else
             {
                 path.push_back(iter->second);
@@ -298,7 +308,6 @@ QDateTime Traveler::CalculateTime(const std::multimap<int, Attribute>::iterator&
 std::vector<Attribute> Traveler::Dijkstra(std::vector<bool> &known, std::vector<QDateTime>& time)
 {
     std::vector<int> value(12, INT_MAX); //记录原点到每个点的权值之和
-//    std::vector<bool> known(12, false);  //标记每个点是否被访问过
     std::vector<Attribute> path(12);     //记录每个点的移动路径
 
     QDateTime currentTime = startTime;
@@ -308,6 +317,7 @@ std::vector<Attribute> Traveler::Dijkstra(std::vector<bool> &known, std::vector<
     int city = origin;
     while(1)
     {
+        //更新相邻节点的值
         UpdateAdjacents(city, value, known, path);
         qDebug() << "update success...";
         city = -1;
@@ -315,7 +325,7 @@ std::vector<Attribute> Traveler::Dijkstra(std::vector<bool> &known, std::vector<
         if(strategy == 0)
         {
             int min = INT_MAX;
-
+            //寻找未访问点中最小的权值
             for(std::vector<int>::size_type ix = 0;
                 ix != value.size(); ix++)
             {
@@ -356,6 +366,7 @@ std::vector<Attribute> Traveler::Dijkstra(std::vector<bool> &known, std::vector<
     return plan;
 }
 
+//逆向path生成plan
 void Traveler::MakePlan(int city, const std::vector<Attribute>& path, std::vector<Attribute> &plan)
 {
     if(path[city].from == -1)
