@@ -112,17 +112,23 @@ Widget::~Widget()
 void Widget::startButtonClicked()
 {
     QDateTime startDateTime;
-
+    //对于当前旅客，初次点击开始按钮
     if (startclicked[ui->TravelerComboBox->currentIndex()] == false)
     {
         qDebug() << "traveler clicked false";
         strategy = getStrategy();
         start = getStart();
         destination = getDestination();
+        //始发地和目的地相同则弹框报错，不作操作
         if (start == destination)
         {
             QMessageBox::information(this, "Error", QString::fromWCharArray(L"出发地和目的地相同"));
-            startclicked[ui->TravelerComboBox->currentIndex()] = false;
+            return;
+        }
+        //（策略三的情况下）截止时间早于当前时间报错，不作操作
+        if (!(ui->StartDateTimeEdit->dateTime() < ui->DeadlineDateTimeEdit->dateTime()))
+        {
+            QMessageBox::information(this, "Error", QString::fromWCharArray(L"截止时间早于当前时间"));
             return;
         }
 
@@ -152,11 +158,21 @@ void Widget::startButtonClicked()
         startclicked[ui->TravelerComboBox->currentIndex()] = true;
         return;
     }
+    //对于当前旅客，执行更改计划操作
     if (startclicked[ui->TravelerComboBox->currentIndex()] == true)
     {
         qDebug() << "traveler clicked is true";
-        strategy = getStrategy();//如果涉及途中策略更改，则保留
+        strategy = getStrategy();
         destination = getDestination();
+
+        if (!(ui->StartDateTimeEdit->dateTime() < ui->DeadlineDateTimeEdit->dateTime()))
+        {
+            QMessageBox::information(this, "Error", QString::fromWCharArray(L"截止时间早于当前时间"));
+            startclicked[ui->TravelerComboBox->currentIndex()] = false;
+            return;
+        }
+
+        //获得新计划的始发地，即原计划的当前停留地/运行途中即将到达地
         int nextCity2Arrive = ui->LeftWidget->nextCity();
         if (nextCity2Arrive != -1)
         {
@@ -165,7 +181,6 @@ void Widget::startButtonClicked()
             if (path.size() == 0)
             {
                 QMessageBox::information(this, "Error", QString::fromWCharArray(L"无有效路径"));
-                //startclicked[ui->TravelerComboBox->currentIndex()] = false;
                 return;
             }
             qDebug() << "change plan success.";
@@ -177,7 +192,7 @@ void Widget::startButtonClicked()
     }
 }
 
-//根据策略决定截止日期栏状态
+//根据策略决定截止日期栏状态，只有策略三使得截止日期状态栏可编辑
 void Widget::enOrDisAbleDeadline(int currentStrategy)
 {
     if (currentStrategy != 2)
@@ -189,6 +204,7 @@ void Widget::enOrDisAbleDeadline(int currentStrategy)
 //单击“添加旅客”按钮，开始运行
 void Widget::addTravelerButtonClicked()
 {
+    //添加旅客，初始化旅客信息
     std::vector<bool> temp(12, false);
     throughcity = temp;
     qDebug() << "throughcity creat success.";
@@ -201,6 +217,7 @@ void Widget::addTravelerButtonClicked()
     addtravelertimes += 1;
     startclickedtimes = 0;
 
+    //将界面右侧各栏初始化显示
     ui->TravelerComboBox->addItem(QString::number(addtravelertimes));
     ui->TravelerComboBox->setCurrentText(QString::number(addtravelertimes));
 
@@ -229,6 +246,7 @@ void Widget::addTravelerButtonClicked()
 //旅客选择更改，显示更改
 void Widget::travelerChanged()
 {
+    //当前旅客执行过构造计划，则将界面显示为该旅客的信息
     if (startclicked[ui->TravelerComboBox->currentIndex()])
     {
         ui->StartDateTimeEdit->setDateTime(travelers[ui->TravelerComboBox->currentIndex()].startTime);
@@ -249,7 +267,6 @@ void Widget::travelerChanged()
         ui->StartButton->setText(QString::fromWCharArray(L"更改"));
         ui->StartComboBox->setEnabled(false);
         ui->StartDateTimeEdit->setEnabled(false);
-        //ui->DeadlineDateTimeEdit->setEnabled(false);
         ui->ThroughCityCheckBox->setChecked(travelers[ui->TravelerComboBox->currentIndex()].isChecked);
         throughcity = travelers[ui->TravelerComboBox->currentIndex()].throughCity;
         activeThroughCity();
@@ -258,6 +275,7 @@ void Widget::travelerChanged()
     }
     else
     {
+        //当前旅客未执行过构造计划操作，则将界面初始化
         ui->StartButton->setText(QString::fromWCharArray(L"开始"));
         ui->StartComboBox->setEnabled(true);
         ui->DestinationComboBox->setEnabled(true);
@@ -319,7 +337,7 @@ QDateTime Widget::getStartTime()
     return ui->StartDateTimeEdit->dateTime();
 }
 
-//获取已用时间
+//获取已用时间，根据纪录的旅客开始旅行时的系统时间和当前系统时间获得系统经过时间，按照10s = 1h的比率得到旅客经过时间
 QDateTime Widget::getSpentTime()
 {
     QDate systemStartDay = travelers[ui->TravelerComboBox->currentIndex()].systemStartTime.date();
@@ -477,14 +495,17 @@ void Widget::displaySpentTime()
 {
     QDateTime spentTime = getSpentTime();
 
+    //当前用户执行过构造计划
     if (startclicked[ui->TravelerComboBox->currentIndex()])
     {
+        //已用时间不超过计划用总时间
         if (travelers[ui->TravelerComboBox->currentIndex()].totalTime >= spentTime)
         {
             ui->DurationText->setText(QString::number(spentTime.date().day()-1) + QString::fromWCharArray(L"天 ")
                     + QString::number(spentTime.time().hour()) + QString::fromWCharArray(L"小时 ")
                     + QString::number(spentTime.time().minute()) + QString::fromWCharArray(L"分钟"));
         }
+        //已用时间超过计划用总时间，显示总时间
         else
         {
             ui->DurationText->setText(QString::number(travelers[ui->TravelerComboBox->currentIndex()].totalTime.date().day()-1)
