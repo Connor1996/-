@@ -32,7 +32,7 @@ public:
 private:
     std::vector<Attribute> plan; //记录最优路径
     std::vector<QDateTime> time; //记录每个城市的到达时间
-    std::vector<Attribute> Dijkstra();
+    std::vector<Attribute> Dijkstra(std::vector<bool> &);
     void DFS(int city, std::vector<Attribute>&, std::vector<bool>&,
              std::vector<QDateTime>&, std::vector<int> &);
     void MakePlan(int, const std::vector<Attribute>&, std::vector<Attribute> &);

@@ -8,20 +8,20 @@ Traveler::Traveler(int id, QDateTime startTime, QDateTime deadlineTime, QDateTim
     throughCity(throughCity), time(12, QDateTime(QDate(7999, 12, 31), QTime(23, 59, 59))),
     min(0x7FFFFFFF), minTime(QDateTime(QDate(7999, 12, 31), QTime(23, 59, 59)))
 {
+    std::vector<bool> known(12, false);  //标记每个点是否被访问过
     //根据不同策略选择，进行相应的算法
     if(strategy == 2 || isChecked)
     {
         std::vector<QDateTime> tempTime(12, QDateTime(QDate(7999, 12, 31), QTime(23, 59, 59)));
                                              //临时记录每个点的到达时间
         std::vector<int> tempValue(12);      //临时记录
-        std::vector<bool> known(12, false);  //标记每个点是否被访问过
         std::vector<Attribute> path;         //记录每个点的移动路径
         tempTime[origin] = startTime;
 
         DFS(origin, path, known, tempTime, tempValue);
     }
     else
-        plan = Dijkstra();
+        plan = Dijkstra(known);
 
     //
     totalTime = TotalDateTime();
@@ -57,9 +57,11 @@ std::vector<Attribute> Traveler::changePlan(int city, int strategy, int destinat
     std::vector<bool> known(12, false);  //标记每个点是否被访问过
     std::vector<Attribute> oldPlan = plan;
     std::vector<Attribute> tempPlan = plan;
-
+    int oldOrigin = origin;
     QDateTime oldStartTime = startTime;
+    origin = -1;
 
+    //将oldplan里未走的路径删除
     for(std::vector<Attribute>::iterator iter = oldPlan.begin(); iter != oldPlan.end(); iter++)
     {
         if (iter->from == city)
@@ -75,6 +77,15 @@ std::vector<Attribute> Traveler::changePlan(int city, int strategy, int destinat
         known[iter->from] = true;
         throughCity[iter->from] = false;
     }
+    if (origin == -1)
+    {
+        std::vector<Attribute> nullPlan; //其实就是得到一个空路径，好返回给widget进入弹出“无有效路径”
+        plan = tempPlan;
+        origin = oldOrigin;
+        totalTime = TotalDateTime();
+        return nullPlan;
+    }
+
     plan.clear();
     this->strategy = strategy;
     this->destination = destination;
@@ -82,36 +93,36 @@ std::vector<Attribute> Traveler::changePlan(int city, int strategy, int destinat
     this->isChecked = isChecked;
     this->throughCity = throughCity;
 
-    for (std::vector<bool>::size_type ix = 0; ix != known.size(); ix++)
-    {
-        qDebug() << throughCity[ix] << known[ix];
-    }
-
     if(strategy == 2 || isChecked)
     {
         std::vector<QDateTime> tempTime = time;
         std::vector<int> tempValue(12);
         std::vector<Attribute> path;     //记录每个点的移动路径
-        tempTime[origin] = startTime;
+        //tempTime[origin] = startTime;
 
         DFS(origin, path, known, tempTime, tempValue);
     }
     else
-        plan = Dijkstra();
-    totalTime = TotalDateTime();
+        plan = Dijkstra(known);
+
 
     qDebug() << oldPlan.size() << plan.size();
     oldPlan.insert(oldPlan.end(), plan.begin(), plan.end());
     startTime = oldStartTime;
-    if (plan.size() == 0)
+
+    if (plan.size() == 0 && city != destination)
     {
-        std::vector<Attribute> cache = plan; //其实就是得到一个空路径，好返回给widget进入弹出“无有效路径”
+        std::vector<Attribute> nullPlan; //其实就是得到一个空路径，好返回给widget进入弹出“无有效路径”
         plan = tempPlan;
-        return cache;
+        origin = oldOrigin;
+        totalTime = TotalDateTime();
+        return nullPlan;
     }
-    else
+    else 
     {
         plan = oldPlan;
+        origin = oldOrigin;
+        totalTime = TotalDateTime();
         return plan;
     }
 
@@ -284,10 +295,10 @@ QDateTime Traveler::CalculateTime(const std::multimap<int, Attribute>::iterator&
     return temp;
 }
 
-std::vector<Attribute> Traveler::Dijkstra()
+std::vector<Attribute> Traveler::Dijkstra(std::vector<bool> &known)
 {
     std::vector<int> value(12, INT_MAX); //记录原点到每个点的权值之和
-    std::vector<bool> known(12, false);  //标记每个点是否被访问过
+//    std::vector<bool> known(12, false);  //标记每个点是否被访问过
     std::vector<Attribute> path(12);     //记录每个点的移动路径
 
     QDateTime currentTime = startTime;
