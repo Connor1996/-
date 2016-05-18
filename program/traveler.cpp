@@ -21,12 +21,13 @@ Traveler::Traveler(int id, QDateTime startTime, QDateTime deadlineTime, QDateTim
         DFS(origin, path, known, tempTime, tempValue);
     }
     else
-        plan = Dijkstra(known);
+        plan = Dijkstra(known, time);
 
-    //
+    //计算行程总时间
     totalTime = TotalDateTime();
 }
 
+//根据行程起始时间和终止时间计算总时间
 QDateTime Traveler::TotalDateTime()
 {
     QDateTime endTime = time[destination];
@@ -41,14 +42,17 @@ QDateTime Traveler::TotalDateTime()
     return QDateTime(QDate(1, 1, durationDay+1), QTime(durationHour, durationMin, 0));
 }
 
+//获得plan的实例
 std::vector<Attribute> Traveler::getPlan()
 {
     return this->plan;
 }
 
+//改变计划
 std::vector<Attribute> Traveler::changePlan(int city, int strategy, int destination, QDateTime deadlineTime,
                                             bool isChecked, std::vector<bool> throughCity)
 {
+    //DFS记录关键信息的初始化
     min = 0x7FFFFFFF;
     minTime = QDateTime(QDate(7999, 12, 31), QTime(23, 59, 59));
 
@@ -77,6 +81,8 @@ std::vector<Attribute> Traveler::changePlan(int city, int strategy, int destinat
         known[iter->from] = true;
         throughCity[iter->from] = false;
     }
+
+    //如果origin未变化，即city为终点城市，说明在最后一条路径，此时不能改变计划
     if (origin == -1)
     {
         std::vector<Attribute> nullPlan; //其实就是得到一个空路径，好返回给widget进入弹出“无有效路径”
@@ -93,24 +99,18 @@ std::vector<Attribute> Traveler::changePlan(int city, int strategy, int destinat
     this->isChecked = isChecked;
     this->throughCity = throughCity;
 
-    if(strategy == 2 || isChecked)
-    {
-        std::vector<QDateTime> tempTime = time;
-        std::vector<int> tempValue(12);
-        std::vector<Attribute> path;     //记录每个点的移动路径
-        //tempTime[origin] = startTime;
+    //任何策略都是用DFS用于changeplan
+    std::vector<QDateTime> tempTime = time;
+    std::vector<int> tempValue(12);
+    std::vector<Attribute> path;     //记录每个点的移动路径
+    DFS(origin, path, known, tempTime, tempValue);
 
-        DFS(origin, path, known, tempTime, tempValue);
-    }
-    else
-        plan = Dijkstra(known);
-
-
-    qDebug() << oldPlan.size() << plan.size();
+    //新旧plan组合
     oldPlan.insert(oldPlan.end(), plan.begin(), plan.end());
     startTime = oldStartTime;
 
-    if (plan.size() == 0 && city != destination)
+    //判断新plan是否为空且
+    if (plan.size() == 0)
     {
         std::vector<Attribute> nullPlan; //其实就是得到一个空路径，好返回给widget进入弹出“无有效路径”
         plan = tempPlan;
@@ -295,7 +295,7 @@ QDateTime Traveler::CalculateTime(const std::multimap<int, Attribute>::iterator&
     return temp;
 }
 
-std::vector<Attribute> Traveler::Dijkstra(std::vector<bool> &known)
+std::vector<Attribute> Traveler::Dijkstra(std::vector<bool> &known, std::vector<QDateTime>& time)
 {
     std::vector<int> value(12, INT_MAX); //记录原点到每个点的权值之和
 //    std::vector<bool> known(12, false);  //标记每个点是否被访问过
