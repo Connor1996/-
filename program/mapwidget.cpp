@@ -69,6 +69,7 @@ QPointF MapWidget::setPointPos()
     QDateTime spenttime = fatherPtr->getSpentTime();
     QDateTime starttime = fatherPtr->travelers[fatherPtr->currentTraveler].startTime;
 
+    //已用时间不小于总时间，当前位置为目的地
     if(spenttime >= fatherPtr->travelers[fatherPtr->currentTraveler].totalTime)
     {
          pointPos = getCityCor(path[path.size()-1].to);
@@ -82,6 +83,7 @@ QPointF MapWidget::setPointPos()
             QDateTime departuredatetime = fatherPtr->travelers[fatherPtr->currentTraveler].getCityDepartureDateTime(path[index].from);
             QDateTime cityarrivaltime = fatherPtr->travelers[fatherPtr->currentTraveler].getCityArrivalDateTime(path[index].to);
 
+            //已用时间不超过一段路径发车时间，状态为等待
             if (spenttime <= getSplitTime(starttime, departuredatetime))
             {
                 pointPos = getCityCor(path[index].from);
@@ -90,6 +92,7 @@ QPointF MapWidget::setPointPos()
                 qDebug() << "State: Stop" << index << departuredatetime.time().hour() << departuredatetime.time().minute();
                 break;
             }
+            //已用时间不超过一段路径的到站时间，状态为运动中
             else if (spenttime <=
                      getSplitTime(starttime, cityarrivaltime))
             {
@@ -117,6 +120,7 @@ int MapWidget::nextCity()
     int nextCity2Arrive;
     QDateTime spenttime = fatherPtr->getSpentTime();
 
+    //已经到达目的地，则无法改变目的地
     if(spenttime >= fatherPtr->travelers[fatherPtr->currentTraveler].totalTime)
     {
          nextCity2Arrive = -1;
@@ -130,14 +134,15 @@ int MapWidget::nextCity()
             QDateTime starttime = fatherPtr->travelers[fatherPtr->currentTraveler].startTime;
             QDateTime departuredatetime = fatherPtr->travelers[fatherPtr->currentTraveler].getCityDepartureDateTime(path[index].from);
             QDateTime cityarrivaltime = fatherPtr->travelers[fatherPtr->currentTraveler].getCityArrivalDateTime(path[index].to);
+            //当前处于等待状态，新计划始发地为当前所处地点
             if (spenttime <= getSplitTime(starttime, departuredatetime))
             {
                 nextCity2Arrive = path[index].from;
                 state = -1;
-                //qDebug() << "State: Stop" << index << departuredatetime.time().hour() << departuredatetime.time().minute();
                 qDebug() << "State : Stop--next city to arrive is the city now at" << nextCity2Arrive;
                 break;
             }
+            //当前处于运行状态，新计划为即将到达的城市
             else if (spenttime <=
                      getSplitTime(starttime, cityarrivaltime))
             {
