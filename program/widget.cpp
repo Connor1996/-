@@ -168,7 +168,14 @@ void Widget::startButtonClicked()
         if (!(ui->StartDateTimeEdit->dateTime() < ui->DeadlineDateTimeEdit->dateTime()))
         {
             QMessageBox::information(this, "Error", QString::fromWCharArray(L"截止时间早于当前时间"));
-            startclicked[ui->TravelerComboBox->currentIndex()] = false;
+
+            int deaDay = ui->StartDateTimeEdit->dateTime().date().day();
+            deaDay += 1;
+            QDateTime deadlineDateTime;
+            deadlineDateTime.setDate(QDate(ui->StartDateTimeEdit->dateTime().date().year(), ui->StartDateTimeEdit->dateTime().date().month(), deaDay));
+            deadlineDateTime.setTime(QTime(ui->StartDateTimeEdit->dateTime().time()));
+            ui->DeadlineDateTimeEdit->setDateTime(deadlineDateTime);
+
             return;
         }
 
