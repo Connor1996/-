@@ -65,7 +65,7 @@ void outputMessage(QtMsgType type, const QMessageLogContext &context, const QStr
     QString message = QString("%1 %2 %3 %4").arg(text).arg(context_info).arg(msg).arg(current_date);
 
     QFile file("log.txt");
-    file.open(QIODevice::WriteOnly | QIODevice::Append);
+    file.open(QIODevice::WriteOnly | QIODevice::Append);//Append 追加方式
     QTextStream text_stream(&file);
     text_stream << message << "\r\n";
     file.flush();
@@ -92,6 +92,8 @@ int main(int argc, char *argv[])
 
     //注册MessageHandler
           qInstallMessageHandler(outputMessage);
+          QFile file("log.txt");
+          file.resize(0);
 
     //支持中文编码
     QTextCodec *codec = QTextCodec::codecForName("UTF-8");
