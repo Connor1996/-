@@ -17,7 +17,7 @@ public:
     bool isChecked;
     int id, strategy;
     int origin, destination;
-    QDateTime startTime, deadlineTime, systemStartTime;
+    QDateTime startTime, deadlineTime, usedTime;
     QDateTime totalTime;
     std::vector<bool> throughCity;
 

@@ -4,7 +4,7 @@
 Traveler::Traveler(int id, QDateTime startTime, QDateTime deadlineTime, QDateTime systemStartTime, int strategy, int origin,
                    int destination, bool isChecked, std::vector<bool> throughCity) :
     isChecked(isChecked), id(id), strategy(strategy), origin(origin), destination(destination),
-    startTime(startTime), deadlineTime(deadlineTime), systemStartTime(systemStartTime),
+    startTime(startTime), deadlineTime(deadlineTime), usedTime(QDateTime(QDate(1, 1, 1), QTime(0, 0, 0, 0))),
     throughCity(throughCity), time(12, QDateTime(QDate(7999, 12, 31), QTime(23, 59, 59))),
     min(0x7FFFFFFF), minTime(QDateTime(QDate(7999, 12, 31), QTime(23, 59, 59)))
 {

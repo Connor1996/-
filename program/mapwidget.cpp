@@ -66,7 +66,7 @@ QPointF MapWidget::setPointPos()
     Widget *fatherPtr = (Widget *)parentWidget();
     static QPointF pointPos;
     std::vector<Attribute> path = fatherPtr->travelers[fatherPtr->currentTraveler].getPlan();
-    QDateTime spenttime = fatherPtr->getSpentTime();
+    QDateTime spenttime = fatherPtr->travelers[fatherPtr->currentTraveler].usedTime;
     QDateTime starttime = fatherPtr->travelers[fatherPtr->currentTraveler].startTime;
 
     //已用时间不小于总时间，当前位置为目的地

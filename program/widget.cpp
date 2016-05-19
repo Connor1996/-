@@ -4,7 +4,7 @@
 
 Widget::Widget(QWidget *parent) :
     QWidget(parent), currentTraveler(-1), ui(new Ui::Widget),
-    addtravelertimes(0), startclickedtimes(0),  throughcity(12, false)
+    addtravelertimes(0), startclickedtimes(0), throughcity(12, false)
 {
     ui->setupUi(this);
     initUI();
@@ -253,6 +253,7 @@ void Widget::addTravelerButtonClicked()
 //旅客选择更改，显示更改
 void Widget::travelerChanged()
 {
+    ui->StartButton->setEnabled(true);
     //当前旅客执行过构造计划，则将界面显示为该旅客的信息
     if (startclicked[ui->TravelerComboBox->currentIndex()])
     {
@@ -346,147 +347,31 @@ QDateTime Widget::getStartTime()
 
 //获取已用时间，根据纪录的旅客开始旅行时的系统时间和当前系统时间获得系统经过时间，按照10s = 1h的比率得到旅客经过时间
 QDateTime Widget::getSpentTime()
-{
-    QDate systemStartDay = travelers[ui->TravelerComboBox->currentIndex()].systemStartTime.date();
-    QTime systemStartTime = travelers[ui->TravelerComboBox->currentIndex()].systemStartTime.time();
-    int systemstartyear, systemstartmonth, systemstartday;
-    int systemstarthour, systemstartmin, systemstartsec, systemstartmsec;
+{    
+    QDateTime usedDateTime = travelers[ui->TravelerComboBox->currentIndex()].usedTime;
 
-    systemStartDay.getDate(&systemstartyear, &systemstartmonth, &systemstartday);
-    systemstarthour = systemStartTime.hour();
-    systemstartmin = systemStartTime.minute();
-    systemstartsec = systemStartTime.second();
-    systemstartmsec = systemStartTime.msec();
+    int durday = usedDateTime.date().day();
+    int durhour = usedDateTime.time().hour();
+    int durmin = usedDateTime.time().minute();
+    int dursec = usedDateTime.time().second();
+    int durmsec = usedDateTime.time().msec();
 
-    QDate systemCurrentDay = QDate::currentDate();
-    QTime systemCurrentTime = QTime::currentTime();
-    int systemcurrentyear, systemcurrentmonth, systemcurrentday;
-    int systemcurrenthour, systemcurrentmin, systemcurrentsec, systemcurrentmsec;
-    systemCurrentDay.getDate(&systemcurrentyear, &systemcurrentmonth, &systemcurrentday);
-    systemcurrenthour = systemCurrentTime.hour();
-    systemcurrentmin = systemCurrentTime.minute();
-    systemcurrentsec = systemCurrentTime.second();
-    systemcurrentmsec = systemCurrentTime.msec();
+    durmsec += 360;
 
-    int duryear = systemcurrentyear - systemstartyear;
-    int durmonth = systemcurrentmonth - systemstartmonth;
-    int durday = systemcurrentday - systemstartday;
-    int durhour = systemcurrenthour - systemstarthour;
-    int durmin = systemcurrentmin - systemstartmin;
-    int dursec = systemcurrentsec - systemstartsec;
-    int durmsec = systemcurrentmsec - systemstartmsec;
+    dursec += durmsec / 1000;
+    durmsec = durmsec % 1000;
+    durmin += dursec / 60;
+    dursec = dursec % 60;
+    durhour += durmin / 60;
+    durmin = durmin % 60;
+    durday += durhour /24;
+    durhour = durhour % 24;    
+    durday = durday % 30;
 
-    if (durmsec < 0)
-    {
-        dursec--;
-        durmsec += 1000;
-    }
-    if (dursec < 0)
-    {
-        durmin--;
-        dursec += 60;
-    }
-    if (durmin < 0)
-    {
-        durhour--;
-        durmin += 60;
-    }
-    if (durhour < 0)
-    {
-        durday--;
-        durhour += 24;
-    }
-    if (durday < 0)
-    {
-        durmonth--;
-        switch (systemstartmonth)
-        {
-        case 1:
-        case 3:
-        case 5:
-        case 7:
-        case 8:
-        case 10:
-        case 12:
-            durday += 31;
-            break;
-        case 4:
-        case 6:
-        case 9:
-        case 11:
-            durday += 30;
-            break;
-        case 2:
-            if (systemstartyear % 4 == 0 || systemstartyear % 400 == 0)
-                durday += 29;
-            else
-                durday += 28;
-            break;
-        }
-    }
-    if (durmonth < 0)
-    {
-        duryear--;
-        durmonth += 12;
-    }
-
-    durmsec *= 360;
-    dursec *= 360;
-    durmin *= 360;
-    durhour *= 360;
-    durday *= 360;
-    durmonth *= 360;
-    duryear *= 360;
-
-    while (durmsec >= 1000)
-    {
-        durmsec -= 1000;
-        dursec++;
-    }
-    while (dursec >= 60)
-    {
-        dursec -= 60;
-        durmin++;
-    }
-    while (durmin >= 60)
-    {
-        durmin -= 60;
-        durhour++;
-    }
-    while (durhour >= 24)
-    {
-        durhour -= 24;
-        durday++;
-    }
-    durmonth += duryear * ((systemstartyear % 4 == 0 || systemstartyear % 400 == 0)?366:365);
-    durday += durmonth * 30;
-
-    if (startclickedtimes == 1)
-    {
-        durmsec++;
-        if(durmsec == 60)
-        {
-             dursec++;
-             durmsec = 0;
-             if (dursec == 60)
-             {
-                 durmin++;
-                 dursec = 0;
-                 if (durmin == 60)
-                 {
-                     durhour++;
-                     durmin = 0;
-                     if (durhour == 24)
-                     {
-                         durday++;
-                         durhour = 0;
-                     }
-                 }
-             }
-        }
-    }
-
-    return QDateTime(QDate(1, 1, durday+1), QTime(durhour, durmin, dursec));
+    //qDebug() << "spentTime: " << travelers[ui->TravelerComboBox->currentIndex()].usedTime.QDateTime::toString("yyyy-MM-dd:hh:mm:ss:z");
+   // qDebug() << "UsedTime:" <<  QDateTime(QDate(1, 1, durday), QTime(durhour, durmin, dursec, durmsec));
+   travelers[ui->TravelerComboBox->currentIndex()].usedTime = QDateTime(QDate(1, 1, durday), QTime(durhour, durmin, dursec, durmsec));
+   return travelers[ui->TravelerComboBox->currentIndex()].usedTime;
 }
 
 //如果mstimer未激活，那么发出DoStartTimer信号
@@ -500,11 +385,13 @@ void Widget::timeStart()
 //显示开始出行到目前所用的时间
 void Widget::displaySpentTime()
 {
-    QDateTime spentTime = getSpentTime();
+//    QDateTime spentTime = getSpentTime();
 
     //当前用户执行过构造计划
     if (startclicked[ui->TravelerComboBox->currentIndex()])
     {
+        QDateTime spentTime = getSpentTime();
+        //qDebug() << spentTime ;
         //已用时间不超过计划用总时间
         if (travelers[ui->TravelerComboBox->currentIndex()].totalTime >= spentTime)
         {
