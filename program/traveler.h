@@ -21,7 +21,7 @@ public:
     QDateTime totalTime;
     std::vector<bool> throughCity;
 
-    Traveler(int, QDateTime, QDateTime, QDateTime, int, int, int, bool, std::vector<bool>);
+    Traveler(int, QDateTime, QDateTime, int, int, int, bool, std::vector<bool>);
     std::vector<Attribute> getPlan();
     QDateTime getCityArrivalDateTime(int);
     QDateTime getCityDepartureDateTime(int);

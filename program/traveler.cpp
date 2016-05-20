@@ -1,7 +1,7 @@
 ﻿#include "traveler.h"
 #include "log.h"
 
-Traveler::Traveler(int id, QDateTime startTime, QDateTime deadlineTime, QDateTime systemStartTime, int strategy, int origin,
+Traveler::Traveler(int id, QDateTime startTime, QDateTime deadlineTime, int strategy, int origin,
                    int destination, bool isChecked, std::vector<bool> throughCity) :
     isChecked(isChecked), id(id), strategy(strategy), origin(origin), destination(destination),
     startTime(startTime), deadlineTime(deadlineTime), usedTime(QDateTime(QDate(1, 1, 1), QTime(0, 0, 0, 0))),
@@ -72,7 +72,7 @@ std::vector<Attribute> Traveler::changePlan(int city, int strategy, int destinat
         {
             {
                 origin = iter->from;
-                startTime = time[iter->from];
+                //startTime = time[iter->from];
                 oldPlan.erase(iter, oldPlan.end());
             }
             break;
@@ -81,6 +81,17 @@ std::vector<Attribute> Traveler::changePlan(int city, int strategy, int destinat
         known[iter->from] = true;
         throughCity[iter->from] = false;
     }
+
+    int Min = usedTime.time().minute() + startTime.time().minute();
+    int Hour = usedTime.time().hour() + startTime.time().hour() + Min / 60;
+    int Day = usedTime.date().day()-1 + startTime.date().day() + Hour / 24;
+    int Month = usedTime.date().month()-1 + startTime.date().month() + Day / startTime.date().daysInMonth();
+
+    Min %= 60;
+    Hour %= 24;
+    Day %= startTime.date().daysInMonth();
+    startTime = QDateTime(QDate(startTime.date().year(), Month, Day), QTime(Hour, Min, startTime.time().second()));
+    time[origin] = startTime;
 
     //如果origin未变化，即city为终点城市，说明在最后一条路径，此时不能改变计划
     if (origin == -1)

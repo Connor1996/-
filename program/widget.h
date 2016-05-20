@@ -79,6 +79,8 @@ private:
 
     QString numToCity(int index);//将城市编号转为城市名称
 
+protected:
+    bool eventFilter(QObject *, QEvent *);
 
 private slots:
     void startButtonClicked();//开始按钮按下，开始计算路径图形输出

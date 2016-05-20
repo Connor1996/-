@@ -72,9 +72,12 @@ QPointF MapWidget::setPointPos()
     //已用时间不小于总时间，当前位置为目的地
     if(spenttime >= fatherPtr->travelers[fatherPtr->currentTraveler].totalTime)
     {
+         if(spenttime == fatherPtr->travelers[fatherPtr->currentTraveler].totalTime)
+         {
+              qDebug() << "Arriving at destination" << path[path.size()-1].to;
+         }
          pointPos = getCityCor(path[path.size()-1].to);
          state = -2;
-         qDebug() << "State: Arrival";
     }
     else
         for (std::vector<Attribute>::size_type index = 0;
@@ -82,33 +85,28 @@ QPointF MapWidget::setPointPos()
         {
             QDateTime departuredatetime = fatherPtr->travelers[fatherPtr->currentTraveler].getCityDepartureDateTime(path[index].from);
             QDateTime cityarrivaltime = fatherPtr->travelers[fatherPtr->currentTraveler].getCityArrivalDateTime(path[index].to);
-
+            QDateTime start2Begin = getSplitTime(starttime, departuredatetime);
+            QDateTime start2End = getSplitTime(starttime, cityarrivaltime);
             //已用时间不超过一段路径发车时间，状态为等待
-            if (spenttime <= getSplitTime(starttime, departuredatetime))
+            if (spenttime <= start2Begin)
             {
                 pointPos = getCityCor(path[index].from);
                 state = -1;
-                qDebug() << spenttime << getSplitTime(starttime, departuredatetime);
-                qDebug() << "State: Stop" << index << departuredatetime.time().hour() << departuredatetime.time().minute();
                 break;
             }
             //已用时间不超过一段路径的到站时间，状态为运动中
-            else if (spenttime <=
-                     getSplitTime(starttime, cityarrivaltime))
+            else if (spenttime <= start2End)
             {
                 pointPos = getCityCor(path[index].from);
-                QDateTime spentTime = spenttime;
-                QDateTime start2Begin = getSplitTime(starttime, departuredatetime);
-                QDateTime start2End = getSplitTime(starttime, cityarrivaltime);
-                pointPos += getMoveDistance(spentTime, start2Begin, start2End, path[index].from, path[index].to);
+                pointPos += getMoveDistance(spenttime, start2Begin, start2End, path[index].from, path[index].to);
                 state = path[index].vehicle;
-                qDebug() << spenttime << getSplitTime(starttime, cityarrivaltime);
-                qDebug() << "State: Run" << index;
+                if (spenttime == start2End)
+                {
+                    qDebug() << "Arriving at " << path[index].to;
+                }
                 break;
             }
         }
-    //qDebug() << pointPos.x() << pointPos.y();
-   // qDebug() << "----------------------------";
     return pointPos;
 }
 
@@ -125,7 +123,6 @@ int MapWidget::nextCity()
     {
          nextCity2Arrive = -1;
          state = -2;
-         qDebug() << "State: Arrival--next City to arrive is NULL" << nextCity2Arrive;
     }
     else
         for (std::vector<Attribute>::size_type index = 0;
@@ -139,7 +136,6 @@ int MapWidget::nextCity()
             {
                 nextCity2Arrive = path[index].from;
                 state = -1;
-                qDebug() << "State : Stop--next city to arrive is the city now at" << nextCity2Arrive;
                 break;
             }
             //当前处于运行状态，新计划为即将到达的城市
@@ -148,10 +144,10 @@ int MapWidget::nextCity()
             {
                 nextCity2Arrive = path[index].to;
                 state = path[index].vehicle;
-                qDebug() << "State: Run--next city to arrive is the city on the other side of current path" << nextCity2Arrive;
                 break;
             }
         }
+    qDebug() << "Next city to arrive is " << nextCity2Arrive;
     return nextCity2Arrive;
 }
 
