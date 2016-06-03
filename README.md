@@ -1,6 +1,8 @@
 ﻿# 旅行模拟查询系统 Travel Query System
 数据结构课程设计的选题，基于QT开发
 
+需要的动态链接库:Qt5Widegets.dll Qt5Gui.dll Qt5Core.dll 
+
 ##Change Log
 
 ###v0.1.0（2016/3/12）
@@ -193,3 +195,6 @@
 ###v0.9.8（2016/5/20）
 * 完善log输出内容
 * 支持开始按钮使用ENTER快捷键
+
+###v1.0.0（2016/6/3）
+*修复重大bug

@@ -329,6 +329,21 @@
        <number>5</number>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <property name="spacing">
+        <number>1</number>
+       </property>
+       <property name="leftMargin">
+        <number>7</number>
+       </property>
+       <property name="topMargin">
+        <number>7</number>
+       </property>
+       <property name="rightMargin">
+        <number>7</number>
+       </property>
+       <property name="bottomMargin">
+        <number>7</number>
+       </property>
        <item>
         <layout class="QGridLayout" name="CityThroughGridLayout">
          <property name="sizeConstraint">
@@ -551,7 +566,7 @@
            <x>0</x>
            <y>0</y>
            <width>275</width>
-           <height>165</height>
+           <height>173</height>
           </rect>
          </property>
         </widget>

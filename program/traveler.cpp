@@ -72,7 +72,21 @@ std::vector<Attribute> Traveler::changePlan(int city, int strategy, int destinat
         {
             {
                 origin = iter->from;
-                //startTime = time[iter->from];
+                if (iter == oldPlan.begin())
+                {
+                    int Min = usedTime.time().minute() + startTime.time().minute();
+                    int Hour = usedTime.time().hour() + startTime.time().hour() + Min / 60;
+                    int Day = usedTime.date().day()-1 + startTime.date().day() + Hour / 24;
+                    int Month = usedTime.date().month()-1 + startTime.date().month() + Day / startTime.date().daysInMonth();
+
+                    Min %= 60;
+                    Hour %= 24;
+                    Day %= startTime.date().daysInMonth();
+
+                    startTime = QDateTime(QDate(startTime.date().year(), Month, Day), QTime(Hour, Min, startTime.time().second()));
+                }
+                else
+                    startTime = time[iter->from];
                 oldPlan.erase(iter, oldPlan.end());
             }
             break;
@@ -82,16 +96,6 @@ std::vector<Attribute> Traveler::changePlan(int city, int strategy, int destinat
         throughCity[iter->from] = false;
     }
 
-    int Min = usedTime.time().minute() + startTime.time().minute();
-    int Hour = usedTime.time().hour() + startTime.time().hour() + Min / 60;
-    int Day = usedTime.date().day()-1 + startTime.date().day() + Hour / 24;
-    int Month = usedTime.date().month()-1 + startTime.date().month() + Day / startTime.date().daysInMonth();
-
-    Min %= 60;
-    Hour %= 24;
-    Day %= startTime.date().daysInMonth();
-    startTime = QDateTime(QDate(startTime.date().year(), Month, Day), QTime(Hour, Min, startTime.time().second()));
-    time[origin] = startTime;
 
     //如果origin未变化，即city为终点城市，说明在最后一条路径，此时不能改变计划
     if (origin == -1)
@@ -111,9 +115,14 @@ std::vector<Attribute> Traveler::changePlan(int city, int strategy, int destinat
     this->throughCity = throughCity;
 
     //任何策略都是用DFS用于changeplan
-    std::vector<QDateTime> tempTime = time;
+    std::vector<QDateTime> tempTime(12, QDateTime(QDate(7999, 12, 31), QTime(23, 59, 59)));
     std::vector<int> tempValue(12);
     std::vector<Attribute> path;     //记录每个点的移动路径
+    for (std::vector<Attribute>::iterator iter = oldPlan.begin(); iter != oldPlan.end(); iter++)
+    {
+        tempTime[iter->from] = time[iter->from];
+    }
+    tempTime[origin] = startTime;
     DFS(origin, path, known, tempTime, tempValue);
 
     //新旧plan组合
@@ -238,19 +247,22 @@ void Traveler::DFS(int city, std::vector<Attribute>& path, std::vector<bool>& kn
                 //找到一条通往新的城市的路径
                 if (iter->second.to != min->second.to)
                 {
-                    path.push_back(min->second);
+                    if (!known[min->second.to])
+                    {
+                        path.push_back(min->second);
 
-                    tempTime[min->second.to] = CalculateTime(min, tempTime);
-                    tempValue[min->second.to] = tempValue[city] + min->second.cost;
+                        tempTime[min->second.to] = CalculateTime(min, tempTime);
+                        tempValue[min->second.to] = tempValue[city] + min->second.cost;
 
-                    DFS(min->second.to, path, known, tempTime, tempValue);
+                        DFS(min->second.to, path, known, tempTime, tempValue);
 
-                    //回溯状态
-                    known[min->second.to] = false;
-                    path.erase(path.end());
+                        //回溯状态
+                        known[min->second.to] = false;
+                        path.erase(path.end());
 
-                    //更新min
-                    min = iter;
+                        //更新min
+                        min = iter;
+                    }
                 }
                 //此路径的去往城市跟之前相同，则寻找最小值
                 else
@@ -279,15 +291,18 @@ void Traveler::DFS(int city, std::vector<Attribute>& path, std::vector<bool>& kn
         //循环结束后还需要处理一次min
         if (strategy != 2)
         {
-            path.push_back(min->second);
+            if (!known[min->second.to])
+            {
+                path.push_back(min->second);
 
-            tempTime[min->second.to] = CalculateTime(min, tempTime);
-            tempValue[min->second.to] = tempValue[city] + min->second.cost;
+                tempTime[min->second.to] = CalculateTime(min, tempTime);
+                tempValue[min->second.to] = tempValue[city] + min->second.cost;
 
-            DFS(min->second.to, path, known, tempTime, tempValue);
+                DFS(min->second.to, path, known, tempTime, tempValue);
 
-            known[min->second.to] = false;
-            path.erase(path.end());
+                known[min->second.to] = false;
+                path.erase(path.end());
+            }
         }
     }
 }
@@ -330,7 +345,7 @@ std::vector<Attribute> Traveler::Dijkstra(std::vector<bool> &known, std::vector<
     {
         //更新相邻节点的值
         UpdateAdjacents(city, value, known, path);
-        qDebug() << "update success...";
+        //qDebug() << "update success...";
         city = -1;
 
         if(strategy == 0)
@@ -369,10 +384,10 @@ std::vector<Attribute> Traveler::Dijkstra(std::vector<bool> &known, std::vector<
 
         known[city] = true;
     }
-    qDebug() << "loop finish...";
+    qDebug() << "Loop finish...";
     std::vector<Attribute> plan;
     MakePlan(destination, path, plan);
-    qDebug() << "makeplan finish...";
+    qDebug() << "Makeplan finish...";
 
     return plan;
 }

@@ -429,11 +429,11 @@ void Widget::displaySpentTime()
                     QString::number(travelers[ui->TravelerComboBox->currentIndex()].totalTime.time().minute())
                     + QString::fromWCharArray(L"分钟"));
             qDebug() << "SpentTime: " << QString::number(travelers[ui->TravelerComboBox->currentIndex()].totalTime.date().day()-1)
-                    + QString::fromWCharArray(L"天 ") +
+                    + "Day " +
                     QString::number(travelers[ui->TravelerComboBox->currentIndex()].totalTime.time().hour())
-                    + QString::fromWCharArray(L"小时 ") +
+                    + "Hour " +
                     QString::number(travelers[ui->TravelerComboBox->currentIndex()].totalTime.time().minute())
-                    + QString::fromWCharArray(L"分钟");
+                    + "Minute";
             ui->StartButton->setEnabled(false);
         }
     }
@@ -562,12 +562,9 @@ void Widget::displayPath(std::vector<Attribute> path)
                            " " + QString::fromWCharArray(L"出发:") + path[index].begin.toString("hh:mm") +
                            QString::fromWCharArray(L" 到站:") + path[index].end.toString("hh:mm") + "\n" +
                            QString::fromWCharArray(L" 票价:") + QString::number(path[index].cost));
-        qDebug() << " " + numToCity(path[index].from) + "->" + numToCity(path[index].to) +
-                    QString::fromWCharArray(L" 班次:") + path[index].num + "\n" +
-                    " " + QString::fromWCharArray(L"出发:") + path[index].begin.toString("hh:mm") +
-                    QString::fromWCharArray(L" 到站:") + path[index].end.toString("hh:mm") + "\n" +
-                    QString::fromWCharArray(L" 票价:") + QString::number(path[index].cost);
+
         QHBoxLayout *rowlayout = new QHBoxLayout;
+        rowlayout->addStretch(1);
         rowlayout->addWidget(vehiclelabel);
         rowlayout->addWidget(textlabel);
         rowlayout->addStretch(1);
