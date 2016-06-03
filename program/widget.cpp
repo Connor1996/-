@@ -35,8 +35,8 @@ void Widget::initUI()
     ui->TravelerComboBox->setEnabled(false);
     ui->ThroughCityCheckBox->setEnabled(false);
 
-    ui->StartButton->setFocus();
-    ui->StartButton->setShortcut(Qt::Key_Return);
+//    ui->StartButton->setFocus();
+//    ui->StartButton->setShortcut(Qt::Key_Return);
 
     ui->city0cbox->setEnabled(false);
     ui->city1cbox->setEnabled(false);
@@ -111,11 +111,6 @@ Widget::~Widget()
     timethread->wait();
     delete ui;
     delete timethread;
-}
-
-bool Widget::eventFilter(QObject *object, QEvent *event)
-{
-
 }
 
 //单击“开始”按钮，获取用户输入信息
